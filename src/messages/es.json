@@ -1,0 +1,113 @@
+{
+  "common": {
+    "home": "Inicio",
+    "edit": "Editar",
+    "close": "Cerrar",
+    "saveChanges": "Guardar Cambios",
+    "viewMore": "Ver Más",
+    "delete": "Eliminar",
+    "filter": "Filtrar",
+    "seeAll": "Ver todo"
+  },
+  "sidebar": {
+    "groups": {
+      "admin": "Administrador",
+      "profesionals": "Personal",
+      "session": "Sesión"
+    },
+    "items": {
+      "dashboard": "Dashboard",
+      "profesionals": "Personal",
+      "authentication": "Autenticación",
+      "session": "Sesión",
+      "signIn": "Iniciar Sesión",
+      "signUp": "Registrarse"
+    }
+  },
+  "header": {
+    "searchPlaceholder": "Buscar o escribir comando...",
+    "toggleSidebar": "Toggle Sidebar",
+    "notifications": {
+      "title": "Notificación",
+      "requestsPermission": "solicita permiso para cambiar",
+      "project": "Proyecto",
+      "minAgo": "hace {count} min",
+      "hrAgo": "hace {count} hr",
+      "viewAll": "Ver todas las notificaciones"
+    }
+  },
+  "userDropdown": {
+    "editProfile": "Editar perfil",
+    "accountSettings": "Configuración de la cuenta",
+    "support": "Soporte",
+    "language": "Idioma",
+    "signOut": "Cerrar sesión"
+  },
+  "notFound": {
+    "error": "ERROR",
+    "message": "¡No podemos encontrar la página que está buscando!",
+    "backHome": "Volver a la página de inicio"
+  },
+  "specialty": {
+    "familyMedicine": "Medicina Familiar",
+    "generalMedicine": "Medicina General",
+    "dentistry": "Odontología",
+    "veterinary": "Veterinaria",
+    "psychology": "Psicología",
+    "nutrition": "Nutrición",
+    "pediatrics": "Pediatría",
+    "geriatrics": "Geriatría",
+    "oncology": "Oncología",
+    "cardiology": "Cardiología",
+    "neurology": "Neurología",
+    "dermatology": "Dermatología",
+    "ophthalmology": "Oftalmología",
+    "otorhinolaryngology": "Otorrinolaringología",
+    "orthopedics": "Ortopedia",
+    "traumatology": "Traumatología",
+    "gynecology": "Ginecología",
+    "gastroenterology": "Gastroenterología"
+  },
+  "deparments": {
+    "Cardiologist": "Cardiología",
+    "Dentist": "Odontología",
+    "Neurologist": "Neurología",
+    "Dermatologist": "Dermatología",
+    "Ophthalmologist": "Oftalmología",
+    "Otorhinolaryngologist": "Otorrinolaringología",
+    "Orthopedist": "Ortopedia",
+    "Traumatologist": "Traumatología",
+    "Gynecologist": "Ginecología",
+    "Urologist": "Urología",
+    "InfectiousDiseases": "Enfermedades Infecciosas",
+    "Endocrinologist": "Endocrinología",
+    "Rheumatologist": "Reumatología",
+    "Nephrologist": "Nefrología",
+    "Hematologist": "Hematología",
+    "Pulmonologist": "Neumología",
+    "Gastroenterologist": "Gastroenterología"
+  },
+  "all_status": {
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "on_leave": "Enfermo",
+    "on_vacation": "Vacaciones",
+    "in_consultation": "En consulta",
+    "on_break": "En descanso",
+    "incapacitated": "Incapacitado"
+  },
+  "pages": {
+    "profesionals": {
+      "table": {
+        "name": "Nombre",
+        "especiality": "Especialidad",
+        "contact": "Contacto",
+        "email": "Email",
+        "status": "Estatus",
+        "createdAt": "Ingreso",
+        "actions": "Acciones",
+        "department": "Departamento"
+      }
+    }
+  }
+}

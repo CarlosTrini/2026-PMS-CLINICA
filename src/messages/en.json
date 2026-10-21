@@ -1,0 +1,113 @@
+{
+  "common": {
+    "home": "Home",
+    "edit": "Edit",
+    "close": "Close",
+    "saveChanges": "Save Changes",
+    "viewMore": "View More",
+    "delete": "Delete",
+    "filter": "Filter",
+    "seeAll": "See all"
+  },
+  "sidebar": {
+    "groups": {
+      "admin": "Admin",
+      "profesionals": "Staff",
+      "session": "Session"
+    },
+    "items": {
+      "dashboard": "Dashboard",
+      "profesionals": "Staff",
+      "authentication": "Authentication",
+      "session": "Session",
+      "signIn": "Sign In",
+      "signUp": "Sign Up"
+    }
+  },
+  "header": {
+    "searchPlaceholder": "Search or type command...",
+    "toggleSidebar": "Toggle Sidebar",
+    "notifications": {
+      "title": "Notification",
+      "requestsPermission": "requests permission to change",
+      "project": "Project",
+      "minAgo": "{count} min ago",
+      "hrAgo": "{count} hr ago",
+      "viewAll": "View All Notifications"
+    }
+  },
+  "userDropdown": {
+    "editProfile": "Edit profile",
+    "accountSettings": "Account settings",
+    "support": "Support",
+    "language": "Language",
+    "signOut": "Sign out"
+  },
+  "notFound": {
+    "error": "ERROR",
+    "message": "We can't seem to find the page you are looking for!",
+    "backHome": "Back to Home Page"
+  },
+  "specialty": {
+    "familyMedicine": "Family Medicine",
+    "generalMedicine": "General Medicine",
+    "dentistry": "Dentistry",
+    "veterinary": "Veterinary",
+    "psychology": "Psychology",
+    "nutrition": "Nutrition",
+    "pediatrics": "Pediatrics",
+    "geriatrics": "Geriatrics",
+    "oncology": "Oncology",
+    "cardiology": "Cardiology",
+    "neurology": "Neurology",
+    "dermatology": "Dermatology",
+    "ophthalmology": "Ophthalmology",
+    "otorhinolaryngology": "Otolaryngology",
+    "orthopedics": "Orthopedics",
+    "traumatology": "Traumatology",
+    "gynecology": "Gynecology",
+    "gastroenterology": "Gastroenterology"
+  },
+  "deparments": {
+    "Cardiologist": "Cardiology",
+    "Dentist": "Dentistry",
+    "Neurologist": "Neurology",
+    "Dermatologist": "Dermatology",
+    "Ophthalmologist": "Ophthalmology",
+    "Otorhinolaryngologist": "Otolaryngology",
+    "Orthopedist": "Orthopedics",
+    "Traumatologist": "Traumatology",
+    "Gynecologist": "Gynecology",
+    "Urologist": "Urology",
+    "InfectiousDiseases": "Infectious Diseases",
+    "Endocrinologist": "Endocrinology",
+    "Rheumatologist": "Rheumatology",
+    "Nephrologist": "Nephrology",
+    "Hematologist": "Hematology",
+    "Pulmonologist": "Pulmonology",
+    "Gastroenterologist": "Gastroenterology"
+  },
+  "all_status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "on_leave": "On Leave",
+    "on_vacation": "On Vacation",
+    "in_consultation": "In Consultation",
+    "on_break": "On Break",
+    "incapacitated": "Incapacitated"
+  },
+  "pages": {
+    "profesionals": {
+      "table": {
+        "name": "Name",
+        "especiality": "Specialty",
+        "contact": "Contact",
+        "email": "Email",
+        "status": "Status",
+        "createdAt": "Joined",
+        "actions": "Actions",
+        "department": "Department"
+      }
+    }
+  }
+}

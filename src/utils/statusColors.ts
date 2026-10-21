@@ -1,0 +1,64 @@
+import type { StatusProfessional, AppointmentStatus } from "@/types/dataTypes";
+
+
+
+export const STATUS_COLOR_SOLID: {
+    [key in StatusProfessional | AppointmentStatus]: string;
+} = {
+    // Éxito / Operativo (Verdes: success -> success-dark)
+    "active": "bg-gradient-to-r from-success to-success-dark text-light-accent shadow-xs",
+    "COMPLETED": "bg-gradient-to-r from-success to-success-dark text-light-accent shadow-xs",
+
+    // Error / Crítico (Rojos: error -> error-dark)
+    "inactive": "bg-gradient-to-r from-error to-error-dark text-light-accent shadow-xs",
+    "CANCELLED": "bg-gradient-to-r from-error to-error-dark text-light-accent shadow-xs",
+    "MISSED": "bg-gradient-to-r from-error to-error-dark text-light-accent shadow-xs",
+    "incapacitated": "bg-gradient-to-r from-error to-error-dark text-light-accent shadow-xs",
+
+    // Alerta / Pendiente (Amarillos: warning -> warning-dark)
+    "PENDING": "bg-gradient-to-r from-warning to-warning-dark text-light-accent shadow-xs",
+    "on_break": "bg-gradient-to-r from-warning to-warning-dark text-light-accent shadow-xs",
+
+    // Atención / Baja temporal (Naranjas: orange -> orange-dark)
+    "on_leave": "bg-gradient-to-r from-orange to-orange-dark text-light-accent shadow-xs",
+
+    // En curso / Enfoque (Brand azul: brand -> brand-dark)
+    "in_consultation": "bg-gradient-to-r from-brand to-brand-dark text-light-accent shadow-xs",
+    "IN_PROGRESS": "bg-gradient-to-r from-brand to-brand-dark text-light-accent shadow-xs",
+
+    // Informativo / Programado (Azul claro: blue-light -> blue-light-dark)
+    "on_vacation": "bg-gradient-to-r from-blue-light to-blue-light-dark text-light-accent shadow-xs",
+    "SCHEDULED": "bg-gradient-to-r from-blue-light to-blue-light-dark text-light-accent shadow-xs",
+    "RESCHEDULED": "bg-gradient-to-r from-blue-light to-blue-light-dark text-light-accent shadow-xs",
+};
+
+
+export const STATUS_COLOR_LIGHT: {
+    [key in StatusProfessional | AppointmentStatus]: string;
+} = {
+    // Éxito
+    "active": "bg-success/20 border border-success/40 text-success-dark dark:text-success-light backdrop-blur-xs",
+    "COMPLETED": "bg-success/20 border border-success/40 text-success-dark dark:text-success-light backdrop-blur-xs",
+
+    // Error
+    "inactive": "bg-error/20 border border-error/40 text-error-dark dark:text-error-light backdrop-blur-xs",
+    "CANCELLED": "bg-error/20 border border-error/40 text-error-dark dark:text-error-light backdrop-blur-xs",
+    "MISSED": "bg-error/20 border border-error/40 text-error-dark dark:text-error-light backdrop-blur-xs",
+    "incapacitated": "bg-error/20 border border-error/40 text-error-dark dark:text-error-light backdrop-blur-xs",
+
+    // Warning
+    "PENDING": "bg-warning/20 border border-warning/40 text-warning-dark dark:text-warning-light backdrop-blur-xs",
+    "on_break": "bg-warning/20 border border-warning/40 text-warning-dark dark:text-warning-light backdrop-blur-xs",
+
+    // Orange
+    "on_leave": "bg-orange/20 border border-orange/40 text-orange-dark dark:text-orange-light backdrop-blur-xs",
+
+    // Brand
+    "in_consultation": "bg-brand/20 border border-brand/40 text-brand-dark dark:text-brand-light backdrop-blur-xs",
+    "IN_PROGRESS": "bg-brand/20 border border-brand/40 text-brand-dark dark:text-brand-light backdrop-blur-xs",
+
+    // Blue light
+    "on_vacation": "bg-blue-light/20 border border-blue-light/40 text-blue-light-dark dark:text-blue-light-light backdrop-blur-xs",
+    "SCHEDULED": "bg-blue-light/20 border border-blue-light/40 text-blue-light-dark dark:text-blue-light-light backdrop-blur-xs",
+    "RESCHEDULED": "bg-blue-light/20 border border-blue-light/40 text-blue-light-dark dark:text-blue-light-light backdrop-blur-xs",
+};
