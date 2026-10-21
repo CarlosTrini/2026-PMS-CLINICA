@@ -114,3 +114,69 @@ src/
 - No utilices colores hexadecimales ni valores en píxeles fijos en `className` — usa los tokens de `@theme`.
 - No crees un archivo `tailwind.config` — Tailwind v4 se configura a través de `globals.css`.
 - No importes `react-apexcharts`, `FullCalendar` o `Swiper` de forma estática — utiliza siempre `next/dynamic` con `ssr: false` (a menos que ya estén envueltos dentro de un límite exclusivo de cliente — confirma primero el patrón existente en la carpeta de esa feature).
+
+---
+
+## Punto Extra: Arquitectura Alternativa por Features (Feature-Driven Architecture)
+
+Si este proyecto decidiera migrar de una arquitectura por capas (`components/`, `hooks/`, `types/`) a una **arquitectura por features (vertical slices)**, las carpetas y archivos actuales se reorganizarían de la siguiente manera:
+
+### 1. Principio rector
+* **`src/app/`**: Se reduce a enrutamiento puro (Thin Routes). Las páginas (`page.tsx`) solo reciben parámetros, manejan metadatos/i18n básicos y montan la vista exportada de la feature.
+* **`src/features/<nombre-feature>/`**: Cada dominio de negocio encapsula todo su ciclo de vida (componentes específicos, schemas de Zod, tipos de TS, hooks y llamadas a API/servicios).
+* **`src/components/` & `src/hooks/`**: Pasan a contener **únicamente lo compartido/genérico** del sistema de diseño (UI Primitives, layouts y utilidades transversales).
+
+### 2. Árbol de directorios reorganizado
+
+```text
+src/
+├── app/                              # Rutas puras y delgadas (Next.js App Router)
+│   ├── [locale]/
+│   │   ├── (public)/
+│   │   │   └── (auth)/signin/page.tsx # Solo importa <SignInForm /> de @/features/auth
+│   │   ├── admin/
+│   │   │   ├── layout.tsx            # Shell administrativo
+│   │   │   ├── page.tsx              # Dashboard home
+│   │   │   └── profesionals/
+│   │   │       └── page.tsx          # Solo importa <ProfessionalsView /> de @/features/professionals
+│   │   └── layout.tsx
+│   ├── favicon.ico
+│   └── globals.css
+│
+├── features/                         # 🌟 Módulos de dominio de negocio autónomos
+│   ├── auth/                         # (Extraído de src/components/auth/)
+│   │   ├── components/               # SignInForm.tsx, SignUpForm.tsx...
+│   │   ├── schemas/                  # auth.schema.ts (Zod)
+│   │   ├── types/                    # auth.types.ts
+│   │   └── index.ts                  # Barrel export público de la feature
+│   │
+│   ├── professionals/                # (Lógica y vistas extraídas de profesionals/page.tsx)
+│   │   ├── components/               # ProfessionalCard.tsx, ProfessionalTable.tsx, StatsBadge.tsx...
+│   │   ├── hooks/                    # useProfessionalFilters.ts...
+│   │   ├── schemas/                  # professional.schema.ts (Zod)
+│   │   ├── types/                    # professional.types.ts (DataTypes específicos)
+│   │   ├── services/                 # professionals.api.ts (fetchers / server actions)
+│   │   └── index.ts                  # Exporta: ProfessionalsView, etc.
+│   │
+│   └── dashboard/                    # Métricas globales, analíticas generales
+│       ├── components/
+│       └── ...
+│
+├── components/                       # 🧩 Solo UI compartida y componentes globales
+│   ├── ui/                           # Primitivos agnósticos: button, modal, table, tabs, dropdown...
+│   ├── form/                         # Inputs agnósticos: InputField, Radio, TextArea, Select, Switch...
+│   └── common/                       # Breadcrumbs, ThemeToggle, Preloader...
+│
+├── layout/                           # Shell global: AppSidebar, AppHeader
+├── context/                          # Contextos de UI globales: SidebarContext, ThemeContext
+├── hooks/                            # Hooks utilitarios globales: useModal, useClickOutside, useGoBack...
+├── icons/                            # Catálogo global de iconos SVG
+├── i18n/                             # Routing y configuración de next-intl
+├── messages/                         # Diccionarios de traducción (en.json, es.json...)
+├── types/                            # Tipos globales de la app (navigation, context, etc.)
+└── utils/                            # Funciones de ayuda compartidas
+```
+
+### 3. Dónde van los Schemas de Zod en este modelo
+Cada schema reside **dentro de su propia feature** (`src/features/<feature>/schemas/<feature>.schema.ts`), permitiendo que el tipo inferido (`z.infer<typeof ...>`) y las validaciones de formulario viajen juntos con la lógica que los consume.
+

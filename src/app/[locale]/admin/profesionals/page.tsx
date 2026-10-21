@@ -258,7 +258,7 @@ export default function Profesionals() {
                         </div>
 
                         {/* OTROS FILTROS */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 my-10">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mt-10 mb-5">
                             <div>
                                 <Label key={'specialty-profesionals'} htmlFor='specialty' className="flex gap-2" > <Stethoscope className="w-4 h-4 text-theme-light-gray" /> Especialidad</Label>
                                 <Select canClear reset={resetSelectValue} options={specialtySelect} name='specialty' placeholder='Selecciona una especialidad' />
@@ -292,7 +292,7 @@ export default function Profesionals() {
 
 
                         {/* BOTÓN SUBMIT */}
-                        <div className="flex gap-2 justify-end mt-10">
+                        <div className="flex gap-2 justify-end mt-5">
                             <button type="button" onClick={resetSelectFn} className="flex items-center gap-1 py-2 px-3 rounded-lg text-theme-light font-semibold bg-error dark:bg-error-dark"> <Delete className="w-4 h-4" /> Quitar Filtros</button>
                             <button type="submit" className="flex items-center gap-1 py-2 px-3 rounded-lg text-theme-light font-semibold bg-brand dark:bg-brand-dark"> <Filter className="w-4 h-4" /> Filtrar</button>
                         </div>
