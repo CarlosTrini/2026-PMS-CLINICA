@@ -84,51 +84,54 @@ const Select: React.FC<SelectProps> = ({
   }
 
   return (
-    <div className="flex relative">
-      {
-        canClear && internalValue !== defaultValue && (
-          <Tooltip trigger="hover" position="bottom" content="Limpiar">
+    <div className="relative w-full">
+      <select
+        className={`${selectClasses}`}
+        value={selectedValue}
+        onChange={handleChange}
+        disabled={disabled}
+        {...props}
+      >
+        {/* Placeholder option */}
+        <option
+          value=""
+          disabled
+          className="text-gray/80 italic font-medium dark:bg-gray-dark dark:text-gray-light"
+        >
+          {placeholder}
+        </option>
 
-            <button onClick={resetSelect} className="absolute left-0 h-full inset-e-3 z-10 bg-warning-dark dark:bg-error-dark w-fit px-1 cursor-pointer rounded-l-lg ">
-              <X className={`${ICON_SIZE['sm']} text-white stroke-3 `} />
+        {/* Map over options */}
+        {options.map((option) => (
+          <option
+            key={option.value}
+            value={option.value}
+            className="text-gray-dark dark:bg-gray-dark dark:text-gray-light"
+          >
+            {option.label}
+          </option>
+        ))}
+      </select>
+
+      {/* Acciones al extremo derecho */}
+      <div className="absolute inset-e-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+        {canClear && internalValue !== defaultValue && (
+          <Tooltip trigger="hover" position="top" content="Limpiar">
+            <button
+              type="button"
+              onClick={resetSelect}
+              className="flex size-5.5 items-center justify-center rounded-full text-gray-400 bg-gray/10 dark:bg-gray/15 hover:bg-gray/20 dark:hover:text-error-light dark:hover:bg-gray-light/10 transition-colors cursor-pointer z-10"
+              aria-label="Limpiar selección"
+            >
+              <X className="size-3.5 stroke-[2.5] text-error" />
             </button>
           </Tooltip>
-        )
-      }
+        )}
 
-      <div className="relative w-full pl-2.5 ">
-        <select
-          className={`${selectClasses}`}
-          value={selectedValue}
-          onChange={handleChange}
-          disabled={disabled}
-          {...props}
-        >
-          {/* Placeholder option */}
-          <option
-            value=""
-            disabled
-            className="text-gray/80 italic font-medium dark:bg-gray-dark dark:text-gray-light"
-          >
-            {placeholder}
-          </option>
-
-          {/* Map over options */}
-          {options.map((option) => (
-            <option
-              key={option.value}
-              value={option.value}
-              className="text-gray-dark dark:bg-gray-dark dark:text-gray-light"
-            >
-              {option.label}
-            </option>
-          ))}
-        </select>
-        <span className="inset-e-3 pointer-events-none absolute top-1/2 -translate-y-1/2 text-gray dark:text-gray-light">
+        <span className="pointer-events-none text-gray dark:text-gray-light">
           <ChevronDownIcon className={ICON_SIZE[size]} />
         </span>
       </div>
-
     </div>
   );
 };

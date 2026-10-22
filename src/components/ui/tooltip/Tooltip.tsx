@@ -104,7 +104,7 @@ export default function Tooltip({ children, content, trigger = "hover", position
                 rounded-md bg-black dark:bg-gray shadow-lg pointer-events-auto
                 ${POSITION[actualPosition]}
                 ${trigger === 'hover'
-                        ? 'invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-opacity duration-150'
+                        ? 'invisible opacity-0 group-hover:visible group-hover:opacity-100  transition-opacity duration-150'
                         : 'invisible'
                     }
                 `}
