@@ -1,3 +1,4 @@
+import Tooltip from "@/components/ui/tooltip/Tooltip";
 import { ChevronDownIcon } from "@/icons";
 import { X } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -8,12 +9,12 @@ interface Option {
 }
 
 interface SelectProps
-  extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "value" | "onChange" | "size"> {
+  extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "value" | "size"> {
   options: Option[];
   placeholder?: string;
   value?: string;
   defaultValue?: string;
-  onChange?: (value: string) => void;
+  // onChange?: (value: string) => void;
   size?: "sm" | "md" | "lg";
   canClear?: boolean;
   reset?: boolean;
@@ -35,16 +36,16 @@ const Select: React.FC<SelectProps> = ({
   options,
   placeholder = "Selecciona una opción",
   value: controlledValue,
-  defaultValue = "",
+  defaultValue,
   onChange,
   size = "md",
   className = "",
   disabled = false,
   canClear = false,
-  reset = false,
+  reset,
   ...props
 }) => {
-  const [internalValue, setInternalValue] = useState<string>(defaultValue);
+  const [internalValue, setInternalValue] = useState<string>(defaultValue || '');
   const isControlled = controlledValue !== undefined;
   const selectedValue = isControlled ? controlledValue : internalValue;
 
@@ -53,16 +54,22 @@ const Select: React.FC<SelectProps> = ({
     if (!isControlled) {
       setInternalValue(value);
     }
-    onChange?.(value);
+    onChange?.(e);
   };
 
   const resetSelect = () => {
-    setInternalValue("");
-    onChange?.("");
+    if (defaultValue) {
+      setInternalValue(defaultValue);
+      onChange?.({ target: { value: defaultValue } } as React.ChangeEvent<HTMLSelectElement>);
+    } else {
+      setInternalValue("");
+      onChange?.({ target: { value: '' } } as React.ChangeEvent<HTMLSelectElement>);
+    }
     return;
   }
 
   useEffect(() => {
+    console.log(reset)
     if (!reset) return;
     resetSelect();
   }, [reset]);
@@ -79,11 +86,13 @@ const Select: React.FC<SelectProps> = ({
   return (
     <div className="flex relative">
       {
-        canClear && selectedValue && selectedValue !== '' && (
+        canClear && internalValue !== defaultValue && (
+          <Tooltip trigger="hover" position="bottom" content="Limpiar">
 
-          <button onClick={resetSelect} className="absolute left-0 h-full inset-e-3 z-10 bg-warning-dark dark:bg-error-dark w-fit px-1 cursor-pointer rounded-l-lg ">
-            <X className={`${ICON_SIZE['sm']} text-white stroke-3 `} />
-          </button>
+            <button onClick={resetSelect} className="absolute left-0 h-full inset-e-3 z-10 bg-warning-dark dark:bg-error-dark w-fit px-1 cursor-pointer rounded-l-lg ">
+              <X className={`${ICON_SIZE['sm']} text-white stroke-3 `} />
+            </button>
+          </Tooltip>
         )
       }
 

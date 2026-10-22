@@ -1,13 +1,13 @@
 import type { Professional } from "../types/dataTypes";
 
 // TYPES VALUES ARRAYS FOR SELECTS 
-export const ROLE_SYSTEM_ARRAY = ['admin', 'professional', 'assistant', 'receptionist', 'owner'];
-export const APPOINTMENT_STATUS_ARRAY = ['SCHEDULED', 'COMPLETED', 'CANCELLED', 'PENDING', 'RESCHEDULED', 'MISSED', 'IN_PROGRESS'];
-export const DEPARTMENT_ARRAY = ['Cardiologist', 'Dentist', 'Neurologist', 'Dermatologist', 'Ophthalmologist', 'Otorhinolaryngologist', 'Orthopedist', 'Traumatologist', 'Gynecologist', 'Urologist', 'InfectiousDiseases', 'Endocrinologist', 'Rheumatologist', 'Nephrologist', 'Hematologist', 'Pulmonologist', 'Gastroenterologist'];
-export const STATUS_PROFESSIONAL_ARRAY = ['active', 'inactive', 'on_leave', 'on_vacation', 'in_consultation', 'on_break', 'incapacitated'];
-export const SPECIALTY_ARRAY = ['familyMedicine', 'generalMedicine', 'dentistry', 'veterinary', 'psychology', 'nutrition', 'pediatrics', 'geriatrics', 'oncology', 'cardiology', 'neurology', 'dermatology', 'ophthalmology', 'otorhinolaryngology', 'orthopedics', 'traumatology', 'gynecology'];
-export const GENDER_ARRAY = ['male', 'female', 'other'];
-export const RELATIONSHIP_ARRAY = ['father', 'mother', 'legalGuardian', 'other'];
+export const ROLE_SYSTEM_ARRAY = ['admin', 'professional', 'assistant', 'receptionist', 'owner'] as const;
+export const APPOINTMENT_STATUS_ARRAY = ['SCHEDULED', 'COMPLETED', 'CANCELLED', 'PENDING', 'RESCHEDULED', 'MISSED', 'IN_PROGRESS'] as const;
+export const DEPARTMENT_ARRAY = ['noDepartment', 'Cardiologist', 'Dentist', 'Neurologist', 'Dermatologist', 'Ophthalmologist', 'Otorhinolaryngologist', 'Orthopedist', 'Traumatologist', 'Gynecologist', 'Urologist', 'InfectiousDiseases', 'Endocrinologist', 'Rheumatologist', 'Nephrologist', 'Hematologist', 'Pulmonologist', 'Gastroenterologist'] as const;
+export const STATUS_PROFESSIONAL_ARRAY = ['active', 'inactive', 'on_leave', 'on_vacation', 'in_consultation', 'on_break', 'incapacitated'] as const;
+export const SPECIALTY_ARRAY = ['familyMedicine', 'generalMedicine', 'dentistry', 'veterinary', 'psychology', 'nutrition', 'pediatrics', 'geriatrics', 'oncology', 'cardiology', 'neurology', 'dermatology', 'ophthalmology', 'otorhinolaryngology', 'orthopedics', 'traumatology', 'gynecology'] as const;
+export const GENDER_ARRAY = ['male', 'female', 'other'] as const;
+export const RELATIONSHIP_ARRAY = ['father', 'mother', 'legalGuardian', 'other'] as const;
 
 export const PROFESIONALS_DATA: Professional[] = [
     {
@@ -21,7 +21,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             dateOfBirth: "1985-03-14T00:00:00.000Z",
             gender: "female"
         },
-        department: "Cardiologist",
+        department: "",
         contactInfo: {
             email: "sofia.garcia@example.com",
             phone: "+525512345601",
@@ -261,7 +261,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             dateOfBirth: "1991-02-17T00:00:00.000Z",
             gender: "female"
         },
-        department: "Endocrinologist",
+        department: "Cardiologist",
         contactInfo: {
             email: "isabella.cruz@example.com",
             phone: "+525512345609",

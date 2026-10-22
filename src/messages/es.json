@@ -7,7 +7,8 @@
     "viewMore": "Ver Más",
     "delete": "Eliminar",
     "filter": "Filtrar",
-    "seeAll": "Ver todo"
+    "seeAll": "Ver todo",
+    "all": "Todos"
   },
   "sidebar": {
     "groups": {
@@ -69,6 +70,7 @@
     "gastroenterology": "Gastroenterología"
   },
   "deparments": {
+    "noDepartment": "Sin departamento",
     "Cardiologist": "Cardiología",
     "Dentist": "Odontología",
     "Neurologist": "Neurología",

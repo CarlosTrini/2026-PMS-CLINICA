@@ -11,9 +11,22 @@ import "simplebar-react/dist/simplebar.min.css";
 import "swiper/css/bundle";
 import "../globals.css";
 
+import type { Metadata } from "next";
+
 const outfit = Outfit({
   subsets: ["latin"],
 });
+
+export const metadata: Metadata = {
+  title: {
+    template: "%s | PMS Clínica",
+    default: "PMS Clínica",
+  },
+  description: "Sistema de Gestión y Administración Clínica",
+  icons: {
+    icon: "/favicon.ico",
+  },
+};
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));

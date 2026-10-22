@@ -180,3 +180,29 @@ src/
 ### 3. Dónde van los Schemas de Zod en este modelo
 Cada schema reside **dentro de su propia feature** (`src/features/<feature>/schemas/<feature>.schema.ts`), permitiendo que el tipo inferido (`z.infer<typeof ...>`) y las validaciones de formulario viajen juntos con la lógica que los consume.
 
+
+
+
+3. Agregar index.ts (Barrel export) en cada feature (Opcional pero recomendado)
+En src/features/auth/index.ts:
+
+ts
+export { default as SigninView } from "./SigninView";
+export { default as SignupView } from "./SignupView";
+
+
+
+3. Agregar index.ts (Barrel export) en cada feature (Opcional pero recomendado)
+En src/features/auth/index.ts:
+
+ts
+export { default as SigninView } from "./SigninView";
+export { default as SignupView } from "./SignupView";
+
+
+
+TODO TENOG QUE ELIMINAR ESTAS CUANDO ELIMINE SUS IMAGENSE
+error/ → Usada en not-found.tsx (404.svg, 404-dark.svg).
+logo/ → Usada en AppSidebar.tsx, AppHeader.tsx y el layout de auth (logo.svg, logo-dark.svg, logo-icon.svg, etc.).
+user/ → Usada en UserDropdown.tsx (owner.png para tu avatar) y NotificationDropdown.tsx.
+shape/ → Usada en GridShape.tsx (grid-01.svg, la cuadrícula de fondo del login y 404).

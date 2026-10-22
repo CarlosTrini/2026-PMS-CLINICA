@@ -1,12 +1,12 @@
-import SignUpForm from "@/components/auth/SignUpForm";
+import SignUpView from "@/features/auth/SignupView";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Next.js SignUp Page | TailAdmin - Next.js Dashboard Template",
-  description: "This is Next.js SignUp Page TailAdmin Dashboard Template",
+  title: "Registro | PMS Clínica",
+  description: "Registro de nuevos profesionales",
   // other metadata
 };
 
 export default function SignUp() {
-  return <SignUpForm />;
+  return <SignUpView />;
 }
