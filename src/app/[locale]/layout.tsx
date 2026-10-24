@@ -10,8 +10,8 @@ import { notFound } from "next/navigation";
 import "simplebar-react/dist/simplebar.min.css";
 import "swiper/css/bundle";
 import "../globals.css";
-
 import type { Metadata } from "next";
+import TankStackProvider from "@/context/tankStackContext";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -48,14 +48,16 @@ export default async function RootLayout({
   setRequestLocale(locale);
 
   return (
-    <html lang={locale} dir={isRtl(locale as Locale) ? "rtl" : "ltr"}>
-      <body className={`${outfit.className} dark:bg-gray-dark`}>
-        <NextIntlClientProvider>
-          <ThemeProvider>
-            <SidebarProvider>{children}</SidebarProvider>
-          </ThemeProvider>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <TankStackProvider>
+      <html lang={locale} dir={isRtl(locale as Locale) ? "rtl" : "ltr"}>
+        <body className={`${outfit.className} dark:bg-gray-dark`}>
+          <NextIntlClientProvider>
+            <ThemeProvider>
+              <SidebarProvider>{children}</SidebarProvider>
+            </ThemeProvider>
+          </NextIntlClientProvider>
+        </body>
+      </html>
+    </TankStackProvider>
   );
 }

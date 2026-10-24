@@ -94,3 +94,17 @@ export const config = {
 #### Arquitectura Integral:
 - **Middleware ([src/proxy.ts](file:///c:/Users/RAM/Desktop/Proyectos/templates/NEXT/nextjs-admin-dashboard/src/proxy.ts))**: Guarda de seguridad (Server-side). Bloquea accesos no autorizados a `/admin/*`.
 - **Context (`AuthContext`)**: Manejo de estado en memoria (Client-side). Para mostrar los datos del usuario logueado (`user.name`, avatar) y ocultar/mostrar botones según su rol (`admin`, `professional`, `receptionist`).
+
+
+
+Simula un pequeño delay de red (300-500ms): Si retornas PROFESIONALS_DATA inmediatamente, nunca podrás ver si tus isLoading, skeletons o spinners de React Query funcionan. Simúlalo así:
+
+ts
+getProfesionales: async (): Promise<Professional[]> => {
+    // Simular 400ms de latencia de red
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    
+    // const { data } = await apiClient.get<Professional[]>('/profesionales');
+    // return data;
+    return PROFESIONALS_DATA;
+},

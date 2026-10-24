@@ -1,5 +1,6 @@
 {
   "common": {
+    "id": "ID",
     "home": "Inicio",
     "edit": "Editar",
     "close": "Cerrar",
@@ -7,8 +8,20 @@
     "viewMore": "Ver Más",
     "delete": "Eliminar",
     "filter": "Filtrar",
+    "filters": "Filtros",
     "seeAll": "Ver todo",
-    "all": "Todos"
+    "all": "Todos",
+    "removeFilters": "Quitar filtros",
+    "phone": "Teléfono",
+    "call": "Llamar",
+    "copiedToClipboard": "¡Copíado!",
+    "copyToClipboard": "Copiar",
+    "asc": "Ascendente",
+    "desc": "Descendente",
+    "thisActionCannotBeUndone": "Esta acción no se puede deshacer",
+    "deleteUser": "Estás seguro que deseas dar de baja a",
+    "whitout": "Sin",
+    "specialities": "Especialidades"
   },
   "sidebar": {
     "groups": {
@@ -49,7 +62,7 @@
     "message": "¡No podemos encontrar la página que está buscando!",
     "backHome": "Volver a la página de inicio"
   },
-  "specialty": {
+  "speciality": {
     "familyMedicine": "Medicina Familiar",
     "generalMedicine": "Medicina General",
     "dentistry": "Odontología",
@@ -67,7 +80,8 @@
     "orthopedics": "Ortopedia",
     "traumatology": "Traumatología",
     "gynecology": "Ginecología",
-    "gastroenterology": "Gastroenterología"
+    "gastroenterology": "Gastroenterología",
+    "all": "Todos"
   },
   "deparments": {
     "noDepartment": "Sin departamento",
@@ -87,7 +101,9 @@
     "Nephrologist": "Nefrología",
     "Hematologist": "Hematología",
     "Pulmonologist": "Neumología",
-    "Gastroenterologist": "Gastroenterología"
+    "Gastroenterologist": "Gastroenterología",
+    "all": "Todos",
+    "no_department": "Sin departamento"
   },
   "all_status": {
     "active": "Activo",
@@ -96,19 +112,40 @@
     "on_vacation": "Vacaciones",
     "in_consultation": "En consulta",
     "on_break": "En descanso",
-    "incapacitated": "Incapacitado"
+    "incapacitated": "Incapacitado",
+    "all": "Todos"
   },
   "pages": {
     "profesionals": {
+      "tittle": "Administración de personal",
+      "Metrics": {
+        "total_employees": "Total de personal",
+        "in_consultation": "En consulta",
+        "specialities": "Especialidades",
+        "status": "Estatus",
+        "registered_staff": "Personal registrado",
+        "active_staff": "Personal activo",
+        "operative": "Operativo"
+      },
       "table": {
         "name": "Nombre",
-        "especiality": "Especialidad",
+        "speciality": "Especialidad",
         "contact": "Contacto",
         "email": "Email",
         "status": "Estatus",
         "createdAt": "Ingreso",
         "actions": "Acciones",
         "department": "Departamento"
+      },
+      "filters": {
+        "name": "Nombre",
+        "searchByName": "Bucar por nombre",
+        "speciality": "Especialidad",
+        "status": "Estatus",
+        "department": "Departamento",
+        "orderByCreatedAt": "Orden por ingreso",
+        "orderBySpeciality": "Orden por especialidad",
+        "orderByStatus": "Orden por estatus"
       }
     }
   }

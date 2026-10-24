@@ -5,7 +5,7 @@ export const ROLE_SYSTEM_ARRAY = ['admin', 'professional', 'assistant', 'recepti
 export const APPOINTMENT_STATUS_ARRAY = ['SCHEDULED', 'COMPLETED', 'CANCELLED', 'PENDING', 'RESCHEDULED', 'MISSED', 'IN_PROGRESS'] as const;
 export const DEPARTMENT_ARRAY = ['noDepartment', 'Cardiologist', 'Dentist', 'Neurologist', 'Dermatologist', 'Ophthalmologist', 'Otorhinolaryngologist', 'Orthopedist', 'Traumatologist', 'Gynecologist', 'Urologist', 'InfectiousDiseases', 'Endocrinologist', 'Rheumatologist', 'Nephrologist', 'Hematologist', 'Pulmonologist', 'Gastroenterologist'] as const;
 export const STATUS_PROFESSIONAL_ARRAY = ['active', 'inactive', 'on_leave', 'on_vacation', 'in_consultation', 'on_break', 'incapacitated'] as const;
-export const SPECIALTY_ARRAY = ['familyMedicine', 'generalMedicine', 'dentistry', 'veterinary', 'psychology', 'nutrition', 'pediatrics', 'geriatrics', 'oncology', 'cardiology', 'neurology', 'dermatology', 'ophthalmology', 'otorhinolaryngology', 'orthopedics', 'traumatology', 'gynecology'] as const;
+export const SPECIALITY_ARRAY = ['familyMedicine', 'generalMedicine', 'dentistry', 'veterinary', 'psychology', 'nutrition', 'pediatrics', 'geriatrics', 'oncology', 'cardiology', 'neurology', 'dermatology', 'ophthalmology', 'otorhinolaryngology', 'orthopedics', 'traumatology', 'gynecology'] as const;
 export const GENDER_ARRAY = ['male', 'female', 'other'] as const;
 export const RELATIONSHIP_ARRAY = ['father', 'mother', 'legalGuardian', 'other'] as const;
 
@@ -32,7 +32,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             country: "México"
         },
         profesionalInfo: [{
-            specialty: "cardiology",
+            speciality: "cardiology",
             cedula: "CED-100001",
             license: "LIC-200001"
         }],
@@ -61,11 +61,11 @@ export const PROFESIONALS_DATA: Professional[] = [
             country: "México"
         },
         profesionalInfo: [{
-            specialty: "generalMedicine",
+            speciality: "generalMedicine",
             cedula: "CED-100002",
             license: "LIC-200002"
         }, {
-            specialty: "familyMedicine",
+            speciality: "familyMedicine",
             cedula: "CED-100002",
             license: "LIC-200002"
         }],
@@ -94,7 +94,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             country: "México"
         },
         profesionalInfo: [{
-            specialty: "pediatrics",
+            speciality: "pediatrics",
             cedula: "CED-100003",
             license: "LIC-200003"
         }],
@@ -123,7 +123,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             country: "México"
         },
         profesionalInfo: [{
-            specialty: "dentistry",
+            speciality: "dentistry",
             cedula: "CED-100004",
             license: "LIC-200004"
         }],
@@ -152,7 +152,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             country: "México"
         },
         profesionalInfo: [{
-            specialty: "psychology",
+            speciality: "psychology",
             cedula: "CED-100005",
             license: "LIC-200005"
         }],
@@ -181,11 +181,11 @@ export const PROFESIONALS_DATA: Professional[] = [
             country: "México"
         },
         profesionalInfo: [{
-            specialty: "orthopedics",
+            speciality: "orthopedics",
             cedula: "CED-100006",
             license: "LIC-200006"
         }, {
-            specialty: "traumatology",
+            speciality: "traumatology",
             cedula: "CED-100006",
             license: "LIC-200006"
         }],
@@ -214,7 +214,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             country: "México"
         },
         profesionalInfo: [{
-            specialty: "dermatology",
+            speciality: "dermatology",
             cedula: "CED-100007",
             license: "LIC-200007"
         }],
@@ -243,7 +243,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             country: "México"
         },
         profesionalInfo: [{
-            specialty: "neurology",
+            speciality: "neurology",
             cedula: "CED-100008",
             license: "LIC-200008"
         }],
@@ -272,7 +272,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             country: "México"
         },
         profesionalInfo: [{
-            specialty: "nutrition",
+            speciality: "nutrition",
             cedula: "CED-100009",
             license: "LIC-200009"
         }],
@@ -301,7 +301,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             country: "México"
         },
         profesionalInfo: [{
-            specialty: "oncology",
+            speciality: "oncology",
             cedula: "CED-100010",
             license: "LIC-200010"
         }],
@@ -330,7 +330,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             country: "México"
         },
         profesionalInfo: [{
-            specialty: "gynecology",
+            speciality: "gynecology",
             cedula: "CED-100011",
             license: "LIC-200011"
         }],
@@ -359,7 +359,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             country: "México"
         },
         profesionalInfo: [{
-            specialty: "ophthalmology",
+            speciality: "ophthalmology",
             cedula: "CED-100012",
             license: "LIC-200012"
         }],
@@ -388,7 +388,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             country: "México"
         },
         profesionalInfo: [{
-            specialty: "nutrition",
+            speciality: "nutrition",
             cedula: "CED-100013",
             license: "LIC-200013"
         }],
@@ -417,7 +417,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             country: "México"
         },
         profesionalInfo: [{
-            specialty: "dentistry",
+            speciality: "dentistry",
             cedula: "CED-100014",
             license: "LIC-200014"
         }],
@@ -446,11 +446,11 @@ export const PROFESIONALS_DATA: Professional[] = [
             country: "México"
         },
         profesionalInfo: [{
-            specialty: "nutrition",
+            speciality: "nutrition",
             cedula: "CED-100015",
             license: "LIC-200015"
         }, {
-            specialty: "generalMedicine",
+            speciality: "generalMedicine",
             cedula: "CED-100015",
             license: "LIC-200015"
         }],

@@ -1,5 +1,6 @@
 {
   "common": {
+    "id": "ID",
     "home": "Home",
     "edit": "Edit",
     "close": "Close",
@@ -7,11 +8,24 @@
     "viewMore": "View More",
     "delete": "Delete",
     "filter": "Filter",
-    "seeAll": "See all"
+    "filters": "Filters",
+    "seeAll": "See All",
+    "all": "All",
+    "removeFilters": "Clear Filters",
+    "phone": "Phone",
+    "call": "Call",
+    "copiedToClipboard": "Copied!",
+    "copyToClipboard": "Copy to Clipboard",
+    "asc": "Ascending",
+    "desc": "Descending",
+    "thisActionCannotBeUndone": "This action cannot be undone",
+    "deleteUser": "Are you sure you want to deactivate",
+    "whitout": "Without",
+    "specialities": "Specialties"
   },
   "sidebar": {
     "groups": {
-      "admin": "Admin",
+      "admin": "Administration",
       "profesionals": "Staff",
       "session": "Session"
     },
@@ -25,7 +39,7 @@
     }
   },
   "header": {
-    "searchPlaceholder": "Search or type command...",
+    "searchPlaceholder": "Search or type a command...",
     "toggleSidebar": "Toggle Sidebar",
     "notifications": {
       "title": "Notification",
@@ -37,22 +51,22 @@
     }
   },
   "userDropdown": {
-    "editProfile": "Edit profile",
-    "accountSettings": "Account settings",
+    "editProfile": "Edit Profile",
+    "accountSettings": "Account Settings",
     "support": "Support",
     "language": "Language",
-    "signOut": "Sign out"
+    "signOut": "Sign Out"
   },
   "notFound": {
     "error": "ERROR",
-    "message": "We can't seem to find the page you are looking for!",
-    "backHome": "Back to Home Page"
+    "message": "We can't find the page you're looking for!",
+    "backHome": "Back to Home"
   },
-  "specialty": {
+  "speciality": {
     "familyMedicine": "Family Medicine",
     "generalMedicine": "General Medicine",
     "dentistry": "Dentistry",
-    "veterinary": "Veterinary",
+    "veterinary": "Veterinary Medicine",
     "psychology": "Psychology",
     "nutrition": "Nutrition",
     "pediatrics": "Pediatrics",
@@ -66,7 +80,8 @@
     "orthopedics": "Orthopedics",
     "traumatology": "Traumatology",
     "gynecology": "Gynecology",
-    "gastroenterology": "Gastroenterology"
+    "gastroenterology": "Gastroenterology",
+    "all": "All"
   },
   "deparments": {
     "Cardiologist": "Cardiology",
@@ -85,7 +100,9 @@
     "Nephrologist": "Nephrology",
     "Hematologist": "Hematology",
     "Pulmonologist": "Pulmonology",
-    "Gastroenterologist": "Gastroenterology"
+    "Gastroenterologist": "Gastroenterology",
+    "all": "All",
+    "no_department": "No Department"
   },
   "all_status": {
     "active": "Active",
@@ -94,19 +111,40 @@
     "on_vacation": "On Vacation",
     "in_consultation": "In Consultation",
     "on_break": "On Break",
-    "incapacitated": "Incapacitated"
+    "incapacitated": "Unable to Work",
+    "all": "All"
   },
   "pages": {
     "profesionals": {
+      "tittle": "Staff Management",
+      "Metrics": {
+        "total_employees": "Total Staff",
+        "in_consultation": "In Consultation",
+        "specialities": "Specialties",
+        "status": "Status",
+        "registered_staff": "Registered Staff",
+        "active_staff": "Active Staff",
+        "operative": "Operational"
+      },
       "table": {
         "name": "Name",
-        "especiality": "Specialty",
+        "speciality": "Specialty",
         "contact": "Contact",
         "email": "Email",
         "status": "Status",
-        "createdAt": "Joined",
+        "createdAt": "Date Joined",
         "actions": "Actions",
         "department": "Department"
+      },
+      "filters": {
+        "name": "Name",
+        "searchByName": "Search by Name",
+        "speciality": "Specialty",
+        "status": "Status",
+        "department": "Department",
+        "orderByCreatedAt": "Sort by Date Joined",
+        "orderBySpeciality": "Sort by Specialty",
+        "orderByStatus": "Sort by Status"
       }
     }
   }

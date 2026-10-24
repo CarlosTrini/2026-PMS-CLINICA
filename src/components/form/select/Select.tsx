@@ -43,6 +43,7 @@ const Select: React.FC<SelectProps> = ({
   disabled = false,
   canClear = false,
   reset,
+  name,
   ...props
 }) => {
   const [internalValue, setInternalValue] = useState<string>(defaultValue || '');
@@ -58,18 +59,24 @@ const Select: React.FC<SelectProps> = ({
   };
 
   const resetSelect = () => {
-    if (defaultValue) {
-      setInternalValue(defaultValue);
-      onChange?.({ target: { value: defaultValue } } as React.ChangeEvent<HTMLSelectElement>);
-    } else {
-      setInternalValue("");
-      onChange?.({ target: { value: '' } } as React.ChangeEvent<HTMLSelectElement>);
-    }
-    return;
-  }
+    const nextVal = defaultValue || "";
+    setInternalValue(nextVal);
+
+    const syntheticEvent = {
+      target: {
+        name,
+        value: nextVal,
+      },
+      currentTarget: {
+        name,
+        value: nextVal,
+      },
+    } as unknown as React.ChangeEvent<HTMLSelectElement>;
+
+    onChange?.(syntheticEvent);
+  };
 
   useEffect(() => {
-    console.log(reset)
     if (!reset) return;
     resetSelect();
   }, [reset]);
@@ -86,6 +93,7 @@ const Select: React.FC<SelectProps> = ({
   return (
     <div className="relative w-full">
       <select
+        name={name}
         className={`${selectClasses}`}
         value={selectedValue}
         onChange={handleChange}

@@ -1,6 +1,6 @@
 export type Relationships = 'father' | 'mother' | 'legalGuardian' | 'other';
 export type Genders = 'male' | 'female' | 'other';
-export type Specialty = 'familyMedicine' | 'generalMedicine' | 'dentistry' | 'veterinary' | 'psychology' | 'nutrition' | 'pediatrics' | 'geriatrics' | 'oncology' | 'cardiology' | 'neurology' | 'dermatology' | 'ophthalmology' | 'otorhinolaryngology' | 'orthopedics' | 'traumatology' | 'gynecology';
+export type Speciality = 'familyMedicine' | 'generalMedicine' | 'dentistry' | 'veterinary' | 'psychology' | 'nutrition' | 'pediatrics' | 'geriatrics' | 'oncology' | 'cardiology' | 'neurology' | 'dermatology' | 'ophthalmology' | 'otorhinolaryngology' | 'orthopedics' | 'traumatology' | 'gynecology';
 export type RoleSystem = 'admin' | 'professional' | 'assistant' | 'receptionist' | 'owner';
 export type AppointmentStatus = 'SCHEDULED' | 'COMPLETED' | 'CANCELLED' | 'PENDING' | 'MISSED' | 'IN_PROGRESS' | 'RESCHEDULED';
 export type Department = 'Cardiologist' | 'Dentist' | 'Neurologist' | 'Dermatologist' | 'Ophthalmologist' | 'Otorhinolaryngologist' | 'Orthopedist' | 'Traumatologist' | 'Gynecologist';
@@ -26,7 +26,7 @@ export interface PersonalInfo {
 }
 
 export interface ProfesionalInfo {
-    specialty: Specialty;
+    speciality: Speciality;
     cedula: string;
     license: string;
 }
@@ -109,4 +109,23 @@ export interface UserSystem {
     role: string;
     createdAt: string;
     updatedAt: string;
+}
+
+// ====================== DATA DE MÉTRICAS
+
+export interface Metrics {
+    total: number;
+    status: {
+        active: number;
+        inactive: number;
+        on_leave: number;
+        on_vacation: number;
+        in_consultation: number;
+        on_break: number;
+        incapacitated: number;
+    };
+    specialities: number;
+    operatives: {
+        percentaje: number;
+    };
 }
