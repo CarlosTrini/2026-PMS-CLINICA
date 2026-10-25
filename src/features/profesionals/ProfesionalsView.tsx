@@ -40,7 +40,7 @@ export default function Profesionals() {
 
     // QUERY
     const { data: dataQuery, isLoading, error } = useQuery({
-        queryKey: ['profesionals'],
+        queryKey: ['profesionalsTable'],
         queryFn: () => ProfesionalService.getProfesionales()
     });
 

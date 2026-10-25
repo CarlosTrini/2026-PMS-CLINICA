@@ -13,8 +13,10 @@ import { FormProvider, useForm } from "react-hook-form";
 import { CreateProfesionalData, createProfesionalDefault, createProfesionalFormSchema } from "../schemas/formProfesional";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { simpleDate } from "@/utils/dates";
-import { Pencil, Trash2 } from "lucide-react";
+import { Loader2, Pencil, Trash2 } from "lucide-react";
 import Select from "@/components/form/select/Select";
+import { useQueryClient, useMutation } from "@tanstack/react-query"
+import { ProfesionalService } from "../services/service"
 
 // CONSTANTES
 import { DEPARTMENT_ARRAY, ROLE_SYSTEM_ARRAY, STATUS_PROFESSIONAL_ARRAY } from "@/utils/datadummy";
@@ -54,6 +56,26 @@ export default function ViewEditProf({ profesional, resetValues, closeModal, isO
     const [isEditMode, setIsEditMode] = useState(false);
 
 
+    // QUERY
+    const queryClient = useQueryClient();
+
+    //MUTATION PARA UPDATES
+    const { mutate: updateProfMutation, isPending } = useMutation({
+        mutationFn: (updatedData: Professional) => ProfesionalService.updateProfesional(updatedData),
+        onSuccess: (response) => {
+            console.log(response.message);
+            // 1. Refresca la tabla principal de profesionales automáticamente
+            queryClient.invalidateQueries({ queryKey: ['profesionalsTable'] });
+
+            // 2. Apaga el modo edición y/o cierra el modal
+            setIsEditMode(false);
+        },
+        onError: (err) => {
+            console.error('Error al actualizar profesional:', err);
+        }
+    });
+
+
 
     //FORM HOOK
     const methods = useForm<CreateProfesionalData>({
@@ -66,15 +88,18 @@ export default function ViewEditProf({ profesional, resetValues, closeModal, isO
 
 
     const handleUpdate = (data: CreateProfesionalData) => {
-        console.log('editando', data);
+        const updatedProf: Professional = {
+            ...data,
+            updatedAt: new Date().toISOString()
+        } as Professional;
+        // Ejecutamos la mutación
+        updateProfMutation(updatedProf);
+
 
     }
 
 
 
-    // const handleSave = () => {
-    //     closeModal();
-    // };
 
 
 
@@ -113,7 +138,7 @@ export default function ViewEditProf({ profesional, resetValues, closeModal, isO
                     <div className='flex  items-center justify-between mb-5 mt-2'>
                         <div className="">
                             <label className="block text-xs text-theme-light-gray" htmlFor="editMode">Editar datos</label>
-                            <Switch id='editMode' size="md" onChange={() => setIsEditMode(!isEditMode)} />
+                            <Switch id='editMode' defaultChecked={isEditMode} size="md" onChange={() => setIsEditMode(!isEditMode)} />
                         </div>
                         <Tooltip
                             content={
@@ -178,15 +203,13 @@ export default function ViewEditProf({ profesional, resetValues, closeModal, isO
                                     id: 'profesionalContact',
                                     label: <p className="flex items-center gap-1.5"> {isEditMode && <Pencil className="text-brand dark:text-brand-light" size={12} />} Datos de contacto</p>,
                                     content: <div className="flex flex-col gap-3">
-                                        <div className="flex flex-col justify-start items-center">
+                                        <div className="">
                                             <div className="flex  items-baseline">
-
                                                 <Label htmlFor="email" className="block text-sm mr-1" >Correo</Label>
                                                 <Input
                                                     disabled={!isEditMode}
                                                     size="sm"
                                                     id="email"
-                                                    // value={getValues("contactInfo.email")}
                                                     className={`${!isEditMode ? 'border-none! outline-none!' : 'block'}`}
                                                     {...register("contactInfo.email")}
                                                     error={!!errors.contactInfo?.email}
@@ -194,65 +217,89 @@ export default function ViewEditProf({ profesional, resetValues, closeModal, isO
                                             </div>
                                             <p className="mt-1 text-error-light text-xs italic">{errors?.contactInfo?.email?.message}</p>
                                         </div>
-                                        <div className="flex items-center">
-                                            <Label htmlFor="phone" className="block text-sm mr-1 mb-0 pb-0" >Teléfono</Label>
-                                            <Input
-                                                disabled={!isEditMode}
-                                                size="sm"
-                                                id="phone"
-                                                className={`${!isEditMode ? 'border-none! outline-none!' : 'block'}`}
-                                                {...register("contactInfo.phone")}
-                                            />
+                                        <div className="">
+                                            <div className="flex  items-baseline">
+                                                <Label htmlFor="phone" className="block text-sm mr-1 mb-0 pb-0" >Teléfono</Label>
+                                                <Input
+                                                    disabled={!isEditMode}
+                                                    size="sm"
+                                                    id="phone"
+                                                    className={`${!isEditMode ? 'border-none! outline-none!' : 'block'}`}
+                                                    {...register("contactInfo.phone")}
+                                                    error={!!errors.contactInfo?.phone}
+                                                />
+                                            </div>
+                                            <p className="mt-1 text-error-light text-xs italic">{errors?.contactInfo?.phone?.message}</p>
                                         </div>
-                                        <div className="flex items-center">
-                                            <Label htmlFor="address" className="block text-sm mr-1" >Dirección</Label>
-                                            <Input
-                                                disabled={!isEditMode}
-                                                size="sm"
-                                                id="address"
-                                                className={`${!isEditMode ? 'border-none! outline-none!' : 'block'}`}
-                                                {...register("contactInfo.address")}
-                                            />
+                                        <div className="">
+                                            <div className="flex  items-baseline">
+                                                <Label htmlFor="address" className="block text-sm mr-1" >Dirección</Label>
+                                                <Input
+                                                    disabled={!isEditMode}
+                                                    size="sm"
+                                                    id="address"
+                                                    className={`${!isEditMode ? 'border-none! outline-none!' : 'block'}`}
+                                                    {...register("contactInfo.address")}
+                                                    error={!!errors.contactInfo?.address}
+                                                />
+                                            </div>
+                                            <p className="mt-1 text-error-light text-xs italic">{errors?.contactInfo?.address?.message}</p>
                                         </div>
-                                        <div className="flex items-center">
-                                            <Label htmlFor="city" className="block text-sm mr-1" >Ciudad</Label>
-                                            <Input
-                                                disabled={!isEditMode}
-                                                size="sm"
-                                                id="city"
-                                                className={`${!isEditMode && 'border-none! outline-none! '}`}
-                                                {...register("contactInfo.city")}
-                                            />
+                                        <div className="">
+                                            <div className="flex  items-baseline">
+                                                <Label htmlFor="city" className="block text-sm mr-1" >Ciudad</Label>
+                                                <Input
+                                                    disabled={!isEditMode}
+                                                    size="sm"
+                                                    id="city"
+                                                    className={`${!isEditMode && 'border-none! outline-none! '}`}
+                                                    {...register("contactInfo.city")}
+                                                    error={!!errors.contactInfo?.city}
+                                                />
+                                            </div>
+                                            <p className="mt-1 text-error-light text-xs italic">{errors?.contactInfo?.city?.message}</p>
                                         </div>
-                                        <div className="flex items-center">
-                                            <Label htmlFor="state" className="block text-sm mr-1" >Estado</Label>
-                                            <Input
-                                                disabled={!isEditMode}
-                                                size="sm"
-                                                id="state"
-                                                className={`${!isEditMode && 'border-none! outline-none! '}`}
-                                                {...register("contactInfo.state")}
-                                            />
+                                        <div className="">
+                                            <div className="flex  items-baseline">
+                                                <Label htmlFor="state" className="block text-sm mr-1" >Estado</Label>
+                                                <Input
+                                                    disabled={!isEditMode}
+                                                    size="sm"
+                                                    id="state"
+                                                    className={`${!isEditMode && 'border-none! outline-none! '}`}
+                                                    {...register("contactInfo.state")}
+                                                    error={!!errors.contactInfo?.state}
+                                                />
+                                            </div>
+                                            <p className="mt-1 text-error-light text-xs italic">{errors?.contactInfo?.state?.message}</p>
                                         </div>
-                                        <div className="flex items-center">
-                                            <Label htmlFor="zip" className="block text-sm mr-1" >Código Postal</Label>
-                                            <Input
-                                                disabled={!isEditMode}
-                                                size="sm"
-                                                id="zip"
-                                                {...register("contactInfo.zip")}
-                                                className={`${!isEditMode && 'border-none! outline-none! '}`}
-                                            />
+                                        <div className="">
+                                            <div className="flex  items-baseline">
+                                                <Label htmlFor="zip" className="block text-sm mr-1" >Código Postal</Label>
+                                                <Input
+                                                    disabled={!isEditMode}
+                                                    size="sm"
+                                                    id="zip"
+                                                    {...register("contactInfo.zip")}
+                                                    className={`${!isEditMode && 'border-none! outline-none! '}`}
+                                                    error={!!errors.contactInfo?.zip}
+                                                />
+                                            </div>
+                                            <p className="mt-1 text-error-light text-xs italic">{errors?.contactInfo?.zip?.message}</p>
                                         </div>
-                                        <div className="flex items-center">
-                                            <Label htmlFor="country" className="block text-sm mr-1" >País</Label>
-                                            <Input
-                                                disabled={!isEditMode}
-                                                size="sm"
-                                                id="country"
-                                                className={`${!isEditMode && 'border-none! outline-none! '}`}
-                                                {...register("contactInfo.country")}
-                                            />
+                                        <div className="">
+                                            <div className="flex  items-baseline">
+                                                <Label htmlFor="country" className="block text-sm mr-1" >País</Label>
+                                                <Input
+                                                    disabled={!isEditMode}
+                                                    size="sm"
+                                                    id="country"
+                                                    className={`${!isEditMode && 'border-none! outline-none! '}`}
+                                                    {...register("contactInfo.country")}
+                                                    error={!!errors.contactInfo?.country}
+                                                />
+                                            </div>
+                                            <p className="mt-1 text-error-light text-xs italic">{errors?.contactInfo?.country?.message}</p>
                                         </div>
 
                                     </div>
@@ -261,42 +308,55 @@ export default function ViewEditProf({ profesional, resetValues, closeModal, isO
                                     id: 'generalInfo',
                                     label: <p className="flex items-center gap-1.5"> {isEditMode && <Pencil className="text-brand dark:text-brand-light " size={12} />} General</p>,
                                     content: <div className="flex flex-col gap-3">
-                                        <div className="flex items-baseline max-w-50">
-                                            <Label htmlFor="role" className="block text-sm mr-1" >Rol</Label>
-                                            <Select
-                                                placeholder="Selecciona un rol"
-                                                options={rolesSelect}
-                                                defaultValue={getValues('role')}
-                                                {...register('role')}
-                                                disabled={!isEditMode}
-                                                size="sm"
-                                                className={`${!isEditMode && 'border-none! outline-none!'}`}
-                                            />
+                                        <div className="">
+
+                                            <div className="flex items-baseline max-w-50">
+                                                <Label htmlFor="role" className="block text-sm mr-1" >Rol</Label>
+                                                <Select
+                                                    placeholder="Selecciona un rol"
+                                                    options={rolesSelect}
+                                                    defaultValue={getValues('role')}
+                                                    {...register('role')}
+                                                    disabled={!isEditMode}
+                                                    size="sm"
+                                                    className={`${!isEditMode && 'border-none! outline-none!'}`}
+                                                />
+                                            </div>
+                                            <p className="mt-1 text-error-light text-xs italic">{errors?.role?.message}</p>
                                         </div>
-                                        <div className="flex items-baseline max-w-50">
-                                            <Label htmlFor="status" className="block text-sm mr-1 mb-0 pb-0" >Estado</Label>
-                                            <Select
-                                                placeholder="Selecciona un estado"
-                                                options={statusSelect}
-                                                defaultValue={getValues('status')}
-                                                {...register('status')}
-                                                disabled={!isEditMode}
-                                                size="sm"
-                                                className={`${!isEditMode && 'border-none! outline-none!'}`}
-                                            />
+
+                                        <div className="">
+                                            <div className="flex items-baseline max-w-50">
+                                                <Label htmlFor="status" className="block text-sm mr-1 mb-0 pb-0" >Estado</Label>
+                                                <Select
+                                                    placeholder="Selecciona un estado"
+                                                    options={statusSelect}
+                                                    defaultValue={getValues('status')}
+                                                    {...register('status')}
+                                                    disabled={!isEditMode}
+                                                    size="sm"
+                                                    className={`${!isEditMode && 'border-none! outline-none!'}`}
+                                                />
+                                            </div>
+                                            <p className="mt-1 text-error-light text-xs italic">{errors?.status?.message}</p>
                                         </div>
-                                        <div className="flex items-baseline max-w-70">
-                                            <Label htmlFor="department" className="block text-sm mr-1" >Departamento</Label>
-                                            <Select
-                                                placeholder="Selecciona un departamento"
-                                                options={departmentSelect}
-                                                defaultValue={getValues('department')}
-                                                {...register('department')}
-                                                disabled={!isEditMode}
-                                                size="sm"
-                                                className={`${!isEditMode && 'border-none! outline-none!'}`}
-                                            />
+
+                                        <div className="">
+                                            <div className="flex items-baseline max-w-70">
+                                                <Label htmlFor="department" className="block text-sm mr-1" >Departamento</Label>
+                                                <Select
+                                                    placeholder="Selecciona un departamento"
+                                                    options={departmentSelect}
+                                                    defaultValue={getValues('department')}
+                                                    {...register('department')}
+                                                    disabled={!isEditMode}
+                                                    size="sm"
+                                                    className={`${!isEditMode && 'border-none! outline-none!'}`}
+                                                />
+                                            </div>
+                                            <p className="mt-1 text-error-light text-xs italic">{errors?.department?.message}</p>
                                         </div>
+
                                         <div className="border border-gray my-2" />
                                         <div className="">
                                             <p>Espcecialidades </p>
@@ -330,8 +390,14 @@ export default function ViewEditProf({ profesional, resetValues, closeModal, isO
                     </Button>
                     {
                         isEditMode && (
-                            <Button form="editProfForm" type="submit" size="sm">
-                                {commonT('saveChanges')}
+                            <Button disabled={isPending} form="editProfForm" type="submit" size="sm">
+                                {
+                                    isPending ? (
+                                        <Loader2 className="animate-spin" />
+                                    ) : (
+                                        commonT('saveChanges')
+                                    )
+                                }
                             </Button>
                         )
                     }
@@ -341,193 +407,3 @@ export default function ViewEditProf({ profesional, resetValues, closeModal, isO
         </>
     )
 }
-
-
-
-
-
-//   <TabsPanel tabsData={[
-//                             {
-//                                 id: 'profesionalInfo',
-//                                 label: 'Información personal',
-//                                 content: <div className="flex flex-col gap-3">
-//                                     <div className="flex items-center">
-//                                         <Label htmlFor="name" className="block text-sm mr-1" >Nombre</Label>
-//                                         <Input
-//                                             disabled={!isEditMode}
-//                                             size="sm"
-//                                             id="name"
-//                                             value={profesional?.personalInfo?.name}
-//                                             className={`${!isEditMode ? 'border-none! outline-none!' : 'block'}`}
-//                                         // onChange={(e) => setprofesional({ ...profesional, personalInfo: { ...profesional?.personalInfo, name: e.target.value } })}
-//                                         />
-//                                     </div>
-//                                     <div className="flex items-center">
-//                                         <Label htmlFor="lastName" className="block text-sm mr-1 mb-0 pb-0" >Apellido</Label>
-//                                         <Input
-//                                             disabled={!isEditMode}
-//                                             size="sm"
-//                                             id="lastName"
-//                                             value={profesional?.personalInfo?.lastName}
-//                                             className={`${!isEditMode ? 'border-none! outline-none!' : 'block'}`}
-//                                         // onChange={(e) => setprofesional({ ...profesional, personalInfo: { ...profesional?.personalInfo, lastName: e.target.value } })}
-//                                         />
-//                                     </div>
-//                                     <div className="flex items-baseline">
-//                                         <Label htmlFor="dateOfBirth" className="block text-sm mr-1" >Fecha de Nacimiento</Label>
-//                                         <p className="pl-2 text-gray-light/60">{simpleDate(profesional?.personalInfo?.dateOfBirth)}</p>
-//                                     </div>
-//                                     <div className="flex items-center">
-//                                         <Label htmlFor="gender" className="block text-sm mr-1" >Género</Label>
-//                                         <Input
-//                                             disabled={!isEditMode}
-//                                             size="sm"
-//                                             id="gender"
-//                                             value={profesional?.personalInfo?.gender}
-//                                             className={`${!isEditMode && 'border-none! outline-none! '}`}
-//                                         // onChange={(e) => setprofesional({ ...profesional, personalInfo: { ...profesional?.personalInfo, gender: e.target.value } })}
-//                                         />
-//                                     </div>
-
-//                                 </div>
-//                             },
-//                             {
-//                                 id: 'profesionalContact',
-//                                 label: 'Datos de contacto',
-//                                 content: <div className="flex flex-col gap-3">
-//                                     <div className="flex items-center">
-//                                         <Label htmlFor="email" className="block text-sm mr-1" >Correo</Label>
-//                                         <Input
-//                                             disabled={!isEditMode}
-//                                             size="sm"
-//                                             id="email"
-//                                             value={profesional?.contactInfo?.email}
-//                                             className={`${!isEditMode ? 'border-none! outline-none!' : 'block'}`}
-//                                         // onChange={(e) => setprofesional({ ...profesional, personalInfo: { ...profesional?.personalInfo, name: e.target.value } })}
-//                                         />
-//                                     </div>
-//                                     <div className="flex items-center">
-//                                         <Label htmlFor="phone" className="block text-sm mr-1 mb-0 pb-0" >Teléfono</Label>
-//                                         <Input
-//                                             disabled={!isEditMode}
-//                                             size="sm"
-//                                             id="phone"
-//                                             value={profesional?.contactInfo?.phone}
-//                                             className={`${!isEditMode ? 'border-none! outline-none!' : 'block'}`}
-//                                         // onChange={(e) => setprofesional({ ...profesional, personalInfo: { ...profesional?.personalInfo, lastName: e.target.value } })}
-//                                         />
-//                                     </div>
-//                                     <div className="flex items-center">
-//                                         <Label htmlFor="address" className="block text-sm mr-1" >Dirección</Label>
-//                                         <Input
-//                                             disabled={!isEditMode}
-//                                             size="sm"
-//                                             id="address"
-//                                             value={profesional?.contactInfo?.address}
-//                                             className={`${!isEditMode ? 'border-none! outline-none!' : 'block'}`}
-//                                         // onChange={(e) => setprofesional({ ...profesional, personalInfo: { ...profesional?.personalInfo, dateOfBirth: e.target.value } })}
-//                                         />
-//                                     </div>
-//                                     <div className="flex items-center">
-//                                         <Label htmlFor="city" className="block text-sm mr-1" >Ciudad</Label>
-//                                         <Input
-//                                             disabled={!isEditMode}
-//                                             size="sm"
-//                                             id="city"
-//                                             value={profesional?.contactInfo?.city}
-//                                             className={`${!isEditMode && 'border-none! outline-none! '}`}
-//                                         // onChange={(e) => setprofesional({ ...profesional, personalInfo: { ...profesional?.personalInfo, gender: e.target.value } })}
-//                                         />
-//                                     </div>
-//                                     <div className="flex items-center">
-//                                         <Label htmlFor="state" className="block text-sm mr-1" >Estado</Label>
-//                                         <Input
-//                                             disabled={!isEditMode}
-//                                             size="sm"
-//                                             id="state"
-//                                             value={profesional?.contactInfo?.state}
-//                                             className={`${!isEditMode && 'border-none! outline-none! '}`}
-//                                         // onChange={(e) => setprofesional({ ...profesional, personalInfo: { ...profesional?.personalInfo, gender: e.target.value } })}
-//                                         />
-//                                     </div>
-//                                     <div className="flex items-center">
-//                                         <Label htmlFor="zip" className="block text-sm mr-1" >Código Postal</Label>
-//                                         <Input
-//                                             disabled={!isEditMode}
-//                                             size="sm"
-//                                             id="zip"
-//                                             value={profesional?.contactInfo?.zip}
-//                                             className={`${!isEditMode && 'border-none! outline-none! '}`}
-//                                         // onChange={(e) => setprofesional({ ...profesional, personalInfo: { ...profesional?.personalInfo, gender: e.target.value } })}
-//                                         />
-//                                     </div>
-//                                     <div className="flex items-center">
-//                                         <Label htmlFor="country" className="block text-sm mr-1" >País</Label>
-//                                         <Input
-//                                             disabled={!isEditMode}
-//                                             size="sm"
-//                                             id="country"
-//                                             value={profesional?.contactInfo?.country}
-//                                             className={`${!isEditMode && 'border-none! outline-none! '}`}
-//                                         // onChange={(e) => setprofesional({ ...profesional, personalInfo: { ...profesional?.personalInfo, gender: e.target.value } })}
-//                                         />
-//                                     </div>
-
-//                                 </div>
-//                             },
-//                             {
-//                                 id: 'generalInfo',
-//                                 label: 'General',
-//                                 content: <div className="flex flex-col gap-3">
-//                                     <div className="flex items-center">
-//                                         <Label htmlFor="role" className="block text-sm mr-1" >Rol</Label>
-//                                         <Input
-//                                             disabled={!isEditMode}
-//                                             size="sm"
-//                                             id="role"
-//                                             value={profesional?.role}
-//                                             className={`${!isEditMode ? 'border-none! outline-none!' : 'block'}`}
-//                                         // onChange={(e) => setprofesional({ ...profesional, personalInfo: { ...profesional?.personalInfo, name: e.target.value } })}
-//                                         />
-//                                     </div>
-//                                     <div className="flex items-center">
-//                                         <Label htmlFor="status" className="block text-sm mr-1 mb-0 pb-0" >Estado</Label>
-//                                         <Input
-//                                             disabled={!isEditMode}
-//                                             size="sm"
-//                                             id="status"
-//                                             value={profesional?.status}
-//                                             className={`${!isEditMode ? 'border-none! outline-none!' : 'block'}`}
-//                                         // onChange={(e) => setprofesional({ ...profesional, personalInfo: { ...profesional?.personalInfo, lastName: e.target.value } })}
-//                                         />
-//                                     </div>
-//                                     <div className="flex items-center">
-//                                         <Label htmlFor="department" className="block text-sm mr-1" >Departamento</Label>
-//                                         <Input
-//                                             disabled={!isEditMode}
-//                                             size="sm"
-//                                             id="department"
-//                                             value={profesional?.department}
-//                                             className={`${!isEditMode ? 'border-none! outline-none!' : 'block'}`}
-//                                         // onChange={(e) => setprofesional({ ...profesional, personalInfo: { ...profesional?.personalInfo, dateOfBirth: e.target.value } })}
-//                                         />
-//                                     </div>
-//                                     <div className="border border-gray my-2" />
-//                                     <div className="">
-//                                         <p>Espcecialidades </p>
-//                                         <div className="flex gap-3 flex-wrap mt-3">
-//                                             {profesional?.profesionalInfo?.map((speciality, idx) => (
-//                                                 <div key={idx} className="flex flex-col gap-y-0 border border-gray/30 rounded-lg p-2 italic">
-
-//                                                     <p >{speciality.speciality}</p>
-//                                                     <p className="text-gray/70 ml-2" >{speciality.cedula}</p>
-//                                                     <p className="text-gray/70 ml-2" >{speciality.license}</p>
-
-//                                                 </div>
-//                                             ))}
-//                                         </div>
-//                                     </div>
-
-//                                 </div>
-//                             }
-//                         ]} />

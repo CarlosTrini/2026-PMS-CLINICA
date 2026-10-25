@@ -5,7 +5,7 @@ import { Metrics, Professional } from "@/types/dataTypes";
 import { PROFESIONALS_DATA } from "@/utils/datadummy";
 
 // Simular 400ms de latencia de red
-const mockDelay = await new Promise((resolve) => setTimeout(resolve, 400));
+const mockDelay = await new Promise((resolve) => setTimeout(resolve, 1000));
 
 export const ProfesionalService = {
 
@@ -36,27 +36,29 @@ export const ProfesionalService = {
 
     },
 
-
-
     getProfesionales: async (): Promise<Professional[]> => {
         // const response = await apiClient.get('/profesionales');
         return PROFESIONALS_DATA;
     },
 
+    updateProfesional: async (profesional: Professional): Promise<{ success: boolean, message: string }> => {
+        // const response = await apiClient.put(`/profesionales/${id}`, profesional);
+
+        await mockDelay;
+        return { success: true, message: 'Profesional actualizado correctamente' };
+
+    },
     // getProfesional: async (id: string) => {
     //     const response = await apiClient.get(`/profesionales/${id}`);
     //     return response.data;
     // },
+
 
     createProfesional: async (profesional: any) => {
         const response = await apiClient.post('/profesionales', profesional);
         return response.data;
     },
 
-    updateProfesional: async (id: string, profesional: any) => {
-        const response = await apiClient.put(`/profesionales/${id}`, profesional);
-        return response.data;
-    },
 
     deleteProfesional: async (id: string) => {
         const response = await apiClient.delete(`/profesionales/${id}`);

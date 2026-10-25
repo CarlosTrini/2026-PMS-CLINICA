@@ -206,3 +206,108 @@ error/ → Usada en not-found.tsx (404.svg, 404-dark.svg).
 logo/ → Usada en AppSidebar.tsx, AppHeader.tsx y el layout de auth (logo.svg, logo-dark.svg, logo-icon.svg, etc.).
 user/ → Usada en UserDropdown.tsx (owner.png para tu avatar) y NotificationDropdown.tsx.
 shape/ → Usada en GridShape.tsx (grid-01.svg, la cuadrícula de fondo del login y 404).
+
+
+
+
+QUERY CLIENT GET BAJO DEMANDA...
+
+ // 1. Configuramos enabled: false y extraemos refetch e isFetching
+    const { 
+        data, 
+        isFetching, 
+        error, 
+        refetch 
+    } = useQuery({
+        queryKey: ['historial', profesionalId],
+        queryFn: () => HistorialService.getHistorial(profesionalId),
+        enabled: false, // 👈 Evita que se ejecute solo al renderizar
+    });
+    const handleConsultar = () => {
+        // 2. Disparamos la petición manualmente
+        refetch();
+    };
+    return (
+        <div>
+            <button 
+                onClick={handleConsultar} 
+                disabled={isFetching}
+                className="btn btn-primary"
+            >
+                {isFetching ? <Loader2 className="animate-spin" /> : 'Consultar Historial'}
+            </button>
+            {/* Mostramos la data una vez que el usuario la solicitó */}
+            {data && (
+                <div>
+                    <h4>Resultados:</h4>
+                    <p>{JSON.stringify(data)}</p>
+                </div>
+            )}
+        </div>
+    );
+}
+
+⚠️ Detalle muy importante: Usa isFetching en vez de isLoading
+Cuando usas enabled: false:
+
+isLoading puede comportarse de manera engañosa al inicio porque la query está en pausa.
+isFetching siempre será true exactamente mientras la petición HTTP está viajando por la red cada vez que presionas el botón. Es ideal para mostrar spinners en botones o deshabilitarlos.
+
+
+
+
+UPDATES MUTATION (QUERY)
+ // QUERY
+    const queryClient = useQueryClient();
+
+    //MUTATION PARA UPDATES
+    const { mutate: updateProfMutation, isPending } = useMutation({
+        mutationFn: (updatedData: Professional) => ProfesionalService.updateProfesional(updatedData),
+        onSuccess: (response) => {
+            console.log(response.message);
+            // 1. Refresca la tabla principal de profesionales automáticamente
+            queryClient.invalidateQueries({ queryKey: ['profesionalsTable'] });
+
+            // 2. Apaga el modo edición y/o cierra el modal
+            setIsEditMode(false);
+        },
+        onError: (err) => {
+            console.error('Error al actualizar profesional:', err);
+        }
+    });
+
+
+    const updatedProf: Professional = {
+            ...data,
+            updatedAt: new Date().toISOString()
+        } as Professional;
+        // Ejecutamos la mutación
+        updateProfMutation(updatedProf);
+
+
+
+        // QUERY GET QUE SE EJECUTE SOLO...
+
+
+// QUERY EN CAMBIO DE ESTADO...
+
+const [selectedId, setSelectedId] = useState<string | null>(null);
+const { data, isFetching } = useQuery({
+    queryKey: ['profesional', selectedId],
+    queryFn: () => ProfesionalService.getById(selectedId!),
+    // Solo se dispara cuando selectedId tiene un valor (no es null)
+    enabled: Boolean(selectedId), 
+});
+// En el botón de la fila:
+<button onClick={() => setSelectedId(profesional.id)}>
+    Ver Detalle
+</button>
+
+
+// QUERY QUE SE EJECUTE SOLO
+
+    // QUERY
+    const { data: dataQuery, isLoading, error } = useQuery({
+        queryKey: ['profesionalsTable'],
+        queryFn: () => ProfesionalService.getProfesionales()
+    });

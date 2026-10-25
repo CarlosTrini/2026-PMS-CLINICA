@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface SwitchProps {
   id?: string;
@@ -62,6 +62,10 @@ const Switch: React.FC<SwitchProps> = ({
     md: 'h-4 w-4',
     lg: 'h-5 w-5',
   }
+
+  useEffect(() => {
+    setIsChecked(defaultChecked);
+  }, [defaultChecked]);
 
   return (
     <label
