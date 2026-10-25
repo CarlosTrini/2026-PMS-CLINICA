@@ -7,20 +7,23 @@ export default function useSystemTraslations() {
     const specialityT = useTranslations("speciality");
     const statusT = useTranslations("all_status");
     const departmentT = useTranslations("deparments");
+    const formInputsT = useTranslations("formInputs");
+    const tableColumnsT = useTranslations("tablesColumns");
+    const rolesSystemT = useTranslations("rolesSystem");
     //página personal
     const profT = useTranslations("pages.profesionals");
     const profMetricsT = useTranslations("pages.profesionals.Metrics");
-    const profTableT = useTranslations("pages.profesionals.table");
-    const profFiltersT = useTranslations("pages.profesionals.filters");
 
     return {
         commonT,
         specialityT,
         statusT,
         departmentT,
+        tableColumnsT,
+        formInputsT,
+        rolesSystemT,
+        // página de personal
         profT,
         profMetricsT,
-        profTableT,
-        profFiltersT
     }
 }

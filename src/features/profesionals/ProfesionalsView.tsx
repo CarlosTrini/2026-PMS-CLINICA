@@ -8,18 +8,19 @@ import { useEffect, useState } from "react";
 import Badge from "@/components/ui/badge/Badge";
 import { simpleDate } from "@/utils/dates";
 import Metrics from "./components/Metrics";
-import { Modal } from "@/components/ui/modal";
-import Button from "@/components/ui/button/Button";
-import { useModal } from "@/hooks/useModal";
 import { Eye, Mail, Phone, Trash2 } from 'lucide-react';
 import Fallback from "@/components/fallbackQuery/Fallback";
 import { ProfesionalService } from "./services/service";
 import useSystemTraslations from "@/hooks/useSysteTranslations";
+import { Professional } from "@/types/dataTypes";
+import FiltersProfesionals from "./components/Filters";
+import { useModal } from "@/hooks/useModal";
+
+
 
 // QUERY
 import { useQuery } from "@tanstack/react-query";
-import { Professional } from "@/types/dataTypes";
-import FiltersProfesionals from "./components/Filters";
+import ViewEditProf from "./components/ViewEditProf";
 
 
 const columns = ['id', 'name', 'speciality', 'department', 'contact', 'status', 'createdAt', 'actions'];
@@ -28,11 +29,12 @@ const columns = ['id', 'name', 'speciality', 'department', 'contact', 'status', 
 
 export default function Profesionals() {
 
-    const { profT, commonT, statusT, profTableT, specialityT, departmentT } = useSystemTraslations();
+    const { profT, commonT, statusT, tableColumnsT, specialityT, departmentT } = useSystemTraslations();
 
     // HOOKS
-    const { isOpen, openModal, closeModal } = useModal();
     const [dataTable, setDataTable] = useState<Professional[]>([]);
+    const [userSelected, setUserSelected] = useState<Professional | null>(null);
+    const { isOpen, openModal, closeModal } = useModal(false);
 
 
 
@@ -42,17 +44,6 @@ export default function Profesionals() {
         queryFn: () => ProfesionalService.getProfesionales()
     });
 
-    useEffect(() => {
-        if (!dataQuery) return;
-        setDataTable(dataQuery);
-    }, [dataQuery]);
-
-
-
-
-    const handleSave = () => {
-        closeModal();
-    };
 
     const [copyTxt, setCopyTxt] = useState(commonT("copyToClipboard"));
     const copyData = async <T,>(value: T): Promise<void> => {
@@ -90,9 +81,24 @@ export default function Profesionals() {
         );
     };
 
+
+    useEffect(() => {
+        if (!dataQuery) return;
+        setDataTable(dataQuery);
+    }, [dataQuery]);
+
+
+    // agre el modal con la info cunaod está listo el state
+    useEffect(() => {
+        if (userSelected) {
+            openModal();
+        }
+    }, [userSelected]);
+
     return (
         <>
             <PageBreadcrumb pageTitle={profT('tittle')} />
+
 
 
             {/* CARDS SECTION */}
@@ -110,6 +116,14 @@ export default function Profesionals() {
                 data={dataTable}
                 errorClassName="min-h-[40vh]"
                 loadingClassName="min-h-[40vh]"
+                noDataPlaceholder={<>
+                    <div className="h-[30vh] flex flex-col items-center justify-center gap-2">
+                        <figure className="w-15 h-15 overflow-hidden rounded-full">
+                            <Image src="/images/no-results.jpg" alt="Empty" width={100} height={100} className="object-cover" />
+                        </figure>
+                        <p className="font-bold text-lg">No se han encontrado coincidencias</p>
+                    </div>
+                </>}
             >
                 <section className="mt-10 w-full min-w-0 ">
                     <div className="hidden lg:block w-full h-full max-h-[65vh]  min-w-0 overflow-auto rounded-lg generic-border-shadow bg-theme-light-dark">
@@ -117,7 +131,7 @@ export default function Profesionals() {
                             <TableHeader className="sticky top-0 border-b z-50 bg-brand dark:bg-brand-dark border-gray/20 dark:border-gray/40">
                                 <TableRow>
                                     {columns.map(col => (
-                                        <TableCell key={col} isHeader><p className="generic-header-table">{col == 'id' ? commonT(col) : profTableT(`${col}`)}</p></TableCell>
+                                        <TableCell key={col} isHeader><p className="generic-header-table">{col == 'id' ? commonT(col) : tableColumnsT(`${col}`)}</p></TableCell>
                                     ))}
                                 </TableRow>
                             </TableHeader>
@@ -157,7 +171,7 @@ export default function Profesionals() {
                                                             <div className="flex items-center gap-2">
                                                                 {
                                                                     p?.profesionalInfo.length > 1 && (
-                                                                        <Tooltip content={`${p.profesionalInfo.length} especialidades más`}>
+                                                                        <Tooltip content={`${p.profesionalInfo.length} ${commonT('specialities')}`}>
                                                                             <button className="p-1 rounded-md text-xs flex gap-1 items-center bg-brand-light/60 dark:bg-gray" onClick={() => { }}>
                                                                                 <Eye className="w-3 h-3 text-brand-dark dark:text-light" />
                                                                             </button>
@@ -225,7 +239,7 @@ export default function Profesionals() {
                                             <TableCell className="p-3 ">
                                                 <div className="flex gap-2 items-center">
 
-                                                    <button className="p-1 rounded-md bg-brand dark:bg-brand-dark hover:bg-brand/60 dark:hover:bg-brand-dark/70 text-light" onClick={() => { openModal() }}><Eye className="w-4 h-4 " /></button>
+                                                    <button className="p-1 rounded-md bg-brand dark:bg-brand-dark hover:bg-brand/60 dark:hover:bg-brand-dark/70 text-light" onClick={() => { setUserSelected(p); }}><Eye className="w-4 h-4 " /></button>
 
                                                     <Tooltip content={<>
                                                         <div className="p-2.5  bg-error-dark/60 ">
@@ -289,7 +303,7 @@ export default function Profesionals() {
                                                         <button
                                                             type="button"
                                                             className="p-1.5 rounded-md bg-brand dark:bg-brand-dark hover:bg-brand/60 dark:hover:bg-brand-dark/70 text-light transition-colors"
-                                                            onClick={() => { openModal(); }}
+                                                            onClick={() => { setUserSelected(p); }}
                                                             title={commonT("viewMore")}
                                                         >
                                                             <Eye className="w-3.5 h-3.5" />
@@ -324,7 +338,7 @@ export default function Profesionals() {
                                                 <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-gray/10 dark:border-gray/30 text-xs">
                                                     <div>
                                                         <span className="text-[11px] text-gray/50 dark:text-gray-light/50 font-medium block mb-0.5">
-                                                            {profTableT("speciality")}
+                                                            {tableColumnsT("speciality")}
                                                         </span>
                                                         {p.profesionalInfo[0] ? (
                                                             <div>
@@ -351,7 +365,7 @@ export default function Profesionals() {
 
                                                     <div>
                                                         <span className="text-[11px] text-gray/50 dark:text-gray-light/50 font-medium block mb-0.5">
-                                                            {profTableT("department")}
+                                                            {tableColumnsT("department")}
                                                         </span>
                                                         <p className="font-semibold uppercase text-gray dark:text-gray-light truncate">
                                                             {p.department ? (
@@ -431,42 +445,17 @@ export default function Profesionals() {
             </Fallback>
 
 
-
-            <Modal
-                isOpen={isOpen}
-                onClose={closeModal}
-                isFullscreen={false}
-                className="w-[80%]! md:w-[60%]! lg:max-w-150 p-5"
-            >
-                <h4 className="mb-7 text-title-sm font-semibold text-gray-800 dark:text-light-accent/90">
-                    Modal Heading
-                </h4>
-                <p className="text-sm leading-6 text-gray-500 dark:text-gray-400">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Pellentesque euismod est quis mauris lacinia pharetra. Sed a ligula
-                    ac odio condimentum aliquet a nec nulla. Aliquam bibendum ex sit
-                    amet ipsum rutrum feugiat ultrices enim quam.
-                </p>
-                <p className="mt-5 text-sm leading-6 text-gray-500 dark:text-gray-400">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Pellentesque euismod est quis mauris lacinia pharetra. Sed a ligula
-                    ac odio.
-                </p>
-                <div className="mt-8 flex w-full items-center justify-end gap-3">
-                    <Button size="sm" variant="outline" onClick={() => {
-                        closeModal();
-                    }}>
-                        {commonT('close')}
-                    </Button>
-                    <Button size="sm" onClick={() => {
-                        handleSave();
-                    }}>
-                        {commonT('saveChanges')}
-                    </Button>
-                </div>
-            </Modal>
-
-
+            {/* MODAL EDIT AND VIEW DATA */}
+            {
+                userSelected && isOpen && (
+                    <ViewEditProf
+                        profesional={userSelected}
+                        isOpen={isOpen}
+                        closeModal={closeModal}
+                        resetValues={() => setUserSelected(null)}
+                    />
+                )
+            }
 
         </>
     );

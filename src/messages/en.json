@@ -62,6 +62,46 @@
     "message": "We can't find the page you're looking for!",
     "backHome": "Back to Home"
   },
+  "rolesSystem": {
+    "admin": "Admin",
+    "professional": "Professional",
+    "assistant": "Assistant",
+    "receptionist": "Receptionist",
+    "owner": "Owner"
+  },
+  "tablesColumns": {
+    "name": "Name",
+    "speciality": "Specialty",
+    "contact": "Contact",
+    "email": "Email",
+    "status": "Status",
+    "createdAt": "Date Joined",
+    "actions": "Actions",
+    "department": "Department"
+  },
+  "formInputs": {
+    "placeholder": "",
+    "name": "Name",
+    "lastName": "Last Name",
+    "dateOfBirth": "Date of Birth",
+    "gender": "Gender",
+    "searchByName": "Search by Name",
+    "speciality": "Specialty",
+    "status": "Status",
+    "department": "Department",
+    "orderByCreatedAt": "Sort by Date Joined",
+    "orderBySpeciality": "Sort by Specialty",
+    "orderByStatus": "Sort by Status",
+    "role": "Role",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "city": "City",
+    "state": "State",
+    "zip": "Zip",
+    "country": "Country",
+    "dateJoined": "Date Joined"
+  },
   "speciality": {
     "familyMedicine": "Family Medicine",
     "generalMedicine": "General Medicine",
@@ -80,10 +120,12 @@
     "orthopedics": "Orthopedics",
     "traumatology": "Traumatology",
     "gynecology": "Gynecology",
-    "gastroenterology": "Gastroenterology",
+    "general": "General",
     "all": "All"
   },
   "deparments": {
+    "general": "General",
+    "General": "General",
     "Cardiologist": "Cardiology",
     "Dentist": "Dentistry",
     "Neurologist": "Neurology",
@@ -125,26 +167,6 @@
         "registered_staff": "Registered Staff",
         "active_staff": "Active Staff",
         "operative": "Operational"
-      },
-      "table": {
-        "name": "Name",
-        "speciality": "Specialty",
-        "contact": "Contact",
-        "email": "Email",
-        "status": "Status",
-        "createdAt": "Date Joined",
-        "actions": "Actions",
-        "department": "Department"
-      },
-      "filters": {
-        "name": "Name",
-        "searchByName": "Search by Name",
-        "speciality": "Specialty",
-        "status": "Status",
-        "department": "Department",
-        "orderByCreatedAt": "Sort by Date Joined",
-        "orderBySpeciality": "Sort by Specialty",
-        "orderByStatus": "Sort by Status"
       }
     }
   }

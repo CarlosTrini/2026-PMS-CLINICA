@@ -43,7 +43,7 @@ const Input: FC<InputProps> = ({
   let inputClasses = ` ${SIZE[size]} w-full rounded-lg border appearance-none ps-4 pe-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray/40 focus:outline-hidden focus:ring-3  dark:bg-gray-dark dark:text-light-accent/90 dark:placeholder:text-light-accent/30 ${className}`;
 
   if (disabled) {
-    inputClasses += ` text-gray border-gray-light opacity-40 bg-light cursor-not-allowed dark:bg-gray-dark dark:text-gray-light dark:border-gray-dark opacity-40`;
+    inputClasses += ` text-gray border-gray-light opacity-60 bg-light cursor-not-allowed dark:bg-gray-dark dark:text-gray-light dark:border-gray-dark opacity-40`;
   } else if (error) {
     inputClasses += `  border-error focus:border-error-light focus:ring-error/20 dark:text-error-light dark:border-error-dark dark:focus:border-error-dark`;
   } else if (success) {

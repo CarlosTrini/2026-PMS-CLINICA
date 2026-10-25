@@ -5,7 +5,7 @@ import Form from "@/components/form/Form";
 import Label from "@/components/form/Label";
 import Input from "@/components/form/input/InputField";
 import Select from "@/components/form/select/Select";
-import { FilterData, filterProfesionalsSchema, filtersProfesionalsDefault } from "../schemas/formFilters";
+import { FilterData, FilterInput, filterProfesionalsSchema, filtersProfesionalsDefault } from "../schemas/formFilters";
 import { Activity, Building, Delete, Filter, ListOrdered, Search, Stethoscope } from 'lucide-react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,7 +24,7 @@ interface Props {
 
 export default function FiltersProfesionals({ dataQuery, updateDataFn }: Props) {
 
-    const { commonT, specialityT, statusT, departmentT, profFiltersT } = useSystemTraslations();
+    const { commonT, specialityT, statusT, departmentT, formInputsT } = useSystemTraslations();
 
     const orderOptions = useMemo(() => [
         { value: 'asc', label: commonT('asc') },
@@ -36,7 +36,7 @@ export default function FiltersProfesionals({ dataQuery, updateDataFn }: Props) 
     const [filtersSelected, setFiltersSelected] = useState<FilterData>(filtersProfesionalsDefault);
 
     // HOOK FORM -ZOD
-    const { register, handleSubmit, reset, getValues } = useForm<FilterData>({
+    const { register, handleSubmit, reset, getValues } = useForm<FilterInput, any, FilterData>({
         resolver: zodResolver(filterProfesionalsSchema),
         defaultValues: filtersProfesionalsDefault
     });
@@ -82,7 +82,7 @@ export default function FiltersProfesionals({ dataQuery, updateDataFn }: Props) 
 
             // 4. Filtro por Departamento
             if (filterValues.department !== 'all') {
-                if (filterValues.department === 'noDepartment') {
+                if (filterValues.department === 'no_department') {
                     if (p.department !== '') return false;
                 } else {
                     if (p.department !== filterValues.department) return false;
@@ -140,7 +140,7 @@ export default function FiltersProfesionals({ dataQuery, updateDataFn }: Props) 
         })), { value: 'all', label: commonT('all') }];
         const departmentSelect = [...DEPARTMENT_ARRAY.map((item) => ({
             value: item,
-            label: item === 'noDepartment' ? departmentT('no_department') : departmentT(item),
+            label: departmentT(item),
         })), { value: 'all', label: commonT('all') }];
         return [specialitySelect, statusSelect, departmentSelect];
     }, [specialityT, statusT, departmentT, commonT]);
@@ -152,37 +152,35 @@ export default function FiltersProfesionals({ dataQuery, updateDataFn }: Props) 
                 {
                     filtersSelected.name !== '' && (
                         <div className="flex gap-1.5 items-center">
-                            <p className="text-brand-dark dark:text-light font-bold">{profFiltersT('name')}:</p>
+                            <p className="text-brand-dark dark:text-light font-bold">{formInputsT('name')}:</p>
                             <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{filtersSelected.name}</p>
                         </div>
                     )
                 }
                 <div className="flex gap-2 items-center">
-                    <p className="text-brand-dark dark:text-light font-bold" >{profFiltersT('speciality')}:</p>
+                    <p className="text-brand-dark dark:text-light font-bold" >{formInputsT('speciality')}:</p>
                     <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{specialityT(filtersSelected.speciality)}</p>
                 </div>
                 <div className="flex gap-2 items-center">
-                    <p className="text-brand-dark dark:text-light font-bold">{profFiltersT('status')}:</p>
+                    <p className="text-brand-dark dark:text-light font-bold">{formInputsT('status')}:</p>
                     <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{statusT(filtersSelected.status)}</p>
                 </div>
                 <div className="flex gap-2 items-center">
-                    <p className="text-brand-dark dark:text-light font-bold">{profFiltersT('department')}:</p>
+                    <p className="text-brand-dark dark:text-light font-bold">{formInputsT('department')}:</p>
                     <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">
-                        {filtersSelected.department === 'noDepartment'
-                            ? departmentT('no_department')
-                            : departmentT(filtersSelected.department)}
+                        {departmentT(filtersSelected.department)}
                     </p>
                 </div>
                 <div className="flex gap-2 items-center">
-                    <p className="text-brand-dark dark:text-light font-bold">{profFiltersT('orderByCreatedAt')}:</p>
+                    <p className="text-brand-dark dark:text-light font-bold">{formInputsT('orderByCreatedAt')}:</p>
                     <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{commonT(filtersSelected.orderByCreatedAt)}</p>
                 </div>
                 <div className="flex gap-2 items-center">
-                    <p className="text-brand-dark dark:text-light font-bold">{profFiltersT('orderBySpeciality')}:</p>
+                    <p className="text-brand-dark dark:text-light font-bold">{formInputsT('orderBySpeciality')}:</p>
                     <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{commonT(filtersSelected.orderBySpeciality)}</p>
                 </div>
                 <div className="flex gap-2 items-center">
-                    <p className="text-brand-dark dark:text-light font-bold">{profFiltersT('orderByStatus')}:</p>
+                    <p className="text-brand-dark dark:text-light font-bold">{formInputsT('orderByStatus')}:</p>
                     <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{commonT(filtersSelected.orderByStatus)}</p>
                 </div>
             </div>
@@ -199,37 +197,37 @@ export default function FiltersProfesionals({ dataQuery, updateDataFn }: Props) 
 
                         <div className=" pb-5 border-b border-gray-light dark:border-gray-light/30">
 
-                            <Label key={'name-profesionals'} htmlFor='name' className="flex gap-2" > <Search className="w-4 h-4 text-theme-light-gray" /> {profFiltersT('searchByName')}</Label>
-                            <Input type="text" {...register('name')} className="max-w-55" id={`name-profesionals`} placeholder={profFiltersT('searchByName')} />
+                            <Label key={'name-profesionals'} htmlFor='name' className="flex gap-2" > <Search className="w-4 h-4 text-theme-light-gray" /> {formInputsT('searchByName')}</Label>
+                            <Input type="text" {...register('name')} className="max-w-55" id={`name-profesionals`} placeholder={formInputsT('searchByName')} />
                         </div>
 
                         {/* OTROS FILTROS */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mt-10 mb-5">
                             <div>
-                                <Label key={'speciality-profesionals'} htmlFor='speciality' className="flex gap-2" > <Stethoscope className="w-4 h-4 text-theme-light-gray" /> {profFiltersT('speciality')}</Label>
+                                <Label key={'speciality-profesionals'} htmlFor='speciality' className="flex gap-2" > <Stethoscope className="w-4 h-4 text-theme-light-gray" /> {formInputsT('speciality')}</Label>
                                 <Select canClear defaultValue={getValues('speciality')} {...register('speciality')} reset={resetSelectValue} options={specialitySelect} placeholder='Selecciona una especialidad' />
                             </div>
 
                             <div>
-                                <Label key={'status-profesionals'} htmlFor='status' className="flex gap-2" > <Activity className="w-4 h-4 text-theme-light-gray" /> {profFiltersT('status')}</Label>
+                                <Label key={'status-profesionals'} htmlFor='status' className="flex gap-2" > <Activity className="w-4 h-4 text-theme-light-gray" /> {formInputsT('status')}</Label>
                                 <Select canClear defaultValue={getValues('status')} {...register('status')} reset={resetSelectValue} options={statusSelect} placeholder='Selecciona un estatus' />
                             </div>
 
                             <div>
-                                <Label key={'department-profesionals'} htmlFor='department' className="flex gap-2" > <Building className="w-4 h-4 text-theme-light-gray" /> {profFiltersT('department')}</Label>
+                                <Label key={'department-profesionals'} htmlFor='department' className="flex gap-2" > <Building className="w-4 h-4 text-theme-light-gray" /> {formInputsT('department')}</Label>
                                 <Select canClear defaultValue={getValues('department')} {...register('department')} reset={resetSelectValue} options={departmentSelect} placeholder='Selecciona un departamento' />
                             </div>
 
                             <div>
-                                <Label key={'order-by-createdat-profesionals'} htmlFor='orderBy' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {profFiltersT('orderByCreatedAt')}</Label>
+                                <Label key={'order-by-createdat-profesionals'} htmlFor='orderBy' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {formInputsT('orderByCreatedAt')}</Label>
                                 <Select canClear defaultValue={getValues('orderByCreatedAt')} {...register('orderByCreatedAt')} reset={resetSelectValue} options={orderOptions} placeholder='Selecciona un orden' />
                             </div>
                             <div>
-                                <Label key={'order-by-speciality-profesionals'} htmlFor='orderBySpeciality' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {profFiltersT('orderBySpeciality')}</Label>
+                                <Label key={'order-by-speciality-profesionals'} htmlFor='orderBySpeciality' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {formInputsT('orderBySpeciality')}</Label>
                                 <Select canClear defaultValue={getValues('orderBySpeciality')} {...register('orderBySpeciality')} reset={resetSelectValue} options={orderOptions} placeholder='Selecciona un orden' />
                             </div>
                             <div>
-                                <Label key={'order-by-status-profesionals'} htmlFor='orderByStatus' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {profFiltersT('orderByStatus')}</Label>
+                                <Label key={'order-by-status-profesionals'} htmlFor='orderByStatus' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {formInputsT('orderByStatus')}</Label>
                                 <Select canClear defaultValue={getValues('orderByStatus')} {...register('orderByStatus')} reset={resetSelectValue} options={orderOptions} placeholder='Selecciona un orden' />
                             </div>
 

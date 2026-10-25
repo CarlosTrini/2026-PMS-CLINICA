@@ -1,9 +1,9 @@
 export type Relationships = 'father' | 'mother' | 'legalGuardian' | 'other';
 export type Genders = 'male' | 'female' | 'other';
-export type Speciality = 'familyMedicine' | 'generalMedicine' | 'dentistry' | 'veterinary' | 'psychology' | 'nutrition' | 'pediatrics' | 'geriatrics' | 'oncology' | 'cardiology' | 'neurology' | 'dermatology' | 'ophthalmology' | 'otorhinolaryngology' | 'orthopedics' | 'traumatology' | 'gynecology';
+export type Speciality = 'general' | 'familyMedicine' | 'generalMedicine' | 'dentistry' | 'veterinary' | 'psychology' | 'nutrition' | 'pediatrics' | 'geriatrics' | 'oncology' | 'cardiology' | 'neurology' | 'dermatology' | 'ophthalmology' | 'otorhinolaryngology' | 'orthopedics' | 'traumatology' | 'gynecology';
 export type RoleSystem = 'admin' | 'professional' | 'assistant' | 'receptionist' | 'owner';
 export type AppointmentStatus = 'SCHEDULED' | 'COMPLETED' | 'CANCELLED' | 'PENDING' | 'MISSED' | 'IN_PROGRESS' | 'RESCHEDULED';
-export type Department = 'Cardiologist' | 'Dentist' | 'Neurologist' | 'Dermatologist' | 'Ophthalmologist' | 'Otorhinolaryngologist' | 'Orthopedist' | 'Traumatologist' | 'Gynecologist';
+export type Department = 'no_department' | 'General' | 'Cardiologist' | 'Dentist' | 'Neurologist' | 'Dermatologist' | 'Ophthalmologist' | 'Otorhinolaryngologist' | 'Orthopedist' | 'Traumatologist' | 'Gynecologist';
 export type StatusProfessional = 'active' | 'inactive' | 'on_leave' | 'on_vacation' | 'in_consultation' | 'on_break' | 'incapacitated';
 
 // ==================== COMMON DATA STRUCTURES ====================

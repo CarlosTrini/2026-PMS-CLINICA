@@ -11,6 +11,7 @@ export const filterProfesionalsSchema = z.object({
     orderByStatus: z.enum(['asc', 'desc']).default('asc'),
 });
 export type FilterData = z.infer<typeof filterProfesionalsSchema>;
+export type FilterInput = z.input<typeof filterProfesionalsSchema>;
 
 export const filtersProfesionalsDefault: FilterData = {
     name: '',

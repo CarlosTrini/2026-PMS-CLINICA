@@ -71,7 +71,7 @@ export const Modal: React.FC<ModalProps> = ({
         {showCloseButton && (
           <button
             onClick={onClose}
-            className="inset-e-3 sm:inset-e-6 absolute top-3 z-999 flex h-9.5 w-9.5 items-center justify-center rounded-full bg-light text-gray-light transition-colors hover:bg-gray-light hover:text-gray-dark sm:top-6 sm:h-11 sm:w-11 dark:bg-gray-dark dark:text-gray-light dark:hover:bg-gray-dark dark:hover:text-light-accent"
+            className="inset-e-3 sm:inset-e-6 absolute top-3 z-999 flex h-8 w-8 items-center justify-center rounded-full text-error transition-colors hover:bg-error/70 hover:text-light sm:top-6"
           >
             <svg
               width="24"

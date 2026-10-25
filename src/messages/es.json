@@ -62,6 +62,46 @@
     "message": "¡No podemos encontrar la página que está buscando!",
     "backHome": "Volver a la página de inicio"
   },
+  "rolesSystem": {
+    "admin": "Administrador",
+    "professional": "Profesional",
+    "assistant": "Asistente",
+    "receptionist": "Recepcionista",
+    "owner": "Dueño"
+  },
+  "formInputs": {
+    "placeholder": "",
+    "name": "Nombre",
+    "lastName": "Apellido",
+    "dateOfBirth": "Fecha de Nacimiento",
+    "gender": "Género",
+    "searchByName": "Bucar por nombre",
+    "speciality": "Especialidad",
+    "status": "Estatus",
+    "department": "Departamento",
+    "orderByCreatedAt": "Orden por ingreso",
+    "orderBySpeciality": "Orden por especialidad",
+    "orderByStatus": "Orden por estatus",
+    "role": "Role",
+    "email": "Correo electrónico",
+    "phone": "Teléfono",
+    "address": "Dirección",
+    "city": "Ciudad",
+    "state": "Estado",
+    "zip": "Código Postal",
+    "country": "País",
+    "dateJoined": "Fecha de Ingreso"
+  },
+  "tablesColumns": {
+    "name": "Nombre",
+    "speciality": "Especialidad",
+    "contact": "Contacto",
+    "email": "Email",
+    "status": "Estatus",
+    "createdAt": "Ingreso",
+    "actions": "Acciones",
+    "department": "Departamento"
+  },
   "speciality": {
     "familyMedicine": "Medicina Familiar",
     "generalMedicine": "Medicina General",
@@ -80,11 +120,12 @@
     "orthopedics": "Ortopedia",
     "traumatology": "Traumatología",
     "gynecology": "Ginecología",
-    "gastroenterology": "Gastroenterología",
+    "general": "General",
     "all": "Todos"
   },
   "deparments": {
-    "noDepartment": "Sin departamento",
+    "general": "General",
+    "General": "General",
     "Cardiologist": "Cardiología",
     "Dentist": "Odontología",
     "Neurologist": "Neurología",
@@ -126,26 +167,6 @@
         "registered_staff": "Personal registrado",
         "active_staff": "Personal activo",
         "operative": "Operativo"
-      },
-      "table": {
-        "name": "Nombre",
-        "speciality": "Especialidad",
-        "contact": "Contacto",
-        "email": "Email",
-        "status": "Estatus",
-        "createdAt": "Ingreso",
-        "actions": "Acciones",
-        "department": "Departamento"
-      },
-      "filters": {
-        "name": "Nombre",
-        "searchByName": "Bucar por nombre",
-        "speciality": "Especialidad",
-        "status": "Estatus",
-        "department": "Departamento",
-        "orderByCreatedAt": "Orden por ingreso",
-        "orderBySpeciality": "Orden por especialidad",
-        "orderByStatus": "Orden por estatus"
       }
     }
   }

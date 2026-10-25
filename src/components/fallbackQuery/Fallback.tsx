@@ -1,21 +1,35 @@
-import { Loader2, SplinePointer } from 'lucide-react';
 import Image from 'next/image';
 // import { useState, useEffect } from 'react';
 
 interface Props {
     id: string;
     children: React.ReactNode;
+    noDataPlaceholder?: string | React.ReactNode;
     isError: boolean | Error | null;
     isLoading: boolean;
-    data?: any | null;
+    data?: unknown | null;
     loadingClassName?: string; // de preferencia mandar solo el height y width
     errorClassName?: string; // de preferencia mandar solo el height y width
 }
 
-export default function Fallback({ id, children, isError, isLoading, data, loadingClassName, errorClassName }: Props) {
+
+export default function Fallback({ id, children, isError, isLoading, data, loadingClassName, errorClassName, noDataPlaceholder }: Props) {
 
     const loadingStyles = loadingClassName ? loadingClassName : `min-h-20 w-full`;
     const errorStyles = errorClassName ? errorClassName : `min-h-10 w-full `;
+
+    const noDataEva = <T,>(data: T) => {
+        let isNull = false;
+        if (
+            (Array.isArray(data) && data.length === 0) ||
+            (typeof data === 'object' && data !== null && Object.keys(data).length === 0) ||
+            !data
+        ) {
+            isNull = true;
+        }
+
+        return isNull;
+    }
 
     return (
         <>
@@ -44,7 +58,11 @@ export default function Fallback({ id, children, isError, isLoading, data, loadi
                 }
 
                 {
-                    !isLoading && !isError && data !== null && data !== undefined && <>{children}</>
+                    !isLoading && !isError && !noDataEva(data) && <>{children}</>
+                }
+
+                {
+                    !isLoading && !isError && noDataEva(data) && noDataPlaceholder && <>{noDataPlaceholder}</>
                 }
 
             </section>

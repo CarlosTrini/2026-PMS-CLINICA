@@ -47,6 +47,7 @@ const Select: React.FC<SelectProps> = ({
   ...props
 }) => {
   const [internalValue, setInternalValue] = useState<string>(defaultValue || '');
+  const [defaultVal] = useState<string>(defaultValue || '');
   const isControlled = controlledValue !== undefined;
   const selectedValue = isControlled ? controlledValue : internalValue;
 
@@ -59,9 +60,8 @@ const Select: React.FC<SelectProps> = ({
   };
 
   const resetSelect = () => {
-    const nextVal = defaultValue || "";
+    const nextVal = defaultVal || "";
     setInternalValue(nextVal);
-
     const syntheticEvent = {
       target: {
         name,
@@ -123,7 +123,7 @@ const Select: React.FC<SelectProps> = ({
 
       {/* Acciones al extremo derecho */}
       <div className="absolute inset-e-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
-        {canClear && internalValue !== defaultValue && (
+        {canClear && internalValue !== defaultVal && (
           <Tooltip trigger="hover" position="top" content="Limpiar">
             <button
               type="button"
