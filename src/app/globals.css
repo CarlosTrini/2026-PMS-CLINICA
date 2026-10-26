@@ -133,6 +133,10 @@
 
   body {
     @apply relative z-1 bg-light font-outfit font-normal overflow-x-hidden scrollbar-thin scrollbar-thumb-brand-light scrollbar-track-gray-light/90 dark:scrollbar-thumb-brand-light/40 dark:scrollbar-track-gray/10;
+  }
+
+  html {
+    scroll-behavior: smooth;
 
   }
 
