@@ -10,7 +10,7 @@ import { STATUS_COLOR_LIGHT } from "@/utils/statusColors";
 import Button from "@/components/ui/button/Button";
 import useSystemTraslations from "@/hooks/useSysteTranslations";
 import { FormProvider, useForm } from "react-hook-form";
-import { CreateProfesionalData, createProfesionalDefault, createProfesionalFormSchema } from "../schemas/formProfesional";
+import { CreateProfesionalData, createProfesionalFormSchema } from "../schemas/formProfesional";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { simpleDate } from "@/utils/dates";
 import { Loader2, Pencil, Trash2 } from "lucide-react";
@@ -80,7 +80,6 @@ export default function ViewEditProf({ profesional, resetValues, closeModal, isO
     //FORM HOOK
     const methods = useForm<CreateProfesionalData>({
         resolver: zodResolver(createProfesionalFormSchema),
-        // defaultValues: createProfesionalDefault
         defaultValues: profesional as CreateProfesionalData
     });
     const { register, handleSubmit, reset, getValues, formState: { errors } } = methods;

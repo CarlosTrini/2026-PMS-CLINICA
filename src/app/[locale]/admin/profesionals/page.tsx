@@ -1,5 +1,5 @@
 
-import ProfesionalsView from "@/features/profesionals/ProfesionalsView";
+import ProfesionalsView from "@/features/profesionals";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

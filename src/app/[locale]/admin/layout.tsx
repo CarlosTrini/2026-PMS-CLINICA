@@ -20,11 +20,11 @@ export default function AdminLayout({
   const mainContentMargin = isMobileOpen
     ? "ml-0"
     : isExpanded || isHovered
-      ? "lg:ml-[290px]"
-      : "lg:ml-[90px]";
+      ? "lg:ml-72"
+      : "lg:ml-20";
 
   return (
-    <div className="h-screen overflow-hidden xl:flex">
+    <div className="h-screen overflow-hidden lg:flex">
       {/* Sidebar and Backdrop */}
       <AppSidebar />
       <Backdrop />

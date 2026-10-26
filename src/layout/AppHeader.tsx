@@ -18,7 +18,7 @@ const AppHeader: React.FC = () => {
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
 
   const handleToggle = () => {
-    if (window.innerWidth >= 1280) {
+    if (window.innerWidth >= 1024) {
       toggleSidebar();
     } else {
       toggleMobileSidebar();
@@ -45,136 +45,111 @@ const AppHeader: React.FC = () => {
   }, []);
 
   return (
-    <header className="sticky top-0 z-99999 flex w-full  lg:w-[99%]  mx-auto xl:border-b border-bg-side-head ">
-      <div className="flex grow flex-col items-center justify-between xl:flex-row xl:px-6">
-        <div className="flex w-full items-center justify-between gap-2 border-b border-gray-light px-3 py-3 sm:gap-4 xl:justify-normal xl:border-b-0 xl:px-0 xl:py-4 dark:border-gray-dark">
-          <button
-            className={`z-99999 flex h-10 w-10 items-center justify-center rounded-lg  generic-border-shadow text-gray lg:h-11 lg:w-11 lg:bg-transparent  dark:text-gray-light dark:lg:bg-transparent ${isMobileOpen ? "bg-light dark:bg-light-accent/3" : ""
-              }`}
-            onClick={handleToggle}
-            aria-label={t("toggleSidebar")}
-          >
-            {isMobileOpen ? (
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M6.21967 7.28131C5.92678 6.98841 5.92678 6.51354 6.21967 6.22065C6.51256 5.92775 6.98744 5.92775 7.28033 6.22065L11.999 10.9393L16.7176 6.22078C17.0105 5.92789 17.4854 5.92788 17.7782 6.22078C18.0711 6.51367 18.0711 6.98855 17.7782 7.28144L13.0597 12L17.7782 16.7186C18.0711 17.0115 18.0711 17.4863 17.7782 17.7792C17.4854 18.0721 17.0105 18.0721 16.7176 17.7792L11.999 13.0607L7.28033 17.7794C6.98744 18.0722 6.51256 18.0722 6.21967 17.7794C5.92678 17.4865 5.92678 17.0116 6.21967 16.7187L10.9384 12L6.21967 7.28131Z"
-                  fill="currentColor"
-                />
-              </svg>
-            ) : (
-              <svg
-                className="rtl:-scale-x-100"
-                width="16"
-                height="12"
-                viewBox="0 0 16 12"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M0.583252 1C0.583252 0.585788 0.919038 0.25 1.33325 0.25H14.6666C15.0808 0.25 15.4166 0.585786 15.4166 1C15.4166 1.41421 15.0808 1.75 14.6666 1.75L1.33325 1.75C0.919038 1.75 0.583252 1.41422 0.583252 1ZM0.583252 11C0.583252 10.5858 0.919038 10.25 1.33325 10.25L14.6666 10.25C15.0808 10.25 15.4166 10.5858 15.4166 11C15.4166 11.4142 15.0808 11.75 14.6666 11.75L1.33325 11.75C0.919038 11.75 0.583252 11.4142 0.583252 11ZM1.33325 5.25C0.919038 5.25 0.583252 5.58579 0.583252 6C0.583252 6.41421 0.919038 6.75 1.33325 6.75L7.99992 6.75C8.41413 6.75 8.74992 6.41421 8.74992 6C8.74992 5.58579 8.41413 5.25 7.99992 5.25L1.33325 5.25Z"
-                  fill="currentColor"
-                />
-              </svg>
-            )}
-            {/* Cross Icon */}
-          </button>
-
-          <Link href="/" className="xl:hidden">
-            <Image
-              width={154}
-              height={32}
-              className="dark:hidden"
-              src="/images/logo/logo.svg"
-              alt="Logo"
-            />
-            <Image
-              width={154}
-              height={32}
-              className="hidden dark:block"
-              src="/images/logo/logo-dark.svg"
-              alt="Logo"
-            />
-          </Link>
-
-          <button
-            onClick={toggleApplicationMenu}
-            className="z-99999 flex h-10 w-10 items-center justify-center rounded-lg text-gray-dark hover:bg-light xl:hidden dark:text-gray-light dark:hover:bg-gray-dark"
-          >
+    <header className="sticky top-0 z-40 flex h-18 w-full items-center justify-between border-b border-gray-light bg-light-accent/95 px-4 backdrop-blur-md sm:px-6 dark:border-gray/30 dark:bg-gray-dark/95">
+      {/* Lado izquierdo: Botón colapsar + Barra de Búsqueda */}
+      <div className="flex items-center gap-3 lg:gap-4 flex-1">
+        {/* Botón Toggle del Sidebar */}
+        <button
+          className={cn(
+            "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gray-light bg-light text-gray transition-colors hover:bg-gray-light/60 hover:text-gray-dark dark:border-gray/30 dark:bg-black-light dark:text-gray-light dark:hover:bg-gray/20 dark:hover:text-light cursor-pointer",
+            isMobileOpen ? "bg-light dark:bg-gray/20" : "",
+          )}
+          onClick={handleToggle}
+          aria-label={t("toggleSidebar")}
+        >
+          {isMobileOpen ? (
             <svg
-              width="24"
-              height="24"
+              className="h-5 w-5"
               viewBox="0 0 24 24"
               fill="none"
-              xmlns="http://www.w3.org/2000/svg"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M5.99902 10.4951C6.82745 10.4951 7.49902 11.1667 7.49902 11.9951V12.0051C7.49902 12.8335 6.82745 13.5051 5.99902 13.5051C5.1706 13.5051 4.49902 12.8335 4.49902 12.0051V11.9951C4.49902 11.1667 5.1706 10.4951 5.99902 10.4951ZM17.999 10.4951C18.8275 10.4951 19.499 11.1667 19.499 11.9951V12.0051C19.499 12.8335 18.8275 13.5051 17.999 13.5051C17.1706 13.5051 16.499 12.8335 16.499 12.0051V11.9951C16.499 11.1667 17.1706 10.4951 17.999 10.4951ZM13.499 11.9951C13.499 11.1667 12.8275 10.4951 11.999 10.4951C11.1706 10.4951 10.499 11.1667 10.499 11.9951V12.0051C10.499 12.8335 11.1706 13.5051 11.999 13.5051C12.8275 13.5051 13.499 12.8335 13.499 12.0051V11.9951Z"
-                fill="currentColor"
-              />
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
-          </button>
-
-          <div className="hidden xl:block">
-            <form>
-              <div className="relative">
-                <span className="inset-s-4 pointer-events-none absolute top-1/2 -translate-y-1/2">
-                  <svg
-                    className="fill-gray dark:fill-gray-light"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M3.04175 9.37363C3.04175 5.87693 5.87711 3.04199 9.37508 3.04199C12.8731 3.04199 15.7084 5.87693 15.7084 9.37363C15.7084 12.8703 12.8731 15.7053 9.37508 15.7053C5.87711 15.7053 3.04175 12.8703 3.04175 9.37363ZM9.37508 1.54199C5.04902 1.54199 1.54175 5.04817 1.54175 9.37363C1.54175 13.6991 5.04902 17.2053 9.37508 17.2053C11.2674 17.2053 13.003 16.5344 14.357 15.4176L17.177 18.238C17.4699 18.5309 17.9448 18.5309 18.2377 18.238C18.5306 17.9451 18.5306 17.4703 18.2377 17.1774L15.418 14.3573C16.5365 13.0033 17.2084 11.2669 17.2084 9.37363C17.2084 5.04817 13.7011 1.54199 9.37508 1.54199Z"
-                      fill=""
-                    />
-                  </svg>
-                </span>
-                <input
-                  ref={inputRef}
-                  type="text"
-                  placeholder={t("searchPlaceholder")}
-                  className="generic-border-shadow dark:bg-dark-900 h-11 w-full rounded-lg bg-transparent py-2.5 ps-12 pe-14 text-sm text-gray-dark shadow-theme-xs placeholder:text-gray-light focus:border-brand-light focus:ring-3 focus:ring-brand/10 focus:outline-hidden xl:w-107.5 dark:border-gray-dark dark:bg-light-accent/3 dark:text-light-accent/90 dark:placeholder:text-light-accent/30 dark:focus:border-brand-dark"
-                />
-
-              </div>
-            </form>
-          </div>
-        </div>
-        <div
-          className={cn(
-            "flex w-full items-center justify-between gap-4 px-5 py-4 shadow-theme-md xl:flex xl:justify-end xl:px-0 xl:shadow-none",
-            isApplicationMenuOpen ? "flex" : "hidden",
+          ) : (
+            <svg
+              className="h-5 w-5 rtl:-scale-x-100"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
           )}
-        >
-          <div className="flex items-center gap-2 2xsm:gap-3">
-            {/* <!-- Dark Mode Toggler --> */}
-            <ThemeToggleButton />
-            {/* <!-- Dark Mode Toggler --> */}
+        </button>
 
-            <NotificationDropdown />
-
-            {/* <!-- Notification Menu Area --> */}
+        {/* Logo Móvil */}
+        <Link href="/" className="lg:hidden flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand text-light">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+            </svg>
           </div>
-          {/* <!-- User Area --> */}
-          <UserDropdown />
+          <span className="font-bold text-sm text-gray-dark dark:text-light">PMS Clínica</span>
+        </Link>
+
+        {/* Barra de Búsqueda de Escritorio */}
+        <div className="hidden lg:block w-full max-w-md">
+          <form onSubmit={(e) => e.preventDefault()}>
+            <div className="relative">
+              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center ps-3.5 text-gray/50 dark:text-gray-light/40">
+                <svg
+                  className="h-4 w-4 fill-current"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M3.04175 9.37363C3.04175 5.87693 5.87711 3.04199 9.37508 3.04199C12.8731 3.04199 15.7084 5.87693 15.7084 9.37363C15.7084 12.8703 12.8731 15.7053 9.37508 15.7053C5.87711 15.7053 3.04175 12.8703 3.04175 9.37363ZM9.37508 1.54199C5.04902 1.54199 1.54175 5.04817 1.54175 9.37363C1.54175 13.6991 5.04902 17.2053 9.37508 17.2053C11.2674 17.2053 13.003 16.5344 14.357 15.4176L17.177 18.238C17.4699 18.5309 17.9448 18.5309 18.2377 18.238C18.5306 17.9451 18.5306 17.4703 18.2377 17.1774L15.418 14.3573C16.5365 13.0033 17.2084 11.2669 17.2084 9.37363C17.2084 5.04817 13.7011 1.54199 9.37508 1.54199Z"
+                  />
+                </svg>
+              </span>
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder={t("searchPlaceholder")}
+                className="h-10 w-full rounded-xl border border-gray-light bg-light ps-10 pe-14 text-sm text-gray-dark shadow-theme-xs placeholder:text-gray/50 transition focus:border-brand focus:outline-hidden focus:ring-2 focus:ring-brand/20 dark:border-gray/30 dark:bg-black-light dark:text-light dark:placeholder:text-gray-light/40 dark:focus:border-brand-dark"
+              />
+              <div className="absolute inset-y-0 right-0 flex items-center pe-3">
+                <kbd className="hidden sm:inline-flex items-center rounded border border-gray-light bg-light-accent px-1.5 py-0.5 text-2xs font-medium text-gray dark:border-gray/40 dark:bg-gray-dark dark:text-gray-light">
+                  ⌘K
+                </kbd>
+              </div>
+            </div>
+          </form>
         </div>
+      </div>
+
+      {/* Lado derecho: Badges, Acciones y Perfil */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        {/* Badge de Sede Hospitalaria */}
+        <div className="hidden xl:flex items-center gap-2 rounded-full border border-gray-light bg-light px-3.5 py-1.5 text-xs text-gray-dark dark:border-gray/30 dark:bg-black-light dark:text-gray-light">
+          <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
+          <span className="font-semibold text-gray-dark dark:text-light">Sede Central</span>
+          <span className="text-gray/60 dark:text-gray-light/60">Turno Activo</span>
+        </div>
+
+        {/* Alternador de Modo Claro/Oscuro */}
+        <ThemeToggleButton />
+
+        {/* Notificaciones */}
+        <NotificationDropdown />
+
+        {/* Separador vertical */}
+        <div className="hidden sm:block h-7 w-px bg-gray-light dark:bg-gray/30 mx-1" />
+
+        {/* Perfil de Usuario */}
+        <UserDropdown />
       </div>
     </header>
   );

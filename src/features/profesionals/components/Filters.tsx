@@ -191,7 +191,7 @@ export default function FiltersProfesionals({ dataQuery, updateDataFn }: Props) 
 
     return (
         <>
-            <section className="my-10 ">
+            <section className="mt-10 mb-6 ">
                 <Collapse title={commonT('filters')} positionOpenBtn="left" defaultOpen={false} contentHeader={<InfoCurrentFilters />} >
                     <Form onSubmit={handleSubmit(onHandleFilters)} key={'professional-filters'} className="mt-5">
 

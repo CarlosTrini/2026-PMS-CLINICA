@@ -49,40 +49,51 @@ export default function UserDropdown() {
     <div className="relative">
       <button
         onClick={toggleDropdown}
-        className="dropdown-toggle flex items-center text-gray-dark dark:text-gray-light"
+        className="dropdown-toggle flex items-center gap-2.5 rounded-xl p-1 sm:pe-2.5 transition-colors hover:bg-light dark:hover:bg-black-light border border-transparent hover:border-gray-light dark:hover:border-gray/30 cursor-pointer"
       >
-        <span className="me-3 h-11 w-11 overflow-hidden rounded-full">
+        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl ring-2 ring-brand/20 dark:ring-brand/40">
           <Image
-            width={44}
-            height={44}
+            width={40}
+            height={40}
             src="/images/user/owner.png"
-            alt="User"
+            alt="Doctor"
+            className="object-cover"
           />
-        </span>
+          <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-success ring-2 ring-light-accent dark:ring-gray-dark" />
+        </div>
 
-        <span className="me-1 block text-theme-sm font-medium">Musharof</span>
+        <div className="hidden text-start sm:block">
+          <span className="block text-sm font-semibold text-gray-dark dark:text-light leading-tight">
+            Dr. Carlos Trini
+          </span>
+          <span className="block text-2xs text-theme-light-gray font-normal">
+            Administrador
+          </span>
+        </div>
 
         <ChevronDownIcon
-          className={`size-5 text-gray transition-transform duration-200 dark:text-gray-light ${isOpen ? "rotate-180" : ""
-            }`}
+          className={cn(
+            "h-4 w-4 text-gray transition-transform duration-200 dark:text-gray-light",
+            isOpen ? "rotate-180 text-brand" : "",
+          )}
         />
       </button>
 
       <Dropdown
         isOpen={isOpen}
         onClose={closeDropdown}
-        className="generic-border-shadow absolute mt-4.25 flex w-65 flex-col rounded-2xl border border-gray-light bg-light-accent p-3 shadow-theme-lg ltr:right-0 rtl:right-auto rtl:left-0 dark:border-gray-dark dark:bg-gray-dark"
+        className="absolute mt-2 flex w-64 flex-col rounded-2xl border border-gray-light bg-light-accent p-3 shadow-theme-lg ltr:right-0 rtl:right-auto rtl:left-0 dark:border-gray/30 dark:bg-gray-dark z-50"
       >
-        <div className="mb-3">
-          <span className="block text-theme-sm font-medium text-gray-dark dark:text-gray-light">
-            Musharof Chowdhury
+        <div className="mb-3 border-b border-gray-light pb-3 dark:border-gray/30">
+          <span className="block text-theme-sm font-semibold text-gray-dark dark:text-light">
+            Dr. Carlos Trini
           </span>
-          <span className="mt-0.5 block text-theme-xs text-gray dark:text-gray-light">
-            randomuser@pimjo.com
+          <span className="mt-0.5 block text-xs text-theme-light-gray">
+            carlos.trini@clinicapms.com
           </span>
         </div>
 
-        <ul className="flex flex-col gap-1 generic-border rounded-md  pt-4 pb-3 ">
+        <ul className="flex flex-col gap-1 rounded-xl pt-2 pb-1">
           <li>
             <DropdownItem
               onItemClick={closeDropdown}

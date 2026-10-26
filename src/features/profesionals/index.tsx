@@ -8,13 +8,14 @@ import { useEffect, useState } from "react";
 import Badge from "@/components/ui/badge/Badge";
 import { simpleDate } from "@/utils/dates";
 import Metrics from "./components/Metrics";
-import { Eye, Mail, Phone, Trash2 } from 'lucide-react';
+import { Calendar, Eye, Mail, MoreVertical, Phone, PlusCircle, Trash2 } from 'lucide-react';
 import Fallback from "@/components/fallbackQuery/Fallback";
 import { ProfesionalService } from "./services/service";
 import useSystemTraslations from "@/hooks/useSysteTranslations";
 import { Professional } from "@/types/dataTypes";
 import FiltersProfesionals from "./components/Filters";
 import { useModal } from "@/hooks/useModal";
+import { Link } from "@/i18n/navigation";
 
 
 
@@ -23,7 +24,7 @@ import { useQuery } from "@tanstack/react-query";
 import ViewEditProf from "./components/ViewEditProf";
 
 
-const columns = ['id', 'name', 'speciality', 'department', 'contact', 'status', 'createdAt', 'actions'];
+const columns = ['name', 'speciality', 'department', 'contact', 'status', 'createdAt', 'actions'];
 
 
 
@@ -104,11 +105,21 @@ export default function Profesionals() {
             {/* CARDS SECTION */}
             <Metrics />
 
-            {/* FILTROS */}
+            {/* FILTERS */}
             <FiltersProfesionals dataQuery={dataQuery as Professional[]} updateDataFn={setDataTable} />
 
+            {/* EXTRA BUTTONS */}
+            <section className="flex items-center justify-end">
+                <Link
+                    href="/admin/profesionals/new"
+                    className="flex items-center text-sm font-medium gap-2 px-4 py-2 rounded-lg bg-brand hover:bg-brand/90 dark:bg-brand-dark dark:hover:bg-brand-dark/80 text-light transition-colors shadow-theme-xs"
+                >
+                    <PlusCircle className="w-4 h-4" />
+                    <span>Agregar Personal</span>
+                </Link>
+            </section>
 
-            {/* TABLA */}
+            {/* TABLE */}
             <Fallback
                 id='profesionals-table'
                 isLoading={isLoading}
@@ -125,13 +136,22 @@ export default function Profesionals() {
                     </div>
                 </>}
             >
-                <section className="mt-10 w-full min-w-0 ">
-                    <div className="hidden lg:block w-full h-full max-h-[65vh]  min-w-0 overflow-auto rounded-lg generic-border-shadow bg-theme-light-dark">
-                        <Table className="w-400 md:w-450 lg:w-310" id={'personal-table'}>
+                <section className=" w-full min-w-0 mt-2 ">
+                    <div className="hidden xl:block w-full h-full max-h-[65vh]  min-w-0 overflow-auto rounded-lg generic-border-shadow bg-theme-light-dark">
+                        <Table className="w-full table-fixed" id={'personal-table'}>
+                            <colgroup>
+                                <col className="w-60 lg:w-60" />
+                                <col className="w-50 lg:w-40" />
+                                <col className="w-50 lg:w-40" />
+                                <col className="w-60 lg:w-50" />
+                                <col className="w-50 lg:w-40" />
+                                <col className="w-50 lg:w-35" />
+                                <col className="w-50 lg:w-40" />
+                            </colgroup>
                             <TableHeader className="sticky top-0 border-b z-50 bg-brand dark:bg-brand-dark border-gray/20 dark:border-gray/40">
                                 <TableRow>
                                     {columns.map(col => (
-                                        <TableCell key={col} isHeader><p className="generic-header-table">{col == 'id' ? commonT(col) : tableColumnsT(`${col}`)}</p></TableCell>
+                                        <TableCell key={col} isHeader><p className="generic-header-table">{tableColumnsT(`${col}`)}</p></TableCell>
                                     ))}
                                 </TableRow>
                             </TableHeader>
@@ -139,28 +159,25 @@ export default function Profesionals() {
                                 {
                                     dataTable.map(p => (
                                         <TableRow key={p.id} className="transition-colors hover:bg-gray/5 dark:hover:bg-gray-light/5">
-                                            <TableCell className="p-3 whitespace-nowrap">
-
-                                                <Tooltip content={
-                                                    <>
-                                                        <button className="p-2 rounded-md text-xs text-light" onClick={() => { copyData(p.id); }}>
-                                                            {copyTxt}
-                                                        </button>
-                                                    </>}
-                                                    position="top-right" trigger="click">
-                                                    <p className="text-sm  cursor-pointer">{p.id.slice(0, 6) + '...'}</p>
-                                                </Tooltip>
-
-                                            </TableCell>
-                                            <TableCell className="p-3 whitespace-nowrap ">
-                                                <div className="flex items-center gap-2">
-                                                    <figure>
+                                            <TableCell className="p-3 min-w-0 overflow-hidden whitespace-nowrap">
+                                                <div className="flex min-w-0 items-center gap-2">
+                                                    <figure className="shrink-0">
                                                         <Image src={p.image} alt={p.personalInfo.name} width={25} height={25} className="rounded-full" />
                                                     </figure>
-                                                    <div className="flex flex-col">
-                                                        <p className="text-gray dark:text-gray-light text-sm font-bold">{p.personalInfo.name} {p.personalInfo.lastName}</p>
-                                                        <p className="text-sm italic text-gray/50 dark:text-gray-light/50">{p.contactInfo.city} - {p.contactInfo.state}</p>
-                                                        <p className="text-sm italic text-gray/50 dark:text-gray-light/50">Role: {p.role}</p>
+                                                    <div className="flex min-w-0 flex-1 flex-col">
+                                                        <p className="truncate text-sm font-bold text-gray dark:text-gray-light">{p.personalInfo.name} {p.personalInfo.lastName}</p>
+                                                        <p className="truncate text-sm italic text-gray/50 dark:text-gray-light/50">{p.contactInfo.city} - {p.contactInfo.state}</p>
+                                                        <p className="truncate text-sm italic text-gray/50 dark:text-gray-light/50">Role: {p.role}</p>
+
+                                                        <Tooltip content={
+                                                            <>
+                                                                <button className="p-2 rounded-md text-xs text-light" onClick={() => { copyData(p.id); }}>
+                                                                    {copyTxt}
+                                                                </button>
+                                                            </>}
+                                                            position="top-right" trigger="click">
+                                                            <p className="truncate text-sm cursor-pointer">{p.id.slice(0, 6) + '...'}</p>
+                                                        </Tooltip>
                                                     </div>
                                                 </div>
                                             </TableCell>
@@ -192,7 +209,7 @@ export default function Profesionals() {
 
 
                                             </TableCell>
-                                            <TableCell className="p-3">
+                                            <TableCell className="p-3 ">
                                                 <p className="text-xs font-bold uppercase text-gray dark:text-gray-light">
                                                     {p.department ? (
                                                         departmentT(p.department)
@@ -201,7 +218,7 @@ export default function Profesionals() {
                                                     )}
                                                 </p>
                                             </TableCell>
-                                            <TableCell className="p-3">
+                                            <TableCell className="p-3 min-w-0 overflow-hidden whitespace-nowrap">
                                                 <div className="flex items-center gap-1">
 
                                                     <Tooltip content={
@@ -211,33 +228,36 @@ export default function Profesionals() {
                                                             </button>
                                                         </>}
                                                         position="top-right" trigger="hover">
-                                                        <Mail className=" cursor-pointer w-3.5 h-3.5 text-brand-dark dark:text-brand" />
+                                                        <Mail className="w-3.5 h-3.5 shrink-0 cursor-pointer text-brand-dark dark:text-brand" />
                                                     </Tooltip>
-                                                    <p className="flex items-baseline gap-2 w-fit pt-1 text-sm text-gray dark:text-gray-light">
+                                                    <p className="min-w-0 flex-1 truncate pt-1 text-sm text-gray dark:text-gray-light">
                                                         {p.contactInfo.email}
                                                     </p>
                                                 </div>
                                                 <div className="flex items-center gap-1">
                                                     <Tooltip content={<PhoneAction phone={p?.contactInfo?.phone ? p.contactInfo.phone : ""} />}
                                                         position="top-right" trigger="hover">
-                                                        <Phone className=" cursor-pointer w-3.5 h-3.5 text-success" />
+                                                        <Phone className="w-3.5 h-3.5 shrink-0 cursor-pointer text-success" />
                                                     </Tooltip>
-                                                    <p className=" flex items-baseline gap-2 w-fit pt-1 text-sm text-gray dark:text-gray-light">
+                                                    <p className="min-w-0 flex-1 truncate pt-1 text-sm text-gray dark:text-gray-light">
                                                         {p.contactInfo.phone}
                                                     </p>
                                                 </div>
 
                                             </TableCell>
-                                            <TableCell className="p-3">
-                                                <Badge variantColor={`${STATUS_COLOR_LIGHT[p.status]}`} size="md" >
-                                                    {statusT(`${p.status}`)}
-                                                </Badge>
+                                            <TableCell className="p-2  whitespace-nowrap">
+                                                <div className="flex justify-center">
+
+                                                    <Badge variantColor={`${STATUS_COLOR_LIGHT[p.status]}`} size="md" >
+                                                        {statusT(`${p.status}`)}
+                                                    </Badge>
+                                                </div>
                                             </TableCell>
-                                            <TableCell className="p-3">
-                                                <p className="text-sm text-gray dark:text-gray-light">{simpleDate(p.createdAt)}</p>
+                                            <TableCell className="p-2 ">
+                                                <p className="text-sm flex items-center justify-center gap-2 text-gray dark:text-gray-light"> <Calendar className="w-4 h-4 text-gray dark:text-gray-light" /> {simpleDate(p.createdAt)}</p>
                                             </TableCell>
-                                            <TableCell className="p-3 ">
-                                                <div className="flex gap-2 items-center">
+                                            <TableCell className="p-2 ">
+                                                <div className="flex justify-center items-center gap-2">
 
                                                     <button className="p-1 rounded-md bg-brand dark:bg-brand-dark hover:bg-brand/60 dark:hover:bg-brand-dark/70 text-light" onClick={() => { setUserSelected(p); }}><Eye className="w-4 h-4 " /></button>
 
@@ -267,7 +287,7 @@ export default function Profesionals() {
                     </div>
 
                     {/* FROM 0 TO LG BREAKPOINT - TABLE WITH MOBILE VERSION */}
-                    <div className="block lg:hidden w-full h-full max-h-[65vh] min-w-0 overflow-auto rounded-lg generic-border-shadow bg-theme-light-dark">
+                    <div className="block xl:hidden w-full h-full max-h-[65vh] min-w-0 overflow-auto rounded-lg generic-border-shadow bg-theme-light-dark">
                         <Table className="w-full block divide-y divide-gray/10 dark:divide-gray/30" id={'personal-table-mobile'}>
                             <TableBody className="block divide-y divide-gray/10 dark:divide-gray/30 text-theme-light-gray">
                                 {
