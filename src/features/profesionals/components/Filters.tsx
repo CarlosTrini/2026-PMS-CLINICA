@@ -5,7 +5,7 @@ import Form from "@/components/form/Form";
 import Label from "@/components/form/Label";
 import Input from "@/components/form/input/InputField";
 import Select from "@/components/form/select/Select";
-import { FilterData, FilterInput, filterProfesionalsSchema, filtersProfesionalsDefault } from "../schemas/formFilters";
+import { FilterData, FilterInput, filterProfesionalsSchema, filtersProfesionalsDefault } from "../schemas/formFiltersSchema";
 import { Activity, Building, Delete, Filter, ListOrdered, Search, Stethoscope } from 'lucide-react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

@@ -131,7 +131,7 @@ const AppSidebar: React.FC = () => {
                 )}
                 <span
                   className={cn(
-                    "flex h-5 w-5 shrink-0 items-center justify-center transition-colors",
+                    "flex h-5 w-6 shrink-0 items-center justify-center transition-colors",
                     isActive(nav.path)
                       ? "text-brand dark:text-brand-light"
                       : "text-gray dark:text-gray-light group-hover:text-gray-dark dark:group-hover:text-light",
@@ -323,7 +323,7 @@ const AppSidebar: React.FC = () => {
           <div>
             <h2
               className={cn(
-                "mb-2.5 px-3 text-2xs font-bold uppercase tracking-wider text-theme-light-gray/70",
+                "mb-2.5 px-3 text-xs italic uppercase tracking-wider text-gray-dark/70 dark:text-light/50",
                 !isExpanded && !isHovered
                   ? "lg:flex lg:justify-center px-0"
                   : "flex justify-start",
@@ -341,7 +341,7 @@ const AppSidebar: React.FC = () => {
           <div>
             <h2
               className={cn(
-                "mb-2.5 px-3 text-2xs font-bold uppercase tracking-wider text-theme-light-gray/70",
+                "mb-2.5 px-3 text-xs italic uppercase tracking-wider text-gray-dark/70 dark:text-light/50",
                 !isExpanded && !isHovered
                   ? "lg:flex lg:justify-center px-0"
                   : "flex justify-start",

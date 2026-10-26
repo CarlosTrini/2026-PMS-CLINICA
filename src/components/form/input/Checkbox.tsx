@@ -1,23 +1,30 @@
 import type React from "react";
+import { useState } from "react";
 
-interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   // checked: boolean;
   // className?: string;
   // id?: string;
-  onChange: (checked: boolean) => void;
+  // onChange: (checked: boolean) => void;
+  error?: boolean;
   // disabled?: boolean;
 }
 
 const Checkbox: React.FC<CheckboxProps> = ({
   label,
-  checked,
+  // checked,
   id,
   onChange,
+  error = false,
   className = "",
   disabled = false,
   ...props
 }) => {
+
+
+  const [isChecked, setIsChecked] = useState(false);
+
   return (
     <label
       className={`group flex cursor-pointer items-center gap-3 ${disabled ? "cursor-not-allowed opacity-60" : ""
@@ -27,17 +34,16 @@ const Checkbox: React.FC<CheckboxProps> = ({
         <input
           id={id}
           type="checkbox"
-          className={`h-5 w-5 cursor-pointer appearance-none rounded-md border border-gray-light checked:border-transparent checked:bg-brand disabled:opacity-60 dark:border-gray ${className}`}
-          checked={checked}
+          className={`h-5 w-5 cursor-pointer appearance-none rounded-md border  ${error ? "border-error border-2" : "border-gray dark:border-gray"} checked:border-transparent checked:bg-brand disabled:opacity-60  ${className}`}
+          checked={isChecked}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            if (onChange && typeof onChange === 'function') {
-              onChange(e.currentTarget.checked);
-            }
+            setIsChecked(e.target.checked);
+            onChange?.(e);
           }}
           disabled={disabled}
           {...props}
         />
-        {checked && (
+        {isChecked && (
           <svg
             className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform"
             xmlns="http://www.w3.org/2000/svg"

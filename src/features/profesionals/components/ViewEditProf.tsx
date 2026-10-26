@@ -10,7 +10,7 @@ import { STATUS_COLOR_LIGHT } from "@/utils/statusColors";
 import Button from "@/components/ui/button/Button";
 import useSystemTraslations from "@/hooks/useSysteTranslations";
 import { FormProvider, useForm } from "react-hook-form";
-import { CreateProfesionalData, createProfesionalFormSchema } from "../schemas/formProfesional";
+import { CreateProfesionalData, createProfesionalFormSchema } from "../schemas/formProfesionalSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { simpleDate } from "@/utils/dates";
 import { Loader2, Pencil, Trash2 } from "lucide-react";

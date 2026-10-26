@@ -99,19 +99,9 @@ export interface Inventory {
     updatedAt: string;
 }
 
-// ==================== USER SYSTEM DATA STRUCTURES ====================
 
-export interface UserSystem {
-    id: string;
-    name: string;
-    email: string;
-    password: string;
-    role: string;
-    createdAt: string;
-    updatedAt: string;
-}
 
-// ====================== DATA DE MÉTRICAS
+// ====================== DATA DE MÉTRICAS DE PROFESSIONALS
 
 export interface Metrics {
     total: number;
@@ -128,4 +118,31 @@ export interface Metrics {
     operatives: {
         percentaje: number;
     };
+}
+
+
+
+
+// ==================== USER SYSTEM DATA STRUCTURES ====================
+
+export interface UserSystem {
+    id: string;
+    name: string;
+    lastName: string;
+    email: string;
+    password: string;
+    role: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+// ====================== DATA DE AUTH: REGISTRO/LOGIN
+
+export interface AuthRegister extends Omit<UserSystem, 'id' | 'role' | 'createdAt' | 'updatedAt'> {
+    termsAndConditions: boolean;
+}
+
+export interface AuthLogin {
+    email: string;
+    password: string;
 }
