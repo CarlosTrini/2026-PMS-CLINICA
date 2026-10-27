@@ -36,7 +36,7 @@ export default function AuthLayout({
                 sizes="50vw"
               />
               {/* Gradient overlays to maintain high contrast with text */}
-              <div className="absolute inset-0 bg-gradient-to-t from-gray-dark via-gray-dark/75 to-brand-dark/50" />
+              <div className="absolute inset-0 bg-linear-to-t from-gray-dark via-gray-dark/75 to-brand-dark/50" />
               <div className="absolute inset-0 bg-brand-dark/20 mix-blend-multiply" />
             </div>
 

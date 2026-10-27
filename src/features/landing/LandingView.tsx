@@ -353,7 +353,7 @@ export default function LandingView() {
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-dark/80 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-gray-dark/80 via-transparent to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4 text-white p-3 bg-gray-dark/60 backdrop-blur-xs rounded-md border border-white/20">
                   <div className="text-xs font-bold text-brand-light">Sede Central Hospitalaria</div>
                   <p className="text-2xs text-white/90">
@@ -512,11 +512,10 @@ export default function LandingView() {
               <span className="text-xs font-semibold text-gray mr-2">Filtrar:</span>
               <button
                 onClick={() => setSelectedSpecialty("all")}
-                className={`px-3 py-1.5 text-xs font-medium rounded-md border mr-2 transition-colors ${
-                  selectedSpecialty === "all"
+                className={`px-3 py-1.5 text-xs font-medium rounded-md border mr-2 transition-colors ${selectedSpecialty === "all"
                     ? "bg-brand text-white border-brand"
                     : "bg-light text-gray-dark border-gray-light hover:bg-gray-light"
-                }`}
+                  }`}
               >
                 Todas ({SPECIALITY_ARRAY.length})
               </button>
@@ -598,11 +597,10 @@ export default function LandingView() {
             {CLINIC_BRANCHES.map((branch) => (
               <div
                 key={branch.id}
-                className={`bg-white rounded-lg border transition-all flex flex-col overflow-hidden ${
-                  selectedBranch === branch.id
+                className={`bg-white rounded-lg border transition-all flex flex-col overflow-hidden ${selectedBranch === branch.id
                     ? "border-brand shadow-theme-md"
                     : "border-gray-light shadow-theme-xs hover:border-gray"
-                }`}
+                  }`}
                 onClick={() => setSelectedBranch(branch.id)}
               >
                 {/* Imagen Estática de la Sede */}
