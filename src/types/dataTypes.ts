@@ -1,10 +1,12 @@
 export type Relationships = 'father' | 'mother' | 'legalGuardian' | 'other';
 export type Genders = 'male' | 'female' | 'other';
 export type Speciality = 'general' | 'familyMedicine' | 'generalMedicine' | 'dentistry' | 'veterinary' | 'psychology' | 'nutrition' | 'pediatrics' | 'geriatrics' | 'oncology' | 'cardiology' | 'neurology' | 'dermatology' | 'ophthalmology' | 'otorhinolaryngology' | 'orthopedics' | 'traumatology' | 'gynecology';
-export type RoleSystem = 'admin' | 'professional' | 'assistant' | 'receptionist' | 'owner';
+export type RoleSystem = 'admin' | 'professional' | 'assistant' | 'receptionist' | 'owner' | 'no_role';
 export type AppointmentStatus = 'SCHEDULED' | 'COMPLETED' | 'CANCELLED' | 'PENDING' | 'MISSED' | 'IN_PROGRESS' | 'RESCHEDULED';
 export type Department = 'no_department' | 'General' | 'Cardiologist' | 'Dentist' | 'Neurologist' | 'Dermatologist' | 'Ophthalmologist' | 'Otorhinolaryngologist' | 'Orthopedist' | 'Traumatologist' | 'Gynecologist';
 export type StatusProfessional = 'active' | 'inactive' | 'on_leave' | 'on_vacation' | 'in_consultation' | 'on_break' | 'incapacitated';
+
+// formato fechas ISO 8601 en UTC, por ejemplo, 2024-11-18T15:35:00.000Z
 
 // ==================== COMMON DATA STRUCTURES ====================
 
@@ -127,11 +129,12 @@ export interface Metrics {
 
 export interface UserSystem {
     id: string;
+    picture: string;
     name: string;
     lastName: string;
     email: string;
     password: string;
-    role: string;
+    role: RoleSystem;
     createdAt: string;
     updatedAt: string;
 }

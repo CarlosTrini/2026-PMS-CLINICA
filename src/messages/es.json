@@ -67,7 +67,8 @@
     "professional": "Profesional",
     "assistant": "Asistente",
     "receptionist": "Recepcionista",
-    "owner": "Dueño"
+    "owner": "Dueño",
+    "no_role": "Sin rol asignado"
   },
   "formInputs": {
     "placeholder": "",
