@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
 import { getDefaultResponseApi } from '@/utils/dataTest/apiResponse';
-import type { UserSystem } from '@/types/dataTypes';
+import type { AuthLogin, UserSystem } from '@/types/dataTypes';
 import { SignJWT } from 'jose';
 
 const PATH_TEST_USERS_SYSTEM = path.join(process.cwd(), 'src/utils/dataTest/usersSystemD.json');
@@ -29,10 +29,14 @@ export async function POST(request: NextRequest) {
     let response = getDefaultResponseApi();
 
     // CAMPOS INCOMPLETOS
-    if (Object.values(body).some((value) => value === '' || value === null || value === undefined)) {
-        response.status = 400;
+    const requiredFields: (keyof AuthLogin)[] = [
+        'email',
+        'password'
+    ];
+    const hasEmptyFields = requiredFields.some((field) => !body[field]);
+    if (hasEmptyFields) {
         response.errorMsg = "Todos los campos son requeridos";
-        return NextResponse.json(response);
+        return NextResponse.json(response, { status: 400 });
     }
 
     const users = JSON.parse(await fs.readFile(PATH_TEST_USERS_SYSTEM, 'utf-8')) as UserSystem[];
@@ -40,16 +44,14 @@ export async function POST(request: NextRequest) {
     // VALIDA QUE EXSISTA
     const userFind = users.find((u: UserSystem) => u.email === body.email) || null
     if (!userFind) {
-        response.status = 404;
         response.errorMsg = "El usuario no existe";
-        return NextResponse.json(response);
+        return NextResponse.json(response, { status: 404 });
     }
 
     //VALIDA QUE CONTRASEÑA COINCIDA CON EL CORREO
     if (userFind.password !== body.password) {
-        response.status = 400;
         response.errorMsg = "Revisar que ambos campos estén correctos";
-        return NextResponse.json(response);
+        return NextResponse.json(response, { status: 400 });
     }
 
     // CREA EL TOKEN

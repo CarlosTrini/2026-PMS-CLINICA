@@ -16,7 +16,7 @@ import { simpleDate } from "@/utils/dates";
 import { Loader2, Pencil, Trash2 } from "lucide-react";
 import Select from "@/components/form/select/Select";
 import { useQueryClient, useMutation } from "@tanstack/react-query"
-import { ProfesionalService } from "../services/service"
+import { ProfesionalActionsService } from "../services/service"
 
 // CONSTANTES
 import { DEPARTMENT_ARRAY, ROLE_SYSTEM_ARRAY, STATUS_PROFESSIONAL_ARRAY } from "@/utils/datadummy";
@@ -61,7 +61,7 @@ export default function ViewEditProf({ profesional, resetValues, closeModal, isO
 
     //MUTATION PARA UPDATES
     const { mutate: updateProfMutation, isPending } = useMutation({
-        mutationFn: (updatedData: Professional) => ProfesionalService.updateProfesional(updatedData),
+        mutationFn: (updatedData: Professional) => ProfesionalActionsService.updateProfesional(updatedData),
         onSuccess: (response) => {
             console.log(response.message);
             // 1. Refresca la tabla principal de profesionales automáticamente

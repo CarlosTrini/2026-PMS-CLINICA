@@ -247,7 +247,7 @@ QUERY CLIENT GET BAJO DEMANDA...
     );
 }
 
-⚠️ Detalle muy importante: Usa isFetching en vez de isLoading
+⚠️ Detalle muy importante: Usar isFetching en vez de isLoading
 Cuando usas enabled: false:
 
 isLoading puede comportarse de manera engañosa al inicio porque la query está en pausa.
@@ -262,10 +262,10 @@ UPDATES MUTATION (QUERY)
 
     //MUTATION PARA UPDATES
     const { mutate: updateProfMutation, isPending } = useMutation({
-        mutationFn: (updatedData: Professional) => ProfesionalService.updateProfesional(updatedData),
+        mutationFn: (updatedData: Professional) => ProfesionalActionsService.updateProfesional(updatedData),
         onSuccess: (response) => {
             console.log(response.message);
-            // 1. Refresca la tabla principal de profesionales automáticamente
+            // 1. Refresca la tabla principal de profesionales automáticamente  
             queryClient.invalidateQueries({ queryKey: ['profesionalsTable'] });
 
             // 2. Apaga el modo edición y/o cierra el modal
@@ -294,7 +294,7 @@ UPDATES MUTATION (QUERY)
 const [selectedId, setSelectedId] = useState<string | null>(null);
 const { data, isFetching } = useQuery({
     queryKey: ['profesional', selectedId],
-    queryFn: () => ProfesionalService.getById(selectedId!),
+    queryFn: () => ProfesionalActionsService.getById(selectedId!),
     // Solo se dispara cuando selectedId tiene un valor (no es null)
     enabled: Boolean(selectedId), 
 });
@@ -309,5 +309,5 @@ const { data, isFetching } = useQuery({
     // QUERY
     const { data: dataQuery, isLoading, error } = useQuery({
         queryKey: ['profesionalsTable'],
-        queryFn: () => ProfesionalService.getProfesionales()
+        queryFn: () => ProfesionalActionsService.getProfesionales()
     });

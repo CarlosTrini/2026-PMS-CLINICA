@@ -64,5 +64,17 @@
     "picture": "https://loremflickr.com/200/200/panda?lock=105",
     "createdAt": "2024-10-15T07:50:00.000Z",
     "updatedAt": "2024-10-20T15:35:00.000Z"
+  },
+  {
+    "id": "d6df69cd-1087-42fc-97d7-7841f7f76a32",
+    "name": "asdf",
+    "lastName": "asdf",
+    "email": "b@b.com",
+    "password": "Trinidad22#",
+    "role": "no_role",
+    "termsAndConditions": true,
+    "picture": "",
+    "createdAt": "2026-10-27T05:48:41.356Z",
+    "updatedAt": "2026-10-27T05:48:41.356Z"
   }
 ]

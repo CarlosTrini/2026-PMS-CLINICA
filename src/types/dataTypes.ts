@@ -137,13 +137,12 @@ export interface UserSystem {
     role: RoleSystem;
     createdAt: string;
     updatedAt: string;
+    termsAndConditions?: boolean;
 }
 
 // ====================== DATA DE AUTH: REGISTRO/LOGIN
 
-export interface AuthRegister extends Omit<UserSystem, 'id' | 'role' | 'createdAt' | 'updatedAt'> {
-    termsAndConditions: boolean;
-}
+export interface AuthRegister extends Pick<UserSystem, 'name' | 'lastName' | 'email' | 'password' | 'termsAndConditions'> { }
 
 export interface AuthLogin {
     email: string;

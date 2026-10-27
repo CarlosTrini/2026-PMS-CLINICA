@@ -10,7 +10,7 @@ import { simpleDate } from "@/utils/dates";
 import Metrics from "./components/Metrics";
 import { Calendar, Eye, Mail, MoreVertical, Phone, PlusCircle, Trash2 } from 'lucide-react';
 import Fallback from "@/components/fallbackQuery/Fallback";
-import { ProfesionalService } from "./services/service";
+import { ProfesionalActionsService } from "./services/service";
 import useSystemTraslations from "@/hooks/useSysteTranslations";
 import { Professional } from "@/types/dataTypes";
 import FiltersProfesionals from "./components/Filters";
@@ -42,7 +42,7 @@ export default function Profesionals() {
     // QUERY
     const { data: dataQuery, isLoading, error } = useQuery({
         queryKey: ['profesionalsTable'],
-        queryFn: () => ProfesionalService.getProfesionales()
+        queryFn: () => ProfesionalActionsService.getProfesionales()
     });
 
 

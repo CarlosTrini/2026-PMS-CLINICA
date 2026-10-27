@@ -7,7 +7,7 @@ import { PROFESIONALS_DATA } from "@/utils/datadummy";
 // Simular 400ms de latencia de red
 const mockDelay = await new Promise((resolve) => setTimeout(resolve, 1000));
 
-export const ProfesionalService = {
+export const ProfesionalActionsService = {
 
     getProfesionalsMetrics: async (): Promise<Metrics> => {
         await mockDelay;

@@ -1,35 +1,86 @@
 "use client";
 
+// HOOKS
+import { useState } from "react";
+// COMPONENTS
+import TopAuth from "./components/TopAuth";
 import Checkbox from "@/components/form/input/Checkbox";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
-import { Link } from "@/i18n/navigation";
+//ICONS
 import { EyeCloseIcon, EyeIcon } from "@/icons";
-import { useState } from "react";
-import TopAuth from "./components/TopAuth";
+import { Loader } from "lucide-react";
+// TYPES
+import { UserSystem } from "@/types/dataTypes";
+// FORM
 import { useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AuthRegisterData, AuthRegisterDefaultValues, auhtRegisterSchema } from "./schemas/authRegisterSchema";
-
+import { authRegisterData, authRegisterDefaultValues, auhtRegisterSchema } from "./schemas/authRegisterSchema";
+// QUERY
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+//SERVICE
+import { AuthActionsService } from "./services/authService";
+// LIBS Y OTROS
+import { Link } from "@/i18n/navigation";
+import { v4 as uuidv4 } from 'uuid';
+import { getISODate } from "@/utils/dates";
+import Alert from "@/components/ui/alert/Alert";
 
 export default function SignupView() {
 
     // HOOKS
     const [showPassword, setShowPassword] = useState(false);
+    const [errorMsg, setErrorMsg] = useState('');
+    const [showAlertSuccess, setShowAlertSuccess] = useState(false);
 
     // HOOK-FORM
-    const { register, handleSubmit, formState: { errors } } = useForm<AuthRegisterData>({
+    const { register, handleSubmit, formState: { errors } } = useForm<authRegisterData>({
         resolver: zodResolver(auhtRegisterSchema),
-        defaultValues: AuthRegisterDefaultValues
+        defaultValues: authRegisterDefaultValues
     })
 
     // QUERY
+    // const queryClient = useQueryClient();
+    const { mutate: handleRegister, isPending, error } = useMutation({
+        mutationKey: ['register-new-user'],
+        retry: 0,
+        mutationFn: (dataUser: UserSystem) => AuthActionsService.registerUserSystem(dataUser),
+        onSuccess: (response) => {
+            setErrorMsg('');
+            // REDIRECCIÓN A INICIAR SESIÓN
+            setShowAlertSuccess(true);
+        },
+        onError: (err: any) => {
+            setErrorMsg(err?.response?.data?.errorMsg || 'Ha ocurrido un error')
+        }
+
+    });
 
 
 
-    const handleRegisterSubmit = (data: AuthRegisterData) => {
-        console.log(data)
+    const handleRegisterSubmit = (data: authRegisterData) => {
+        // HACK: LA DATA 'data' ES DE TIPO authRegisterData, PERO DEBE CONVERTIRSE A 
+        //TIPO UserSystem para enviarla al servicio con ID, rol, fechas, etc...
+        setErrorMsg('');
+
+        const registerDate = getISODate();
+
+        const userSystemData: UserSystem = {
+            id: uuidv4(),
+            name: data.name,
+            lastName: data.lastName,
+            email: data.email,
+            password: data.password,
+            role: 'no_role',
+            termsAndConditions: data.termsAndConditions,
+            picture: "",
+            createdAt: registerDate,
+            updatedAt: registerDate
+        }
+
+        handleRegister(userSystemData); // SE EJECUTA EL MUTATE
+
     }
 
     return (
@@ -144,9 +195,30 @@ export default function SignupView() {
 
                 {/* Botón de Envío */}
                 <div className="pt-2">
-                    <Button type="submit" size="md" className="w-full justify-center">
-                        Crear Cuenta
+                    <Button disabled={isPending} type="submit" size="md" className="mb-2 w-full justify-center">
+                        {
+                            isPending
+                                ? (
+                                    <span className="flex gap-2 items-center">
+                                        <Loader size="sm" className="w-7 h-7 text-white animate-[spin_2s_linear_infinite]" /> Creando cuenta
+                                    </span>
+                                )
+                                : (
+                                    <span>Crear Cuenta</span>
+                                )
+                        }
                     </Button>
+                    {
+                        errorMsg !== '' &&
+                        (
+                            <p className="bg-error-dark/50 text-light text-sm rounded-lg py-2 w-90 mx-auto text-center">{errorMsg}</p>
+                        )
+                    }
+                    {
+                        showAlertSuccess && (
+                            <Alert variant="success" title="Usuario creado" message="" showLink={true} linkHref="/signin" linkText="Iniciar Sesión" />
+                        )
+                    }
                 </div>
             </form>
 

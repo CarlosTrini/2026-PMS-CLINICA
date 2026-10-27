@@ -18,3 +18,9 @@ export const simpleDate = (date: string) => {
 
     return dateObj.toLocaleDateString(locales['es'], options);
 }
+
+
+export const getISODate = () => {
+    const dateObj = new Date();
+    return dateObj.toISOString();
+}

@@ -1,7 +1,7 @@
 'use client'
 import Badge from "@/components/ui/badge/Badge";
 import { useQuery } from "@tanstack/react-query";
-import { ProfesionalService } from "../services/service";
+import { ProfesionalActionsService } from "../services/service";
 import { Activity, ChartBar, Stethoscope, User2Icon } from 'lucide-react';
 import Fallback from "@/components/fallbackQuery/Fallback"; // mas que nada usar cuando se use query
 import type { Metrics } from "@/types/dataTypes";
@@ -13,7 +13,7 @@ export default function Metrics() {
 
     const { data: metrics, isLoading: isLoadingMetrics, error: errorMetrics } = useQuery({
         queryKey: ['metrics-query'],
-        queryFn: () => ProfesionalService.getProfesionalsMetrics(),
+        queryFn: () => ProfesionalActionsService.getProfesionalsMetrics(),
     });
 
     return (

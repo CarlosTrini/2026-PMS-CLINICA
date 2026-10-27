@@ -15,9 +15,9 @@ export const auhtRegisterSchema = z.object({
     }),
 });
 
-export type AuthRegisterData = z.infer<typeof auhtRegisterSchema>;
+export type authRegisterData = z.infer<typeof auhtRegisterSchema>;
 
-export const AuthRegisterDefaultValues: AuthRegisterData = {
+export const authRegisterDefaultValues: authRegisterData = {
     name: '',
     lastName: '',
     email: '',

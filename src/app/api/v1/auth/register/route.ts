@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs/promises';
 import { UserSystem } from '@/types/dataTypes';
-import { getDefaultResponseApi, ResponseStruct } from '@/utils/dataTest/apiResponse';
+import { getDefaultResponseApi } from '@/utils/dataTest/apiResponse';
 const PATH_TEST_USERS_SYSTEM = path.join(process.cwd(), 'src/utils/dataTest/usersSystemD.json');
 
 export async function POST(request: NextRequest) {
@@ -10,11 +10,21 @@ export async function POST(request: NextRequest) {
 
     let response = getDefaultResponseApi();
 
-    if (Object.values(body).some((value) => value === '' || value === null || value === undefined)) {
-        response.status = 400;
+    const requiredFields: (keyof UserSystem)[] = [
+        'name',
+        'lastName',
+        'email',
+        'password',
+        'role',
+        'createdAt',
+        'updatedAt',
+        'termsAndConditions'
+    ];
+    const hasEmptyFields = requiredFields.some((field) => !body[field]);
+    if (hasEmptyFields) {
         response.message = "bad_request";
         response.errorMsg = 'Campos incompletos';
-        return NextResponse.json(response);
+        return NextResponse.json(response, { status: 400 });
     }
 
     // lectura datos de usuarios
@@ -24,10 +34,9 @@ export async function POST(request: NextRequest) {
     const userExists = users.some((user: UserSystem) => user.email === body.email);
 
     if (userExists) {
-        response.status = 400;
         response.message = "bad_request";
         response.errorMsg = 'El correo electrónico ya está registrado';
-        return NextResponse.json(response);
+        return NextResponse.json(response, { status: 400 });
     }
 
     users.push(body);
