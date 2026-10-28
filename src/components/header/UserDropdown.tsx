@@ -11,9 +11,11 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
+import { useUserStore } from "@/store/userStore";
 
 export default function UserDropdown() {
   const t = useTranslations("userDropdown");
+  const { clearAllSession } = useUserStore();
   const locale = useLocale() as Locale;
   const router = useRouter();
   const pathname = usePathname();
@@ -44,6 +46,12 @@ export default function UserDropdown() {
     router.replace(pathname, { locale: id });
     setIsSubDropdownOpen(false);
   };
+
+  const closeSession = () => {
+    clearAllSession();
+    document.cookie = "auth_token=; path=/; max-age=0;";
+    router.push('/signin');
+  }
 
   return (
     <div className="relative">
@@ -255,12 +263,14 @@ export default function UserDropdown() {
             )}
           </li>
         </ul>
-        <Link
-          href="/signin"
+
+        <button
+          onClick={closeSession}
           className="generic-border group mt-3 flex items-center justify-center gap-3 rounded-lg px-3 py-2 text-theme-sm font-medium text-gray-dark hover:bg-light hover:text-gray-dark dark:text-gray-light dark:hover:bg-light-accent/5 dark:hover:text-gray-light"
         >
           {t("signOut")}
-        </Link>
+        </button>
+
       </Dropdown>
     </div>
   );

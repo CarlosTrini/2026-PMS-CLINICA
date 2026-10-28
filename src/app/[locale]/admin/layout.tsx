@@ -20,7 +20,7 @@ export default function AdminLayout({
   const mainContentMargin = isMobileOpen
     ? "ml-0"
     : isExpanded || isHovered
-      ? "lg:ml-72"
+      ? "lg:ml-64"
       : "lg:ml-20";
 
   return (

@@ -1,7 +1,9 @@
 "use client";
 
 // HOOKS
-import { useState } from "react";
+import { useState, useEffect } from "react";
+// NAVIGATION
+import { useRouter } from "@/i18n/navigation";
 // COMPONENTS
 import TopAuth from "./components/TopAuth";
 import Checkbox from "@/components/form/input/Checkbox";
@@ -18,7 +20,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authRegisterData, authRegisterDefaultValues, auhtRegisterSchema } from "./schemas/authRegisterSchema";
 // QUERY
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { hydrate, useMutation, useQueryClient } from '@tanstack/react-query';
 //SERVICE
 import { AuthActionsService } from "./services/authService";
 // LIBS Y OTROS
@@ -26,13 +28,21 @@ import { Link } from "@/i18n/navigation";
 import { v4 as uuidv4 } from 'uuid';
 import { getISODate } from "@/utils/dates";
 import Alert from "@/components/ui/alert/Alert";
+// STORE
+import { useUserStore } from "@/store/userStore";
+import Fallback from "@/components/fallbackQuery/Fallback";
 
 export default function SignupView() {
 
     // HOOKS
+    const { isAuthenticated } = useUserStore();
     const [showPassword, setShowPassword] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
     const [showAlertSuccess, setShowAlertSuccess] = useState(false);
+    const Navigate = useRouter();
+
+
+
 
     // HOOK-FORM
     const { register, handleSubmit, formState: { errors }, reset } = useForm<authRegisterData>({
@@ -82,6 +92,20 @@ export default function SignupView() {
         handleRegister(userSystemData); // SE EJECUTA EL MUTATE
 
     }
+
+
+    // useEffect(() => {
+    //     if (isAuthenticated) {
+    //         Navigate.replace('/admin'); // Usamos 'replace' para que no vuelva al login con el botón 'Atrás'
+    //     }
+    // }, [isAuthenticated, Navigate]);
+
+
+
+    // if (isAuthenticated) {
+    //     return <Fallback id="loader-login-fallback" children={'Redirigiendo al panel de control...'} data={null} isLoading={true} isError={false} />;
+    // }
+
 
     return (
         <div className="mx-auto flex w-full max-w-md flex-col justify-center">

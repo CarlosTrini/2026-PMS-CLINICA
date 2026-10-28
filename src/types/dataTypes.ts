@@ -127,6 +127,7 @@ export interface Metrics {
 
 // ==================== USER SYSTEM DATA STRUCTURES ====================
 
+// data general del usuario registrar para uso del sistema
 export interface UserSystem {
     id: string;
     picture: string;
@@ -138,7 +139,11 @@ export interface UserSystem {
     createdAt: string;
     updatedAt: string;
     termsAndConditions?: boolean;
+    idEnterprise?: string;
 }
+
+// data del usuario usando el sistema
+export interface UserSession extends Pick<UserSystem, 'id' | 'name' | 'email' | 'role' | 'picture' | 'idEnterprise'> { }
 
 // ====================== DATA DE AUTH: REGISTRO/LOGIN
 

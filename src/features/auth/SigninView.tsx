@@ -1,7 +1,7 @@
 "use client";
 
 //HOOKS
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from '@/i18n/navigation';
 //COMPONENTS
 import Checkbox from "@/components/form/input/Checkbox";
@@ -15,14 +15,17 @@ import { authLoginSchema, authLoginData, authLoginDefaultValues } from './schema
 import { Link } from "@/i18n/navigation";
 // ICONS
 import { EyeCloseIcon, EyeIcon } from "@/icons";
+import { Loader } from "lucide-react";
 // LIBRARIES
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient, useMutation } from "@tanstack/react-query";
+// TYPES
+import { AuthLogin } from "@/types/dataTypes";
+// STORES
+import { useUserStore } from "@/store/userStore";
 //SERVICES
 import { AuthActionsService } from "./services/authService";
-import { AuthLogin } from "@/types/dataTypes";
-import { Loader } from "lucide-react";
 
 export default function SignInView() {
 
@@ -30,6 +33,8 @@ export default function SignInView() {
     const [showPassword, setShowPassword] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
     const Navigate = useRouter();
+
+    const { setToken, setUserInfo, setIsAuthenticated, isAuthenticated } = useUserStore();
 
 
     // HOOK-FORM
@@ -43,10 +48,26 @@ export default function SignInView() {
     const { mutate: handleLogin, isPending, error } = useMutation({
         mutationKey: ['login'],
         mutationFn: (data: AuthLogin) => AuthActionsService.loginUserSystem(data),
-        onSuccess: (response) => {
-            reset();
-            setErrorMsg('');
-            Navigate.push('/admin')
+        onSuccess: (res) => {
+            const dataUser = res?.data.data;
+
+            if (res.status !== 200) return
+
+
+            if (dataUser) {
+                // Guardar cookie por 1 día o la que marque el servidor... 
+                // ESTO TIENE RELQCIÍNO CON PROXY.TS...
+                // para que no pase a ruta admin sin loguearse o vaya a rutas auth una vez logueado...
+                // en los botones de cerrar sesión UserDropdown y AppSidebar se elimina la cookie
+                document.cookie = `auth_token=${dataUser.token}; path=/; max-age=86400; SameSite=Lax`;
+
+                setToken(dataUser.token);
+                setUserInfo(dataUser.user);
+                setIsAuthenticated(true);
+                reset();
+                setErrorMsg('');
+                Navigate.push('/admin')
+            }
         },
         onError: (err: any) => [
             setErrorMsg(err?.response?.data?.errorMsg || 'Ha ocurrido un error')
@@ -58,6 +79,18 @@ export default function SignInView() {
     const handleLoginSubmit = (data: authLoginData) => {
         handleLogin(data)
     }
+
+
+    // useEffect(() => {
+    //     if (isAuthenticated) {
+    //         Navigate.replace('/admin'); // Usamos 'replace' para que no vuelva al login con el botón 'Atrás'
+    //     }
+    // }, [isAuthenticated, Navigate]);
+
+
+    // if (isAuthenticated) {
+    //     return null;
+    // }
 
     return (
         <div className="mx-auto flex w-full max-w-md flex-col justify-center">

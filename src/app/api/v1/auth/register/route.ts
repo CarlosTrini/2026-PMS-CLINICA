@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     }
 
     // GETDATA DB
-    const { collectionFound } = await getCollectionsFn<UserSystem>({ dbName: "pms-clinic-database", collectionName: "usersSystem" });
+    const { collectionFound } = await getCollectionsFn<UserSystem>("usersSystem");
     const user = await collectionFound.findOne({ email: body.email });
 
     // ==== VERIFICAR SI EL CORREO YA EXISTE

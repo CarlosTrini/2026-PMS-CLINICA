@@ -2,10 +2,10 @@ import { MongoClient, Collection, Db, Document } from 'mongodb';
 const USERNAME = process.env.USERNAME_MONGO;
 const PASSWORD = process.env.PASS_MONGO;
 const MONGO_LOCAL = process.env.MONGO_LOCAL;
-const MONGO_DB_NAME = process.env.NAME_DB_MONGO;
+const NAME_CLUSTER_MONGO = process.env.NAME_CLUSTER_MONGO;
 
 
-const MONGO_CLIENT_URI = MONGO_LOCAL || `mongodb+srv://${USERNAME}:${PASSWORD}@${MONGO_DB_NAME}.un9ru7t.mongodb.net/`;
+const MONGO_CLIENT_URI = MONGO_LOCAL || `mongodb+srv://${USERNAME}:${PASSWORD}@${NAME_CLUSTER_MONGO}.un9ru7t.mongodb.net/`;
 
 
 
@@ -40,9 +40,9 @@ export default clientDB;
 
 // GET COLLECTIONS PARA USAR EN EL API
 
-export const getCollectionsFn = async <T extends Document = Document>({ dbName = "pms-clinic-database", collectionName }: { dbName: string, collectionName: string }): Promise<{ db: Db, collectionFound: Collection<T> }> => {
+export const getCollectionsFn = async <T extends Document = Document>(collectionName: string): Promise<{ db: Db, collectionFound: Collection<T> }> => {
     const client = await clientDB;
-    const db = await client.db(dbName);
+    const db = await client.db(process.env.NAME_DB_MONGO || "pms-clinic-database");
     const collectionFound = db.collection<T>(collectionName);
 
     return { db, collectionFound };

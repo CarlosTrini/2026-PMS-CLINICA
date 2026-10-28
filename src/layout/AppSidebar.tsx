@@ -1,6 +1,6 @@
 "use client";
 
-import { Link, usePathname } from "@/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { cn } from "@/utils";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -13,6 +13,8 @@ import {
   PlugInIcon,
   UserCircleIcon,
 } from "../icons/index";
+import { useUserStore } from "@/store/userStore";
+import { LogOut } from "lucide-react";
 
 type NavItem = {
   key: string;
@@ -213,6 +215,9 @@ const AppSidebar: React.FC = () => {
     {},
   );
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const { clearAllSession } = useUserStore();
+  const Navigate = useRouter();
+
 
   const isActive = useCallback((path: string) => path === pathname, [pathname]);
 
@@ -268,11 +273,18 @@ const AppSidebar: React.FC = () => {
     });
   };
 
+
+  const closeSession = () => {
+    clearAllSession();
+    document.cookie = "auth_token=; path=/; max-age=0;";
+    Navigate.replace('/signin');
+  }
+
   return (
     <aside
       className={cn(
         "fixed top-0 left-0 z-50 flex h-screen flex-col bg-light-accent dark:bg-gray-dark border-r border-gray-light dark:border-gray/30 transition-all duration-300 ease-in-out rtl:right-0 rtl:left-auto rtl:border-r-0 rtl:border-l shadow-theme-xs",
-        isExpanded || isMobileOpen ? "w-72" : isHovered ? "w-72 shadow-theme-xl" : "w-20",
+        isExpanded || isMobileOpen ? "w-64" : isHovered ? "w-64 shadow-theme-xl" : "w-20",
         isMobileOpen
           ? "translate-x-0"
           : "-translate-x-full rtl:translate-x-full",
@@ -338,7 +350,7 @@ const AppSidebar: React.FC = () => {
             {renderMenuItems(adminItems, "main")}
           </div>
 
-          <div>
+          {/* <div>
             <h2
               className={cn(
                 "mb-2.5 px-3 text-xs italic uppercase tracking-wider text-gray-dark/70 dark:text-light/50",
@@ -354,25 +366,43 @@ const AppSidebar: React.FC = () => {
               )}
             </h2>
             {renderMenuItems(sessionItems, "session")}
-          </div>
+          </div> */}
         </nav>
 
-        {/* Bottom System Status Badge */}
-        {(isExpanded || isHovered || isMobileOpen) && (
-          <div className="mt-auto pt-6 pb-6">
-            <div className="rounded-2xl border border-gray-light dark:border-gray/30 bg-light/70 dark:bg-black/30 p-3.5">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
-                <span className="text-xs font-semibold text-gray-dark dark:text-light">
-                  Sistema Hospitalario
-                </span>
+        {/* Bottom Section: Status & Logout */}
+        <div className="mt-auto pt-4 pb-4">
+          {(isExpanded || isHovered || isMobileOpen) ? (
+            <div className="rounded-xl border border-gray-light dark:border-gray/30 bg-light/70 dark:bg-black/30 p-3 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
+                  <span className="text-xs font-semibold text-gray-dark dark:text-light">
+                    Sistema Hospitalario
+                  </span>
+                </div>
+                <span className="text-3xs font-mono text-theme-light-gray">v1.2</span>
               </div>
-              <p className="text-2xs text-theme-light-gray">
-                Servidor Seguro &bull; v2.6
-              </p>
+
+              <button
+                type="button"
+                onClick={closeSession}
+                className="group flex w-full items-center justify-center gap-2 rounded-lg border border-error/20 bg-error/10 py-2 px-3 text-xs font-semibold text-error transition-all hover:bg-error hover:text-white dark:border-error/30 dark:bg-error/15 dark:text-error-light dark:hover:bg-error dark:hover:text-white cursor-pointer shadow-theme-xs"
+              >
+                <LogOut className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
+                <span>{t("groups.session")}</span>
+              </button>
             </div>
-          </div>
-        )}
+          ) : (
+            <button
+              type="button"
+              onClick={closeSession}
+              title={t("groups.session")}
+              className="flex h-10 w-10 mx-auto items-center justify-center rounded-lg border border-error/20 bg-error/10 text-error transition-all hover:bg-error hover:text-white dark:border-error/30 dark:bg-error/15 dark:text-error-light dark:hover:bg-error dark:hover:text-white cursor-pointer shadow-theme-xs"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          )}
+        </div>
       </div>
     </aside>
   );

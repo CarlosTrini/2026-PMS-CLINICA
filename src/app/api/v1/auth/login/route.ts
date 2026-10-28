@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDefaultResponseApi } from '@/utils/dataTest/apiResponse';
-import type { AuthLogin, UserSystem } from '@/types/dataTypes';
+import type { AuthLogin, UserSession, UserSystem } from '@/types/dataTypes';
 import { SignJWT } from 'jose';
 import { getCollectionsFn } from '@/lib/mongodb';
 
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     }
 
     // revisar usuario
-    const { collectionFound } = await getCollectionsFn<UserSystem>({ dbName: "pms-clinic-database", collectionName: "usersSystem" });
+    const { collectionFound } = await getCollectionsFn<UserSystem>("usersSystem");
     const userFind = await collectionFound.findOne({ email: body.email });
 
     // VALIDA QUE EXSISTA
@@ -56,12 +56,13 @@ export async function POST(request: NextRequest) {
     // CREA EL TOKEN
     const token = await createToken(userFind);
 
-    const dataUser = {
+    const dataUser: UserSession = {
         id: userFind.id,
         name: userFind.name + " " + userFind.lastName,
         email: userFind.email,
         role: userFind.role,
-        picture: userFind.picture
+        picture: userFind.picture || '',
+        idEnterprise: userFind.idEnterprise || ''
     };
 
     response.data = {

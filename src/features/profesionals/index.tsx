@@ -40,9 +40,10 @@ export default function Profesionals() {
 
 
     // QUERY
-    const { data: dataQuery, isLoading, error } = useQuery({
+    const { data: dataQuery, isLoading, isError, error } = useQuery({
         queryKey: ['profesionalsTable'],
-        queryFn: () => ProfesionalActionsService.getProfesionales()
+        queryFn: () => ProfesionalActionsService.getProfesionales(),
+
     });
 
 
@@ -85,8 +86,15 @@ export default function Profesionals() {
 
     useEffect(() => {
         if (!dataQuery) return;
+        console.log("dataQuery", dataQuery);
         setDataTable(dataQuery);
     }, [dataQuery]);
+
+    useEffect(() => {
+        if (isError) {
+            console.log("error", error.message);
+        }
+    }, [isError]);
 
 
     // agre el modal con la info cunaod está listo el state
