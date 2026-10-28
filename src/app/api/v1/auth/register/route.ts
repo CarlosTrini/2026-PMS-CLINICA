@@ -1,9 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import path from 'path';
-import fs from 'fs/promises';
 import { UserSystem } from '@/types/dataTypes';
 import { getDefaultResponseApi } from '@/utils/dataTest/apiResponse';
-const PATH_TEST_USERS_SYSTEM = path.join(process.cwd(), 'src/utils/dataTest/usersSystemD.json');
+import { getCollectionsFn } from '@/lib/mongodb';
+
+// const getCollections = async () => {
+//     const client = await clientDB;
+//     const db = client.db("pms-clinic-database");
+//     const usersSystemCollection = await db.collection<UserSystem>('usersSystem');
+
+//     return {
+//         db,
+//         usersSystemCollection,
+//     }
+// }
+
 
 export async function POST(request: NextRequest) {
     const body = await request.json() as UserSystem;
@@ -27,23 +37,28 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(response, { status: 400 });
     }
 
-    // lectura datos de usuarios
-    const users = JSON.parse(await fs.readFile(PATH_TEST_USERS_SYSTEM, 'utf8'));
+    // GETDATA DB
+    const { collectionFound } = await getCollectionsFn<UserSystem>({ dbName: "pms-clinic-database", collectionName: "usersSystem" });
+    const user = await collectionFound.findOne({ email: body.email });
 
-    // VERIFICAR SI EL CORREO YA EXISTE
-    const userExists = users.some((user: UserSystem) => user.email === body.email);
-
-    if (userExists) {
+    // ==== VERIFICAR SI EL CORREO YA EXISTE
+    // Verificar si el usuario existe en la collection
+    if (user) {
         response.message = "bad_request";
         response.errorMsg = 'El correo electrónico ya está registrado';
         return NextResponse.json(response, { status: 400 });
     }
 
-    users.push(body);
 
 
-    // actualizar data
-    await fs.writeFile(PATH_TEST_USERS_SYSTEM, JSON.stringify(users, null, 2));
+    // ==== actualizar data
+    const result = await collectionFound.insertOne(body);
+
+    if (!result.acknowledged) {
+        response.message = "error";
+        response.errorMsg = 'Error al registrar el usuario';
+        return NextResponse.json(response, { status: 500 });
+    }
 
     response.message = `success`;
     return NextResponse.json(response);

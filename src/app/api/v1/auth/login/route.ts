@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
 import { getDefaultResponseApi } from '@/utils/dataTest/apiResponse';
 import type { AuthLogin, UserSystem } from '@/types/dataTypes';
 import { SignJWT } from 'jose';
-
-const PATH_TEST_USERS_SYSTEM = path.join(process.cwd(), 'src/utils/dataTest/usersSystemD.json');
+import { getCollectionsFn } from '@/lib/mongodb';
 
 // ================ EXTRA FUNC
 const createToken = async (userFind: UserSystem) => {
@@ -21,6 +18,7 @@ const createToken = async (userFind: UserSystem) => {
 
     return token;
 }
+
 
 // ================================  METHODS
 export async function POST(request: NextRequest) {
@@ -39,17 +37,18 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(response, { status: 400 });
     }
 
-    const users = JSON.parse(await fs.readFile(PATH_TEST_USERS_SYSTEM, 'utf-8')) as UserSystem[];
+    // revisar usuario
+    const { collectionFound } = await getCollectionsFn<UserSystem>({ dbName: "pms-clinic-database", collectionName: "usersSystem" });
+    const userFind = await collectionFound.findOne({ email: body.email });
 
     // VALIDA QUE EXSISTA
-    const userFind = users.find((u: UserSystem) => u.email === body.email) || null
     if (!userFind) {
         response.errorMsg = "El usuario no existe";
-        return NextResponse.json(response, { status: 404 });
+        return NextResponse.json(response, { status: 400 });
     }
 
     //VALIDA QUE CONTRASEÑA COINCIDA CON EL CORREO
-    if (userFind.password !== body.password) {
+    if (!userFind || (userFind.password !== body.password)) {
         response.errorMsg = "Revisar que ambos campos estén correctos";
         return NextResponse.json(response, { status: 400 });
     }

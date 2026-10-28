@@ -1,36 +1,62 @@
 "use client";
 
+//HOOKS
+import { useState } from "react";
+import { useRouter } from '@/i18n/navigation';
+//COMPONENTS
 import Checkbox from "@/components/form/input/Checkbox";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
-import { Link } from "@/i18n/navigation";
-import { EyeCloseIcon, EyeIcon } from "@/icons";
-import { useState } from "react";
 import TopAuth from "./components/TopAuth";
+// SCHEMA
 import { authLoginSchema, authLoginData, authLoginDefaultValues } from './schemas/authLoginSchema';
+// NAVIGATION
+import { Link } from "@/i18n/navigation";
+// ICONS
+import { EyeCloseIcon, EyeIcon } from "@/icons";
+// LIBRARIES
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+//SERVICES
+import { AuthActionsService } from "./services/authService";
+import { AuthLogin } from "@/types/dataTypes";
+import { Loader } from "lucide-react";
 
 export default function SignInView() {
 
     //HOOKS
     const [showPassword, setShowPassword] = useState(false);
-
+    const [errorMsg, setErrorMsg] = useState('');
+    const Navigate = useRouter();
 
 
     // HOOK-FORM
-    const { register, formState: { errors }, handleSubmit } = useForm<authLoginData>({
+    const { register, reset, formState: { errors }, handleSubmit } = useForm<authLoginData>({
         resolver: zodResolver(authLoginSchema),
         defaultValues: authLoginDefaultValues
     })
 
     // QUERY
+    // const queryClient = useQueryClient();
+    const { mutate: handleLogin, isPending, error } = useMutation({
+        mutationKey: ['login'],
+        mutationFn: (data: AuthLogin) => AuthActionsService.loginUserSystem(data),
+        onSuccess: (response) => {
+            reset();
+            setErrorMsg('');
+            Navigate.push('/admin')
+        },
+        onError: (err: any) => [
+            setErrorMsg(err?.response?.data?.errorMsg || 'Ha ocurrido un error')
+        ]
+    });
 
 
 
     const handleLoginSubmit = (data: authLoginData) => {
-        console.log(data)
+        handleLogin(data)
     }
 
     return (
@@ -109,10 +135,27 @@ export default function SignInView() {
                     </Link>
                 </div>
 
-                <div>
-                    <Button type="submit" size="md" className="w-full justify-center">
-                        Iniciar Sesión
+                <div className="">
+                    <Button type="submit" size="md" className="w-full justify-center mb-3">
+                        {
+                            isPending
+                                ? (
+                                    <span className="flex gap-2 items-center">
+                                        <Loader size="sm" className="w-7 h-7 text-white animate-[spin_2s_linear_infinite]" /> Iniciando sesión
+                                    </span>
+                                )
+                                : (
+                                    <span>Iniciar sesión</span>
+                                )
+                        }
                     </Button>
+
+                    {
+                        errorMsg !== '' &&
+                        (
+                            <p className="bg-error-dark/50 text-light text-sm rounded-lg py-2 w-90 mx-auto text-center">{errorMsg}</p>
+                        )
+                    }
                 </div>
             </form>
 

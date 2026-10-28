@@ -35,7 +35,7 @@ export default function SignupView() {
     const [showAlertSuccess, setShowAlertSuccess] = useState(false);
 
     // HOOK-FORM
-    const { register, handleSubmit, formState: { errors } } = useForm<authRegisterData>({
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<authRegisterData>({
         resolver: zodResolver(auhtRegisterSchema),
         defaultValues: authRegisterDefaultValues
     })
@@ -48,8 +48,8 @@ export default function SignupView() {
         mutationFn: (dataUser: UserSystem) => AuthActionsService.registerUserSystem(dataUser),
         onSuccess: (response) => {
             setErrorMsg('');
-            // REDIRECCIÓN A INICIAR SESIÓN
             setShowAlertSuccess(true);
+            reset();
         },
         onError: (err: any) => {
             setErrorMsg(err?.response?.data?.errorMsg || 'Ha ocurrido un error')
@@ -216,7 +216,7 @@ export default function SignupView() {
                     }
                     {
                         showAlertSuccess && (
-                            <Alert variant="success" title="Usuario creado" message="" showLink={true} linkHref="/signin" linkText="Iniciar Sesión" />
+                            <Alert timer={false} variant="success" title="Usuario creado" message="" showLink={true} linkHref="/signin" linkText="Iniciar Sesión" />
                         )
                     }
                 </div>

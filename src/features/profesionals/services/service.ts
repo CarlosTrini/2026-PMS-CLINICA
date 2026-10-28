@@ -9,6 +9,12 @@ const mockDelay = await new Promise((resolve) => setTimeout(resolve, 1000));
 
 export const ProfesionalActionsService = {
 
+    getProfesional: async (id: string) => {
+        const response = await apiClient.get(`/profesionales/${id}`);
+        return response.data;
+    },
+
+
     getProfesionalsMetrics: async (): Promise<Metrics> => {
         await mockDelay;
         const totalInConsultation = PROFESIONALS_DATA.filter(
@@ -48,10 +54,6 @@ export const ProfesionalActionsService = {
         return { success: true, message: 'Profesional actualizado correctamente' };
 
     },
-    // getProfesional: async (id: string) => {
-    //     const response = await apiClient.get(`/profesionales/${id}`);
-    //     return response.data;
-    // },
 
 
     createProfesional: async (profesional: any) => {

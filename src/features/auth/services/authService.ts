@@ -9,6 +9,11 @@ export const AuthActionsService = {
     async registerUserSystem(userData: UserSystem) {
         const response = await apiClient.post('/auth/register', userData);
         return response;
+    },
+
+    async loginUserSystem(userData: authLoginData) {
+        const response = await apiClient.post('/auth/login', userData);
+        return response;
     }
 
 }
