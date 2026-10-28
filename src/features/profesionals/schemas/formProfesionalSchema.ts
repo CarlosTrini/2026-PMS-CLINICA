@@ -1,4 +1,4 @@
-import { STATUS_PROFESSIONAL_ARRAY, ROLE_SYSTEM_ARRAY, GENDER_ARRAY, DEPARTMENT_ARRAY } from '@/utils/datadummy';
+import { STATUS_PROFESSIONAL_ARRAY, ROLE_SYSTEM_ARRAY, GENDER_ARRAY, DEPARTMENT_ARRAY } from '@/utils/constants';
 import z from 'zod';
 
 

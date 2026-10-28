@@ -24,7 +24,7 @@ import {
     ROLE_SYSTEM_ARRAY,
     SPECIALITY_ARRAY,
     STATUS_PROFESSIONAL_ARRAY,
-} from '@/utils/datadummy';
+} from '@/utils/constants';
 
 // Opciones preformateadas para los componentes Select
 const ROLE_OPTIONS = ROLE_SYSTEM_ARRAY.map((role) => ({

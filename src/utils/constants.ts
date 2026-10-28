@@ -1,13 +1,8 @@
 import type { Professional } from "../types/dataTypes";
 
 // TYPES VALUES ARRAYS FOR SELECTS 
-export const ROLE_SYSTEM_ARRAY = ['admin', 'professional', 'assistant', 'receptionist', 'owner'] as const;
-export const APPOINTMENT_STATUS_ARRAY = ['SCHEDULED', 'COMPLETED', 'CANCELLED', 'PENDING', 'RESCHEDULED', 'MISSED', 'IN_PROGRESS'] as const;
-export const DEPARTMENT_ARRAY = ['general', 'no_department', 'Cardiologist', 'Dentist', 'Neurologist', 'Dermatologist', 'Ophthalmologist', 'Otorhinolaryngologist', 'Orthopedist', 'Traumatologist', 'Gynecologist', 'Urologist', 'InfectiousDiseases', 'Endocrinologist', 'Rheumatologist', 'Nephrologist', 'Hematologist', 'Pulmonologist', 'Gastroenterologist'] as const;
-export const STATUS_PROFESSIONAL_ARRAY = ['active', 'inactive', 'on_leave', 'on_vacation', 'in_consultation', 'on_break', 'incapacitated'] as const;
-export const SPECIALITY_ARRAY = ['familyMedicine', 'generalMedicine', 'dentistry', 'veterinary', 'psychology', 'nutrition', 'pediatrics', 'geriatrics', 'oncology', 'cardiology', 'neurology', 'dermatology', 'ophthalmology', 'otorhinolaryngology', 'orthopedics', 'traumatology', 'gynecology'] as const;
-export const GENDER_ARRAY = ['male', 'female', 'other'] as const;
-export const RELATIONSHIP_ARRAY = ['father', 'mother', 'legalGuardian', 'other'] as const;
+
+
 
 export const PROFESIONALS_DATA: Professional[] = [
     {
@@ -50,7 +45,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             dateOfBirth: "1978-07-22T00:00:00.000Z",
             gender: "male"
         },
-        department: "Dentist",
+        department: "dentist",
         contactInfo: {
             email: "daniel.hernandez@example.com",
             phone: "+525512345602",
@@ -61,11 +56,11 @@ export const PROFESIONALS_DATA: Professional[] = [
             country: "México"
         },
         profesionalInfo: [{
-            speciality: "generalMedicine",
+            speciality: "general_medicine",
             cedula: "CED-100002",
             license: "LIC-200002"
         }, {
-            speciality: "familyMedicine",
+            speciality: "family_medicine",
             cedula: "CED-100002",
             license: "LIC-200002"
         }],
@@ -83,7 +78,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             dateOfBirth: "1990-11-05T00:00:00.000Z",
             gender: "female"
         },
-        department: "Neurologist",
+        department: "neurologist",
         contactInfo: {
             email: "valentina.martinez@example.com",
             phone: "+525512345603",
@@ -112,7 +107,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             dateOfBirth: "1982-01-19T00:00:00.000Z",
             gender: "male"
         },
-        department: "Cardiologist",
+        department: "cardiologist",
         contactInfo: {
             email: "alejandro.lopez@example.com",
             phone: "+525512345604",
@@ -141,7 +136,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             dateOfBirth: "1993-06-30T00:00:00.000Z",
             gender: "female"
         },
-        department: "Ophthalmologist",
+        department: "ophthalmologist",
         contactInfo: {
             email: "camila.gonzalez@example.com",
             phone: "+525512345605",
@@ -170,7 +165,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             dateOfBirth: "1975-09-12T00:00:00.000Z",
             gender: "male"
         },
-        department: "Otorhinolaryngologist",
+        department: "otorhinolaryngologist",
         contactInfo: {
             email: "diego.ramirez@example.com",
             phone: "+525512345606",
@@ -203,7 +198,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             dateOfBirth: "1988-12-03T00:00:00.000Z",
             gender: "female"
         },
-        department: "Orthopedist",
+        department: "orthopedist",
         contactInfo: {
             email: "lucia.sanchez@example.com",
             phone: "+525512345607",
@@ -232,7 +227,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             dateOfBirth: "1980-04-25T00:00:00.000Z",
             gender: "male"
         },
-        department: "Traumatologist",
+        department: "traumatologist",
         contactInfo: {
             email: "mateo.torres@example.com",
             phone: "+525512345608",
@@ -261,7 +256,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             dateOfBirth: "1991-02-17T00:00:00.000Z",
             gender: "female"
         },
-        department: "Cardiologist",
+        department: "cardiologist",
         contactInfo: {
             email: "isabella.cruz@example.com",
             phone: "+525512345609",
@@ -290,7 +285,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             dateOfBirth: "1972-08-09T00:00:00.000Z",
             gender: "male"
         },
-        department: "Cardiologist",
+        department: "cardiologist",
         contactInfo: {
             email: "gabriel.reyes@example.com",
             phone: "+525512345610",
@@ -319,7 +314,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             dateOfBirth: "1987-05-11T00:00:00.000Z",
             gender: "female"
         },
-        department: "Gynecologist",
+        department: "gynecologist",
         contactInfo: {
             email: "renata.diaz@example.com",
             phone: "+525512345611",
@@ -348,7 +343,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             dateOfBirth: "1984-10-27T00:00:00.000Z",
             gender: "male"
         },
-        department: "Cardiologist",
+        department: "cardiologist",
         contactInfo: {
             email: "sebastian.ortiz@example.com",
             phone: "+525512345612",
@@ -377,7 +372,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             dateOfBirth: "1995-01-08T00:00:00.000Z",
             gender: "other"
         },
-        department: "Cardiologist",
+        department: "cardiologist",
         contactInfo: {
             email: "andrea.flores@example.com",
             phone: "+525512345613",
@@ -406,7 +401,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             dateOfBirth: "1979-03-21T00:00:00.000Z",
             gender: "male"
         },
-        department: "Dentist",
+        department: "dentist",
         contactInfo: {
             email: "nicolas.gutierrez@example.com",
             phone: "+525512345614",
@@ -435,7 +430,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             dateOfBirth: "1989-09-16T00:00:00.000Z",
             gender: "female"
         },
-        department: "Dentist",
+        department: "dentist",
         contactInfo: {
             email: "victoria.rivera@example.com",
             phone: "+525512345615",
@@ -450,7 +445,7 @@ export const PROFESIONALS_DATA: Professional[] = [
             cedula: "CED-100015",
             license: "LIC-200015"
         }, {
-            speciality: "generalMedicine",
+            speciality: "general_medicine",
             cedula: "CED-100015",
             license: "LIC-200015"
         }],
@@ -458,3 +453,14 @@ export const PROFESIONALS_DATA: Professional[] = [
         updatedAt: "2024-11-18T15:35:00.000Z"
     }
 ];
+// DATA QUE PUEDE TENER SU LUGAR EN B.D.
+export const ROLE_SYSTEM_ARRAY = ['admin', 'professional', 'assistant', 'receptionist', 'owner'] as const;
+export const DEPARTMENT_ARRAY = ['general', 'no_department', 'cardiologist', 'dentist', 'neurologist', 'dermatologist', 'ophthalmologist', 'otorhinolaryngologist', 'orthopedist', 'traumatologist', 'gynecologist', 'urologist', 'infectious_diseases', 'endocrinologist', 'rheumatologist', 'nephrologist', 'hematologist', 'pulmonologist', 'gastroenterologist'] as const;
+export const SPECIALITY_ARRAY = ['family_medicine', 'general_medicine', 'dentistry', 'veterinary', 'psychology', 'nutrition', 'pediatrics', 'geriatrics', 'oncology', 'cardiology', 'neurology', 'dermatology', 'ophthalmology', 'otorhinolaryngology', 'orthopedics', 'traumatology', 'gynecology'] as const;
+
+
+// DATA QUE PUEDE PERMANECER EN EL SISTEMA..
+export const APPOINTMENT_STATUS_ARRAY = ['scheduled', 'completed', 'cancelled', 'pending', 'rescheduled', 'missed', 'in_progress'] as const;
+export const GENDER_ARRAY = ['male', 'female', 'other'] as const;
+export const RELATIONSHIP_ARRAY = ['father', 'mother', 'legal_guardian', 'other'] as const;
+export const STATUS_PROFESSIONAL_ARRAY = ['active', 'inactive', 'on_leave', 'on_vacation', 'in_consultation', 'on_break', 'incapacitated'] as const;

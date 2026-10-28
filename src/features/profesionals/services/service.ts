@@ -2,7 +2,7 @@ import { apiClient } from "@/lib/axios";
 import { Metrics, Professional } from "@/types/dataTypes";
 
 // DATA FAKE... SUSTITUIR EN EL SERVER
-import { PROFESIONALS_DATA } from "@/utils/datadummy";
+import { PROFESIONALS_DATA } from "@/utils/constants";
 
 // Simular 400ms de latencia de red
 const mockDelay = await new Promise((resolve) => setTimeout(resolve, 1000));

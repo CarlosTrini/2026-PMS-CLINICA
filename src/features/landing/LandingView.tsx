@@ -7,7 +7,7 @@ import {
   SPECIALITY_ARRAY,
   DEPARTMENT_ARRAY,
   PROFESIONALS_DATA,
-} from "@/utils/datadummy";
+} from "@/utils/constants";
 
 // 4 Sedes Hospitalarias Detalladas
 const CLINIC_BRANCHES = [
@@ -513,8 +513,8 @@ export default function LandingView() {
               <button
                 onClick={() => setSelectedSpecialty("all")}
                 className={`px-3 py-1.5 text-xs font-medium rounded-md border mr-2 transition-colors ${selectedSpecialty === "all"
-                    ? "bg-brand text-white border-brand"
-                    : "bg-light text-gray-dark border-gray-light hover:bg-gray-light"
+                  ? "bg-brand text-white border-brand"
+                  : "bg-light text-gray-dark border-gray-light hover:bg-gray-light"
                   }`}
               >
                 Todas ({SPECIALITY_ARRAY.length})
@@ -598,8 +598,8 @@ export default function LandingView() {
               <div
                 key={branch.id}
                 className={`bg-white rounded-lg border transition-all flex flex-col overflow-hidden ${selectedBranch === branch.id
-                    ? "border-brand shadow-theme-md"
-                    : "border-gray-light shadow-theme-xs hover:border-gray"
+                  ? "border-brand shadow-theme-md"
+                  : "border-gray-light shadow-theme-xs hover:border-gray"
                   }`}
                 onClick={() => setSelectedBranch(branch.id)}
               >

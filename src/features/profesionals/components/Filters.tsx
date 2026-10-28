@@ -1,5 +1,5 @@
 'use client'
-import { DEPARTMENT_ARRAY, SPECIALITY_ARRAY, STATUS_PROFESSIONAL_ARRAY } from "@/utils/datadummy";
+import { DEPARTMENT_ARRAY, SPECIALITY_ARRAY, STATUS_PROFESSIONAL_ARRAY } from "@/utils/constants";
 import Collapse from "@/components/ui/collapse/Collapse";
 import Form from "@/components/form/Form";
 import Label from "@/components/form/Label";

@@ -1,4 +1,4 @@
-import { DEPARTMENT_ARRAY, SPECIALITY_ARRAY, STATUS_PROFESSIONAL_ARRAY } from "@/utils/datadummy";
+import { DEPARTMENT_ARRAY, SPECIALITY_ARRAY, STATUS_PROFESSIONAL_ARRAY } from "@/utils/constants";
 import { z } from "zod";
 
 export const filterProfesionalsSchema = z.object({

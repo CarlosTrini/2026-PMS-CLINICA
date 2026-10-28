@@ -19,7 +19,7 @@ import { useQueryClient, useMutation } from "@tanstack/react-query"
 import { ProfesionalActionsService } from "../services/service"
 
 // CONSTANTES
-import { DEPARTMENT_ARRAY, ROLE_SYSTEM_ARRAY, STATUS_PROFESSIONAL_ARRAY } from "@/utils/datadummy";
+import { DEPARTMENT_ARRAY, ROLE_SYSTEM_ARRAY, STATUS_PROFESSIONAL_ARRAY } from "@/utils/constants";
 import Tooltip from "@/components/ui/tooltip/Tooltip";
 
 interface Props {
