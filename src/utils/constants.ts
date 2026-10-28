@@ -454,13 +454,12 @@ export const PROFESIONALS_DATA: Professional[] = [
     }
 ];
 // DATA QUE PUEDE TENER SU LUGAR EN B.D.
-export const ROLE_SYSTEM_ARRAY = ['admin', 'professional', 'assistant', 'receptionist', 'owner'] as const;
-export const DEPARTMENT_ARRAY = ['general', 'no_department', 'cardiologist', 'dentist', 'neurologist', 'dermatologist', 'ophthalmologist', 'otorhinolaryngologist', 'orthopedist', 'traumatologist', 'gynecologist', 'urologist', 'infectious_diseases', 'endocrinologist', 'rheumatologist', 'nephrologist', 'hematologist', 'pulmonologist', 'gastroenterologist'] as const;
-export const SPECIALITY_ARRAY = ['family_medicine', 'general_medicine', 'dentistry', 'veterinary', 'psychology', 'nutrition', 'pediatrics', 'geriatrics', 'oncology', 'cardiology', 'neurology', 'dermatology', 'ophthalmology', 'otorhinolaryngology', 'orthopedics', 'traumatology', 'gynecology'] as const;
-
+export const DEPARTMENT_ARRAY = ['general', 'no_department', 'cardiologist', 'dentist', 'neurologist', 'dermatologist', 'ophthalmologist', 'otorhinolaryngologist', 'orthopedist', 'traumatologist', 'gynecologist', 'urologist', 'infectious_diseases', 'endocrinologist', 'rheumatologist', 'nephrologist', 'hematologist', 'pulmonologist', 'gastroenterologist', 'anesthesiologist', 'emergency_medicine', 'family_medicine', 'general_surgeon', 'internist', 'pediatrician', 'psychiatrist', 'psychologist', 'radiologist', 'plastic_surgeon', 'physiotherapist', 'midwife'] as const;
+export const SPECIALITY_ARRAY = ['family_medicine', 'general_medicine', 'dentistry', 'veterinary', 'psychology', 'nutrition', 'pediatrics', 'geriatrics', 'oncology', 'cardiology', 'neurology', 'dermatology', 'ophthalmology', 'otorhinolaryngology', 'orthopedics', 'traumatology', 'gynecology', 'urology', 'infectious_diseases', 'endocrinology', 'rheumatology', 'nephrology', 'hematology', 'pulmonology', 'gastroenterology', 'anesthesiology', 'emergency_medicine', 'internal_medicine', 'general_surgery', 'psychiatry', 'radiology', 'plastic_surgery', 'physical_therapy', 'midwifery'] as const;
 
 // DATA QUE PUEDE PERMANECER EN EL SISTEMA..
-export const APPOINTMENT_STATUS_ARRAY = ['scheduled', 'completed', 'cancelled', 'pending', 'rescheduled', 'missed', 'in_progress'] as const;
-export const GENDER_ARRAY = ['male', 'female', 'other'] as const;
-export const RELATIONSHIP_ARRAY = ['father', 'mother', 'legal_guardian', 'other'] as const;
-export const STATUS_PROFESSIONAL_ARRAY = ['active', 'inactive', 'on_leave', 'on_vacation', 'in_consultation', 'on_break', 'incapacitated'] as const;
+export const ROLE_SYSTEM_ARRAY = ['admin', 'professional', 'assistant', 'receptionist', 'owner', 'no_role'] as const;
+export const APPOINTMENT_STATUS_ARRAY = ['scheduled', 'completed', 'cancelled', 'pending', 'rescheduled', 'missed', 'in_progress', 'no_show'] as const;
+export const GENDER_ARRAY = ['male', 'female', 'other', 'prefer_not_to_say'] as const;
+export const RELATIONSHIP_ARRAY = ['father', 'mother', 'legal_guardian', 'other', 'spouse', 'son_daughter', 'sibling', 'grandparent', 'caregiver'] as const;
+export const STATUS_PROFESSIONAL_ARRAY = ['active', 'inactive', 'on_leave', 'on_vacation', 'in_consultation', 'on_break', 'incapacitated', 'suspended'] as const;

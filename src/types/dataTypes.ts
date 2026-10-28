@@ -1,10 +1,12 @@
-export type Relationships = 'father' | 'mother' | 'legalGuardian' | 'other';
-export type Genders = 'male' | 'female' | 'other';
-export type Speciality = 'general' | 'family_medicine' | 'general_medicine' | 'dentistry' | 'veterinary' | 'psychology' | 'nutrition' | 'pediatrics' | 'geriatrics' | 'oncology' | 'cardiology' | 'neurology' | 'dermatology' | 'ophthalmology' | 'otorhinolaryngology' | 'orthopedics' | 'traumatology' | 'gynecology';
-export type RoleSystem = 'admin' | 'professional' | 'assistant' | 'receptionist' | 'owner' | 'no_role';
-export type AppointmentStatus = 'SCHEDULED' | 'COMPLETED' | 'CANCELLED' | 'PENDING' | 'MISSED' | 'IN_PROGRESS' | 'RESCHEDULED';
-export type Department = 'no_department' | 'general' | 'cardiologist' | 'dentist' | 'neurologist' | 'dermatologist' | 'ophthalmologist' | 'otorhinolaryngologist' | 'orthopedist' | 'traumatologist' | 'gynecologist';
-export type StatusProfessional = 'active' | 'inactive' | 'on_leave' | 'on_vacation' | 'in_consultation' | 'on_break' | 'incapacitated';
+import { APPOINTMENT_STATUS_ARRAY, DEPARTMENT_ARRAY, GENDER_ARRAY, RELATIONSHIP_ARRAY, ROLE_SYSTEM_ARRAY, SPECIALITY_ARRAY, STATUS_PROFESSIONAL_ARRAY } from '@/utils/constants';
+
+export type Relationships = typeof RELATIONSHIP_ARRAY[number];
+export type Genders = typeof GENDER_ARRAY[number];
+export type Speciality = typeof SPECIALITY_ARRAY[number];
+export type RoleSystem = typeof ROLE_SYSTEM_ARRAY[number];
+export type AppointmentStatus = typeof APPOINTMENT_STATUS_ARRAY[number];
+export type Department = typeof DEPARTMENT_ARRAY[number];
+export type StatusProfessional = typeof STATUS_PROFESSIONAL_ARRAY[number];
 
 // formato fechas ISO 8601 en UTC, por ejemplo, 2024-11-18T15:35:00.000Z
 

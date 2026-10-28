@@ -67,7 +67,8 @@
     "professional": "Professional",
     "assistant": "Assistant",
     "receptionist": "Receptionist",
-    "owner": "Owner"
+    "owner": "Owner",
+    "no_role": "No role assigned"
   },
   "tablesColumns": {
     "name": "Name",
@@ -120,6 +121,23 @@
     "orthopedics": "Orthopedics",
     "traumatology": "Traumatology",
     "gynecology": "Gynecology",
+    "urology": "Urology",
+    "infectious_diseases": "Infectious Diseases",
+    "endocrinology": "Endocrinology",
+    "rheumatology": "Rheumatology",
+    "nephrology": "Nephrology",
+    "hematology": "Hematology",
+    "pulmonology": "Pulmonology",
+    "gastroenterology": "Gastroenterology",
+    "anesthesiology": "Anesthesiology",
+    "emergency_medicine": "Emergency Medicine",
+    "internal_medicine": "Internal Medicine",
+    "general_surgery": "General Surgery",
+    "psychiatry": "Psychiatry",
+    "radiology": "Radiology",
+    "plastic_surgery": "Plastic Surgery",
+    "physical_therapy": "Physical Therapy",
+    "midwifery": "Midwifery",
     "general": "General",
     "all": "All"
   },
@@ -142,6 +160,18 @@
     "hematologist": "Hematology",
     "pulmonologist": "Pulmonology",
     "gastroenterologist": "Gastroenterology",
+    "anesthesiologist": "Anesthesiology",
+    "emergency_medicine": "Emergency Medicine",
+    "family_medicine": "Family Medicine",
+    "general_surgeon": "General Surgery",
+    "internist": "Internal Medicine",
+    "pediatrician": "Pediatrics",
+    "psychiatrist": "Psychiatry",
+    "psychologist": "Psychology",
+    "radiologist": "Radiology",
+    "plastic_surgeon": "Plastic Surgery",
+    "physiotherapist": "Physiotherapy",
+    "midwife": "Midwifery",
     "all": "All",
     "no_department": "No Department"
   },
@@ -153,7 +183,35 @@
     "in_consultation": "In Consultation",
     "on_break": "On Break",
     "incapacitated": "Unable to Work",
+    "suspended": "Suspended",
     "all": "All"
+  },
+  "appointmentStatus": {
+    "scheduled": "Scheduled",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "pending": "Pending",
+    "rescheduled": "Rescheduled",
+    "missed": "Missed",
+    "in_progress": "In Progress",
+    "no_show": "No Show"
+  },
+  "gender": {
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "prefer_not_to_say": "Prefer not to say"
+  },
+  "relationship": {
+    "father": "Father",
+    "mother": "Mother",
+    "legal_guardian": "Legal Guardian",
+    "other": "Other",
+    "spouse": "Spouse",
+    "son_daughter": "Son/Daughter",
+    "sibling": "Sibling",
+    "grandparent": "Grandparent",
+    "caregiver": "Caregiver"
   },
   "pages": {
     "profesionals": {
