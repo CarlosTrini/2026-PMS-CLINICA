@@ -2,21 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCollectionsFn } from "@/lib/mongodb";
 import type { Professional } from "@/types/dataTypes";
 
-import { getDefaultResponseApi } from "@/utils/dataTest/apiResponse";
-
 export async function GET(request: NextRequest) {
-    const responseApi = getDefaultResponseApi();
+    try {
+        const { collectionFound } = await getCollectionsFn<Professional>('professionals');
 
-    const { collectionFound } = await getCollectionsFn<Professional[]>('professionals');
+        if (!collectionFound) {
+            return NextResponse.json(
+                { message: "No se ha podido obtener información." },
+                { status: 500 }
+            );
+        }
 
-    if (!collectionFound) {
-        responseApi.message = 'bad_request';
-        responseApi.errorMsg = "No se han podido encontrar datos. Intente de nuevo.";
-        return NextResponse.json(responseApi, { status: 400 });
+        const professionals = await collectionFound.find({}).toArray();
+        return NextResponse.json(professionals);
+    } catch (error) {
+        return NextResponse.json(
+            { message: "Error al obtener profesionales." },
+            { status: 500 }
+        );
     }
-
-    const professionals = await collectionFound.find({}).toArray();
-    responseApi.data = professionals;
-    return NextResponse.json(responseApi);
-
 }

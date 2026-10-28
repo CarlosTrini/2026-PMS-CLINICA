@@ -20,7 +20,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authRegisterData, authRegisterDefaultValues, auhtRegisterSchema } from "./schemas/authRegisterSchema";
 // QUERY
-import { hydrate, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 //SERVICE
 import { AuthActionsService } from "./services/authService";
 // LIBS Y OTROS
@@ -62,7 +62,7 @@ export default function SignupView() {
             reset();
         },
         onError: (err: any) => {
-            setErrorMsg(err?.response?.data?.errorMsg || 'Ha ocurrido un error')
+            setErrorMsg(err?.response?.data?.message || 'Ha ocurrido un error')
         }
 
     });

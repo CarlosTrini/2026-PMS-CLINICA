@@ -133,6 +133,7 @@ export default function Profesionals() {
                 isLoading={isLoading}
                 isError={error}
                 data={dataTable}
+                errorMsg={error?.message}
                 errorClassName="min-h-[40vh]"
                 loadingClassName="min-h-[40vh]"
                 noDataPlaceholder={<>
@@ -140,7 +141,7 @@ export default function Profesionals() {
                         <figure className="w-15 h-15 overflow-hidden rounded-full">
                             <Image src="/images/no-results.jpg" alt="Empty" width={100} height={100} className="object-cover" />
                         </figure>
-                        <p className="font-bold text-lg">No se han encontrado coincidencias</p>
+                        <p className="font-bold text-lg text-theme-light-gray">No se han encontrado coincidencias</p>
                     </div>
                 </>}
             >

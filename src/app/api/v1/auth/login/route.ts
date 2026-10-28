@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDefaultResponseApi } from '@/utils/dataTest/apiResponse';
 import type { AuthLogin, UserSession, UserSystem } from '@/types/dataTypes';
 import { SignJWT } from 'jose';
 import { getCollectionsFn } from '@/lib/mongodb';
@@ -24,8 +23,6 @@ const createToken = async (userFind: UserSystem) => {
 export async function POST(request: NextRequest) {
     const body = await request.json();
 
-    let response = getDefaultResponseApi();
-
     // CAMPOS INCOMPLETOS
     const requiredFields: (keyof AuthLogin)[] = [
         'email',
@@ -33,24 +30,21 @@ export async function POST(request: NextRequest) {
     ];
     const hasEmptyFields = requiredFields.some((field) => !body[field]);
     if (hasEmptyFields) {
-        response.errorMsg = "Todos los campos son requeridos";
-        return NextResponse.json(response, { status: 400 });
+        return NextResponse.json({ message: "Todos los campos son requeridos" }, { status: 400 });
     }
 
     // revisar usuario
     const { collectionFound } = await getCollectionsFn<UserSystem>("usersSystem");
     const userFind = await collectionFound.findOne({ email: body.email });
 
-    // VALIDA QUE EXSISTA
+    // VALIDA QUE EXISTA
     if (!userFind) {
-        response.errorMsg = "El usuario no existe";
-        return NextResponse.json(response, { status: 400 });
+        return NextResponse.json({ message: "El usuario no existe" }, { status: 404 });
     }
 
-    //VALIDA QUE CONTRASEÑA COINCIDA CON EL CORREO
-    if (!userFind || (userFind.password !== body.password)) {
-        response.errorMsg = "Revisar que ambos campos estén correctos";
-        return NextResponse.json(response, { status: 400 });
+    // VALIDA QUE CONTRASEÑA COINCIDA CON EL CORREO
+    if (userFind.password !== body.password) {
+        return NextResponse.json({ message: "Revisar que ambos campos estén correctos" }, { status: 400 });
     }
 
     // CREA EL TOKEN
@@ -65,10 +59,8 @@ export async function POST(request: NextRequest) {
         idEnterprise: userFind.idEnterprise || ''
     };
 
-    response.data = {
+    return NextResponse.json({
         user: dataUser,
         token
-    }
-
-    return NextResponse.json(response);
+    });
 }

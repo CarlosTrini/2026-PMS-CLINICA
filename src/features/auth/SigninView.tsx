@@ -49,16 +49,12 @@ export default function SignInView() {
         mutationKey: ['login'],
         mutationFn: (data: AuthLogin) => AuthActionsService.loginUserSystem(data),
         onSuccess: (res) => {
-            const dataUser = res?.data.data;
+            const dataUser = res?.data;
 
-            if (res.status !== 200) return
-
+            if (res.status !== 200) return;
 
             if (dataUser) {
-                // Guardar cookie por 1 día o la que marque el servidor... 
-                // ESTO TIENE RELQCIÍNO CON PROXY.TS...
-                // para que no pase a ruta admin sin loguearse o vaya a rutas auth una vez logueado...
-                // en los botones de cerrar sesión UserDropdown y AppSidebar se elimina la cookie
+                // Guardar cookie por 1 día
                 document.cookie = `auth_token=${dataUser.token}; path=/; max-age=86400; SameSite=Lax`;
 
                 setToken(dataUser.token);
@@ -66,12 +62,12 @@ export default function SignInView() {
                 setIsAuthenticated(true);
                 reset();
                 setErrorMsg('');
-                Navigate.push('/admin')
+                Navigate.push('/admin');
             }
         },
-        onError: (err: any) => [
-            setErrorMsg(err?.response?.data?.errorMsg || 'Ha ocurrido un error')
-        ]
+        onError: (err: any) => {
+            setErrorMsg(err?.response?.data?.message || 'Ha ocurrido un error');
+        }
     });
 
 

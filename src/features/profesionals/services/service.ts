@@ -1,6 +1,5 @@
 import { apiClient } from "@/lib/axios";
 import { Metrics, Professional } from "@/types/dataTypes";
-import { ResponseStruct } from "@/utils/dataTest/apiResponse";
 
 // DATA FAKE... SUSTITUIR EN EL SERVER
 import { PROFESIONALS_DATA } from "@/utils/datadummy";
@@ -53,11 +52,10 @@ export const ProfesionalActionsService = {
 
     getProfesionales: async (): Promise<Professional[]> => {
         try {
-            const { data } = await apiClient.get<ResponseStruct<Professional[]>>('/profesionals');
-            return data.data || [];
+            const { data } = await apiClient.get<Professional[]>('/profesionals');
+            return data;
         } catch (err: any) {
-            // Lanzas directamente el mensaje de tu backend:
-            throw new Error(err.response?.data?.errorMsg || "Error al obtener profesionales");
+            throw new Error(err.response?.data?.message || "Error al obtener profesionales");
         }
     },
 

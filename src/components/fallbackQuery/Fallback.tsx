@@ -7,13 +7,14 @@ interface Props {
     noDataPlaceholder?: string | React.ReactNode;
     isError: boolean | Error | null;
     isLoading: boolean;
+    errorMsg?: string;
     data?: unknown | null;
     loadingClassName?: string; // de preferencia mandar solo el height y width
     errorClassName?: string; // de preferencia mandar solo el height y width
 }
 
 
-export default function Fallback({ id, children, isError, isLoading, data, loadingClassName, errorClassName, noDataPlaceholder }: Props) {
+export default function Fallback({ id, children, isError, isLoading, data, errorMsg, loadingClassName, errorClassName, noDataPlaceholder }: Props) {
 
     const loadingStyles = loadingClassName ? loadingClassName : `min-h-20 w-full`;
     const errorStyles = errorClassName ? errorClassName : `min-h-10 w-full `;
@@ -44,7 +45,7 @@ export default function Fallback({ id, children, isError, isLoading, data, loadi
                 {
                     !isLoading && isError && (
                         <div className={`${errorStyles} flex flex-col items-center justify-center`} >
-                            <figure className='w-5 h-5 overflow-hidden'>
+                            <figure className='w-8 h-8 overflow-hidden'>
                                 <Image
                                     src="/images/error.jpg"
                                     alt="Error"
@@ -53,7 +54,9 @@ export default function Fallback({ id, children, isError, isLoading, data, loadi
                                     height={100}
                                 />
                             </figure>
-                            <h2 className="text-md font-bold text-error-dark/70">No se pudo cargar la información</h2>
+                            <h2 className="text-lg font-bold text-theme-light-gray">
+                                {errorMsg ? errorMsg : "No se pudo cargar la información"}
+                            </h2>
                         </div>)
                 }
 
