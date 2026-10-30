@@ -2,10 +2,13 @@
 import { UserSession } from '@/types/dataTypes';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { create } from 'zustand';
+import { RoleSystem } from '@/types/dataTypes';
 
 
 
 interface UserStore {
+    userRole: RoleSystem;
+    setUserRole: (userRole: RoleSystem) => void;
     userInfo: UserSession | null;
     setUserInfo: (user: UserSession) => void;
     token: string | null;
@@ -20,6 +23,8 @@ interface UserStore {
 export const useUserStore = create<UserStore>()(
     persist(
         (set) => ({
+            userRole: 'no_role',
+            setUserRole: (userRole) => set({ userRole }),
             userInfo: null,
             setUserInfo: (userInfo) => set({ userInfo }),
             token: null,
@@ -36,7 +41,6 @@ export const useUserStore = create<UserStore>()(
         }),
         {
             name: 'auth-session', // Nombre de la clave
-            storage: createJSONStorage(() => localStorage) // O quita esta línea si prefieres localStorage
         }
     )
 );

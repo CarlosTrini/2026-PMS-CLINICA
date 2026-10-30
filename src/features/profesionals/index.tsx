@@ -16,6 +16,7 @@ import { Professional } from "@/types/dataTypes";
 import FiltersProfesionals from "./components/Filters";
 import { useModal } from "@/hooks/useModal";
 import { Link } from "@/i18n/navigation";
+import { HEADQUARTERS_DATA } from "@/utils/constants";
 
 
 
@@ -24,7 +25,7 @@ import { useQuery } from "@tanstack/react-query";
 import ViewEditProf from "./components/ViewEditProf";
 
 
-const columns = ['name', 'speciality', 'department', 'contact', 'status', 'createdAt', 'actions'];
+const columns = ['name', 'speciality', 'headquarters', 'contact', 'status', 'createdAt', 'actions'];
 
 
 
@@ -220,11 +221,11 @@ export default function Profesionals() {
                                             </TableCell>
                                             <TableCell className="p-3 ">
                                                 <p className="text-xs font-bold uppercase text-gray dark:text-gray-light">
-                                                    {p.department ? (
-                                                        departmentT(p.department)
-                                                    ) : (
-                                                        <span className="text-error dark:text-error-dark"> {departmentT('no_department')}</span>
-                                                    )}
+                                                    {p.locationAssignments.length ? p.locationAssignments.map((assignment) => {
+                                                        const headquarters = HEADQUARTERS_DATA.find((item) => item.id === assignment.headquartersId);
+                                                        const department = headquarters?.departments.find((item) => item.id === assignment.departmentId);
+                                                        return <span key={assignment.id} className="block">{headquarters?.name ?? assignment.headquartersId} · {specialityT(assignment.speciality)}{department ? ` · ${departmentT(department.value)}` : ''}</span>;
+                                                    }) : 'Sin sede asignada'}
                                                 </p>
                                             </TableCell>
                                             <TableCell className="p-3 min-w-0 overflow-hidden whitespace-nowrap">
@@ -394,14 +395,14 @@ export default function Profesionals() {
 
                                                     <div>
                                                         <span className="text-[11px] text-gray/50 dark:text-gray-light/50 font-medium block mb-0.5">
-                                                            {tableColumnsT("department")}
+                                                            {tableColumnsT("headquarters")}
                                                         </span>
                                                         <p className="font-semibold uppercase text-gray dark:text-gray-light truncate">
-                                                            {p.department ? (
-                                                                departmentT(p.department)
-                                                            ) : (
-                                                                <span className="text-error dark:text-error-dark normal-case">{departmentT("no_department")}</span>
-                                                            )}
+                                                            {p.locationAssignments.length ? p.locationAssignments.map((assignment) => {
+                                                                const headquarters = HEADQUARTERS_DATA.find((item) => item.id === assignment.headquartersId);
+                                                                const department = headquarters?.departments.find((item) => item.id === assignment.departmentId);
+                                                                return <span key={assignment.id} className="block">{headquarters?.name ?? assignment.headquartersId} · {specialityT(assignment.speciality)}{department ? ` · ${departmentT(department.value)}` : ''}</span>;
+                                                            }) : 'Sin sede asignada'}
                                                         </p>
                                                     </div>
                                                 </div>

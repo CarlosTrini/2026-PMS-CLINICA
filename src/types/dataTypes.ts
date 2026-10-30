@@ -1,11 +1,11 @@
-import { APPOINTMENT_STATUS_ARRAY, DEPARTMENT_ARRAY, GENDER_ARRAY, RELATIONSHIP_ARRAY, ROLE_SYSTEM_ARRAY, SPECIALITY_ARRAY, STATUS_PROFESSIONAL_ARRAY } from '@/utils/constants';
+import { APPOINTMENT_STATUS_ARRAY, GENDER_ARRAY, RELATIONSHIP_ARRAY, ROLE_SYSTEM_ARRAY, SPECIALITY_ARRAY, STATUS_PROFESSIONAL_ARRAY, HEADQUARTERS_DEPARTMENT_ARRAY } from '@/utils/constants';
 
 export type Relationships = typeof RELATIONSHIP_ARRAY[number];
 export type Genders = typeof GENDER_ARRAY[number];
 export type Speciality = typeof SPECIALITY_ARRAY[number];
 export type RoleSystem = typeof ROLE_SYSTEM_ARRAY[number];
 export type AppointmentStatus = typeof APPOINTMENT_STATUS_ARRAY[number];
-export type Department = typeof DEPARTMENT_ARRAY[number];
+export type Department = typeof HEADQUARTERS_DEPARTMENT_ARRAY[number];
 export type StatusProfessional = typeof STATUS_PROFESSIONAL_ARRAY[number];
 
 // formato fechas ISO 8601 en UTC, por ejemplo, 2024-11-18T15:35:00.000Z
@@ -33,6 +33,41 @@ export interface ProfesionalInfo {
     speciality: Speciality;
     cedula: string;
     license: string;
+}
+
+export interface HeadquartersSpeciality {
+    value: Speciality;
+    isActive: boolean;
+}
+
+export interface HeadquartersDepartment {
+    id: string;
+    headquartersId: string;
+    value: Department;
+    isActive: boolean;
+    specialities: Speciality[];
+}
+
+export interface ProfessionalLocationAssignment {
+    id: string;
+    headquartersId: string;
+    speciality: Speciality;
+    departmentId?: string;
+}
+
+export interface Headquarters {
+    id: string;
+    name: string;
+    city: string;
+    address: string;
+    phone: string;
+    whatsapp: string;
+    hours: string;
+    emergency: string;
+    image: string;
+    services: string[];
+    specialities: HeadquartersSpeciality[];
+    departments: HeadquartersDepartment[];
 }
 
 // ==================== CLINICAL DATA STRUCTURES ====================
@@ -63,7 +98,7 @@ export interface Professional {
     personalInfo: PersonalInfo;
     contactInfo: ContactInfo;
     profesionalInfo: ProfesionalInfo[];
-    department: Department | '';
+    locationAssignments: ProfessionalLocationAssignment[];
     createdAt: string;
     updatedAt: string;
     role: RoleSystem;

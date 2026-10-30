@@ -36,8 +36,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Markdown docs (ignore all except README)
+# Markdown docs (ignore all except README and the requested domain model doc)
 *.md
 **/*.md
 !README.md
 !**/README.md
+!src/DOCUMENTACION_MODELO_SEDES_PROFESIONALES.md

@@ -18,12 +18,14 @@ import { EyeCloseIcon, EyeIcon } from "@/icons";
 import { Loader } from "lucide-react";
 // LIBRARIES
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod'
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 // TYPES
 import { AuthLogin } from "@/types/dataTypes";
 // STORES
 import { useUserStore } from "@/store/userStore";
+import { useHeadquarterStore } from "@/store/useHeadquarterStore";
+import { HEADQUARTERS_DATA } from "@/utils/constants";
 //SERVICES
 import { AuthActionsService } from "./services/authService";
 
@@ -35,13 +37,14 @@ export default function SignInView() {
     const Navigate = useRouter();
 
     const { setToken, setUserInfo, setIsAuthenticated, isAuthenticated } = useUserStore();
+    const setHeadquarters = useHeadquarterStore((state) => state.setHeadquarters);
 
 
     // HOOK-FORM
     const { register, reset, formState: { errors }, handleSubmit } = useForm<authLoginData>({
         resolver: zodResolver(authLoginSchema),
         defaultValues: authLoginDefaultValues
-    })
+    });
 
     // QUERY
     // const queryClient = useQueryClient();
@@ -62,6 +65,9 @@ export default function SignInView() {
                 setIsAuthenticated(true);
                 reset();
                 setErrorMsg('');
+                setHeadquarters(HEADQUARTERS_DATA[0]);
+
+
                 Navigate.push('/admin');
             }
         },
@@ -73,8 +79,8 @@ export default function SignInView() {
 
 
     const handleLoginSubmit = (data: authLoginData) => {
-        handleLogin(data)
-    }
+        handleLogin(data);
+    };
 
 
     // useEffect(() => {

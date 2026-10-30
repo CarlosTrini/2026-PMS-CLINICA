@@ -13,7 +13,16 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        const professionals = await collectionFound.find({}).toArray();
+        const documents = await collectionFound.find({}).toArray();
+        // Legacy documents may still store a single professional-level department.
+        // Keep the database untouched and expose the new response shape to clients.
+        const professionals = documents.map((document) => {
+            const { department: _legacyDepartment, ...professional } = document as typeof document & { department?: string };
+            return {
+                ...professional,
+                locationAssignments: Array.isArray(professional.locationAssignments) ? professional.locationAssignments : [],
+            };
+        });
         return NextResponse.json(professionals);
     } catch (error) {
         return NextResponse.json(

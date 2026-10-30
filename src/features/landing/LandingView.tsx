@@ -1,66 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import {
   SPECIALITY_ARRAY,
-  DEPARTMENT_ARRAY,
   PROFESIONALS_DATA,
+  HEADQUARTERS_DATA,
 } from "@/utils/constants";
 
 // 4 Sedes Hospitalarias Detalladas
-const CLINIC_BRANCHES = [
-  {
-    id: "sede-insurgentes",
-    name: "Sede Central Insurgentes",
-    city: "Ciudad de México",
-    address: "Av. Insurgentes Sur 1450, Col. Actipan, Benito Juárez, C.P. 03100, CDMX",
-    phone: "(55) 5482-1000",
-    whatsapp: "+52 55 1234 5601",
-    hours: "Lunes a Domingo: 24 Horas",
-    emergency: "Urgencias y Terapia 24/7",
-    image: "https://picsum.photos/id/1076/800/600",
-    services: ["Hospitalización", "Terapia Intensiva", "Resonancia Magnética", "Laboratorio 24h", "Banco de Sangre"],
-  },
-  {
-    id: "sede-guadalajara",
-    name: "Sede Guadalajara Country",
-    city: "Guadalajara, Jalisco",
-    address: "Av. Circunvalación Jorge Álvarez del Castillo 1240, Col. Country Club, C.P. 44610, Guadalajara, Jal.",
-    phone: "(33) 3818-4000",
-    whatsapp: "+52 33 9876 5402",
-    hours: "Lunes a Sábado: 7:00 am - 9:00 pm | Urgencias 24h",
-    emergency: "Urgencias Médicas 24/7",
-    image: "https://picsum.photos/id/122/800/600",
-    services: ["Consulta Especializada", "Tomografía Axial", "Check-ups Ejecutivos", "Clínica Dental", "Farmacia"],
-  },
-  {
-    id: "sede-monterrey",
-    name: "Sede Monterrey Valle Oriente",
-    city: "San Pedro Garza García, N.L.",
-    address: "Av. Lázaro Cárdenas 2400, Valle Oriente, C.P. 66269, San Pedro Garza García, N.L.",
-    phone: "(81) 8399-2000",
-    whatsapp: "+52 81 2345 6703",
-    hours: "Lunes a Domingo: 24 Horas",
-    emergency: "Urgencias de Alta Especialidad 24/7",
-    image: "https://picsum.photos/id/447/800/600",
-    services: ["Centro Quirúrgico", "Unidad Cardiovascular", "Endoscopía", "Medicina Preventiva", "Ultrasonido"],
-  },
-  {
-    id: "sede-puebla",
-    name: "Sede Puebla Angelópolis",
-    city: "Puebla, Puebla",
-    address: "Blvd. del Niño Poblano 2901, Reserva Territorial Atlixcáyotl, C.P. 72197, Puebla, Pue.",
-    phone: "(22) 2229-7000",
-    whatsapp: "+52 22 3456 7804",
-    hours: "Lunes a Sábado: 7:00 am - 8:00 pm | Domingo: 8:00 am - 4:00 pm",
-    emergency: "Atención Continua y Urgencias",
-    image: "https://picsum.photos/id/488/800/600",
-    services: ["Clínica de la Mujer", "Pediatría Integral", "Laboratorio Clínico", "Ultrasonido 4D", "Rehabilitación"],
-  },
-];
-
 // 4 Promociones Médicas Destacadas (Estudios y Consultas)
 const MEDICAL_PROMOTIONS = [
   {
@@ -156,17 +106,20 @@ const SPECIALITY_DETAILS: Record<string, { label: string; desc: string }> = {
 };
 
 export default function LandingView() {
+  const departmentT = useTranslations("deparments");
   const [selectedSpecialty, setSelectedSpecialty] = useState<string>("all");
-  const [selectedBranch, setSelectedBranch] = useState<string>(CLINIC_BRANCHES[0].id);
+  const [selectedBranch, setSelectedBranch] = useState<string>(HEADQUARTERS_DATA[0].id);
 
   // Filtrado de especialidades
+  const selectedHeadquarters = HEADQUARTERS_DATA.find((branch) => branch.id === selectedBranch) ?? HEADQUARTERS_DATA[0];
+  const branchSpecialities = selectedHeadquarters.specialities.filter(({ isActive }) => isActive).map(({ value }) => value);
   const filteredSpecialties =
     selectedSpecialty === "all"
-      ? SPECIALITY_ARRAY.slice(0, 12)
-      : SPECIALITY_ARRAY.filter((spec) => spec === selectedSpecialty);
+      ? branchSpecialities.slice(0, 12)
+      : branchSpecialities.filter((spec) => spec === selectedSpecialty);
 
   // Datos de doctores destacados tomados de PROFESIONALS_DATA
-  const featuredDoctors = PROFESIONALS_DATA.slice(0, 4);
+  const featuredDoctors = PROFESIONALS_DATA.filter((doctor) => doctor.locationAssignments.some((assignment) => assignment.headquartersId === selectedBranch)).slice(0, 4);
 
   return (
     <div className="min-h-screen bg-white text-gray-dark font-outfit antialiased selection:bg-brand selection:text-white">
@@ -292,7 +245,7 @@ export default function LandingView() {
                       defaultValue=""
                     >
                       <option value="" disabled>Selecciona especialidad...</option>
-                      {SPECIALITY_ARRAY.map((spec) => (
+                      {branchSpecialities.map((spec) => (
                         <option key={spec} value={spec}>
                           {SPECIALITY_DETAILS[spec]?.label || spec}
                         </option>
@@ -309,7 +262,7 @@ export default function LandingView() {
                       defaultValue=""
                     >
                       <option value="" disabled>Selecciona tu sede...</option>
-                      {CLINIC_BRANCHES.map((b) => (
+                      {HEADQUARTERS_DATA.map((b) => (
                         <option key={b.id} value={b.id}>
                           {b.name} ({b.city})
                         </option>
@@ -517,7 +470,7 @@ export default function LandingView() {
                   : "bg-light text-gray-dark border-gray-light hover:bg-gray-light"
                   }`}
               >
-                Todas ({SPECIALITY_ARRAY.length})
+              Todas ({branchSpecialities.length})
               </button>
             </div>
           </div>
@@ -563,12 +516,12 @@ export default function LandingView() {
               Departamentos Hospitalarios Activos:
             </span>
             <div className="flex flex-wrap gap-2">
-              {DEPARTMENT_ARRAY.filter(d => d !== 'no_department').map((dept) => (
+              {selectedHeadquarters.departments.filter(({ isActive }) => isActive).map((dept) => (
                 <span
-                  key={dept}
+                  key={dept.id}
                   className="px-2.5 py-1 text-2xs font-medium rounded bg-white border border-gray-light text-gray-dark"
                 >
-                  {dept}
+                  {departmentT(dept.value)}
                 </span>
               ))}
             </div>
@@ -594,7 +547,7 @@ export default function LandingView() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {CLINIC_BRANCHES.map((branch) => (
+            {HEADQUARTERS_DATA.map((branch) => (
               <div
                 key={branch.id}
                 className={`bg-white rounded-lg border transition-all flex flex-col overflow-hidden ${selectedBranch === branch.id
@@ -826,7 +779,7 @@ export default function LandingView() {
                       defaultValue=""
                     >
                       <option value="" disabled>Selecciona sede...</option>
-                      {CLINIC_BRANCHES.map((b) => (
+                      {HEADQUARTERS_DATA.map((b) => (
                         <option key={b.id} value={b.id}>
                           {b.name} ({b.city})
                         </option>
@@ -852,7 +805,7 @@ export default function LandingView() {
                         ))}
                       </optgroup>
                       <optgroup label="Especialidades">
-                        {SPECIALITY_ARRAY.map((s) => (
+                        {branchSpecialities.map((s) => (
                           <option key={s} value={s}>
                             {SPECIALITY_DETAILS[s]?.label || s}
                           </option>
@@ -920,7 +873,7 @@ export default function LandingView() {
                 Nuestras Sedes
               </h4>
               <ul className="space-y-2 text-xs">
-                {CLINIC_BRANCHES.map((b) => (
+                {HEADQUARTERS_DATA.map((b) => (
                   <li key={b.id}>
                     <a href="#sedes" className="hover:text-brand transition-colors">
                       {b.name}

@@ -1,4 +1,4 @@
-import { STATUS_PROFESSIONAL_ARRAY, ROLE_SYSTEM_ARRAY, GENDER_ARRAY, DEPARTMENT_ARRAY } from '@/utils/constants';
+import { STATUS_PROFESSIONAL_ARRAY, ROLE_SYSTEM_ARRAY, GENDER_ARRAY, SPECIALITY_ARRAY, HEADQUARTERS_DATA } from '@/utils/constants';
 import z from 'zod';
 
 
@@ -33,7 +33,6 @@ export const createProfesionalFormSchema = z.object({
         dateOfBirth: birthDateSchema,
         gender: z.enum(GENDER_ARRAY, { message: 'Género no válido' })
     }),
-    department: z.enum(DEPARTMENT_ARRAY, { message: 'Departamento no válido' }),
     contactInfo: z.object({
         email: z.string().email({ message: 'Correo inválido' }),
         phone: z.string({ message: 'Teléfono no válido' })
@@ -51,8 +50,31 @@ export const createProfesionalFormSchema = z.object({
             license: z.string({ message: 'Licencia no válida' })
         })
     ),
+    locationAssignments: z.array(z.object({
+        id: z.string(),
+        headquartersId: z.string().min(1, { message: 'Sede requerida' }),
+        speciality: z.enum(SPECIALITY_ARRAY, { message: 'Especialidad no válida' }),
+        departmentId: z.string().optional(),
+    })),
     createdAt: z.string(),
     updatedAt: z.string()
+}).superRefine(({ profesionalInfo, locationAssignments }, context) => {
+    locationAssignments.forEach((assignment, index) => {
+        const headquarters = HEADQUARTERS_DATA.find((item) => item.id === assignment.headquartersId);
+        if (!headquarters) {
+            context.addIssue({ code: 'custom', path: ['locationAssignments', index, 'headquartersId'], message: 'La sede no existe' });
+            return;
+        }
+        if (!headquarters.specialities.some((item) => item.value === assignment.speciality)) {
+            context.addIssue({ code: 'custom', path: ['locationAssignments', index, 'speciality'], message: 'La sede no ofrece esta especialidad' });
+        }
+        if (!profesionalInfo.some((item) => item.speciality === assignment.speciality)) {
+            context.addIssue({ code: 'custom', path: ['locationAssignments', index, 'speciality'], message: 'El profesional no tiene esta especialidad personal' });
+        }
+        if (assignment.departmentId && !headquarters.departments.some((item) => item.id === assignment.departmentId && item.specialities.includes(assignment.speciality))) {
+            context.addIssue({ code: 'custom', path: ['locationAssignments', index, 'departmentId'], message: 'El departamento no pertenece a esta sede' });
+        }
+    });
 });
 export type CreateProfesionalData = z.infer<typeof createProfesionalFormSchema>;
 
@@ -65,7 +87,6 @@ export const createProfesionalDefault: CreateProfesionalData = {
         dateOfBirth: "",
         gender: "other"
     },
-    department: 'no_department',
     contactInfo: {
         email: "",
         phone: "",
@@ -82,6 +103,7 @@ export const createProfesionalDefault: CreateProfesionalData = {
             license: ""
         }
     ],
+    locationAssignments: [],
     createdAt: "",
     updatedAt: ""
 }

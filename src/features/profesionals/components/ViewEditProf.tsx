@@ -9,7 +9,7 @@ import Badge from "@/components/ui/badge/Badge";
 import { STATUS_COLOR_LIGHT } from "@/utils/statusColors";
 import Button from "@/components/ui/button/Button";
 import useSystemTraslations from "@/hooks/useSysteTranslations";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { CreateProfesionalData, createProfesionalFormSchema } from "../schemas/formProfesionalSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { simpleDate } from "@/utils/dates";
@@ -19,7 +19,7 @@ import { useQueryClient, useMutation } from "@tanstack/react-query"
 import { ProfesionalActionsService } from "../services/service"
 
 // CONSTANTES
-import { DEPARTMENT_ARRAY, ROLE_SYSTEM_ARRAY, STATUS_PROFESSIONAL_ARRAY } from "@/utils/constants";
+import { HEADQUARTERS_DATA, ROLE_SYSTEM_ARRAY, STATUS_PROFESSIONAL_ARRAY } from "@/utils/constants";
 import Tooltip from "@/components/ui/tooltip/Tooltip";
 
 interface Props {
@@ -34,7 +34,7 @@ export default function ViewEditProf({ profesional, resetValues, closeModal, isO
 
     const { statusT, specialityT, commonT, formInputsT, departmentT, rolesSystemT } = useSystemTraslations();
 
-    const [rolesSelect, statusSelect, departmentSelect] = useMemo(() => {
+    const [rolesSelect, statusSelect] = useMemo(() => {
         const rolesSelect = ROLE_SYSTEM_ARRAY.map((role) => ({
             value: role,
             label: rolesSystemT(role), // o rolesT(role)
@@ -43,12 +43,7 @@ export default function ViewEditProf({ profesional, resetValues, closeModal, isO
             value: status,
             label: statusT(status),
         }));
-        const departmentSelect = DEPARTMENT_ARRAY.map((department) => ({
-            value: department,
-            label: departmentT(department),
-        }));
-
-        return [rolesSelect, statusSelect, departmentSelect]
+        return [rolesSelect, statusSelect]
     }, []);
 
 
@@ -83,6 +78,9 @@ export default function ViewEditProf({ profesional, resetValues, closeModal, isO
         defaultValues: profesional as CreateProfesionalData
     });
     const { register, handleSubmit, reset, getValues, formState: { errors } } = methods;
+    const { fields: locationAssignmentFields, append: appendLocationAssignment, remove: removeLocationAssignment } = useFieldArray({ control: methods.control, name: 'locationAssignments', keyName: 'fieldKey' });
+    const locationAssignmentValues = useWatch({ control: methods.control, name: 'locationAssignments' });
+    const eligibleHeadquarters = HEADQUARTERS_DATA.filter((headquarters) => headquarters.specialities.some(({ value, isActive }) => isActive && profesional.profesionalInfo.some((item) => item.speciality === value)));
 
 
 
@@ -340,20 +338,33 @@ export default function ViewEditProf({ profesional, resetValues, closeModal, isO
                                             <p className="mt-1 text-error-light text-xs italic">{errors?.status?.message}</p>
                                         </div>
 
-                                        <div className="">
-                                            <div className="flex items-baseline max-w-70">
-                                                <Label htmlFor="department" className="block text-sm mr-1" >Departamento</Label>
-                                                <Select
-                                                    placeholder="Selecciona un departamento"
-                                                    options={departmentSelect}
-                                                    defaultValue={getValues('department')}
-                                                    {...register('department')}
-                                                    disabled={!isEditMode}
-                                                    size="sm"
-                                                    className={`${!isEditMode && 'border-none! outline-none!'}`}
-                                                />
+                                        <div className="rounded-lg border border-gray/20 p-3">
+                                            <div className="flex items-center justify-between gap-2">
+                                                <p className="text-sm font-semibold">Asignaciones por sede</p>
+                                                {isEditMode && <Button type="button" size="sm" variant="outline" onClick={() => { const headquarters = eligibleHeadquarters[0] ?? HEADQUARTERS_DATA[0]; const speciality = headquarters.specialities.find((item) => item.isActive && profesional.profesionalInfo.some((info) => info.speciality === item.value))?.value ?? profesional.profesionalInfo[0]?.speciality ?? headquarters.specialities[0].value; appendLocationAssignment({ id: `assignment-${Date.now()}`, headquartersId: headquarters.id, speciality }); }}>Agregar sede</Button>}
                                             </div>
-                                            <p className="mt-1 text-error-light text-xs italic">{errors?.department?.message}</p>
+                                            {locationAssignmentFields.map((field, index) => {
+                                                const assignment = locationAssignmentValues?.[index];
+                                                const headquarters = HEADQUARTERS_DATA.find((item) => item.id === assignment?.headquartersId) ?? HEADQUARTERS_DATA[0];
+                                                return <div key={field.fieldKey} className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3 rounded-md border border-gray/10 p-3">
+                                                    <div>
+                                                        <Label htmlFor={`assignment-headquarters-${index}`}>Sede</Label>
+                                                        <Select id={`assignment-headquarters-${index}`} options={eligibleHeadquarters.map(({ id, name }) => ({ value: id, label: name }))} value={assignment?.headquartersId ?? ''} {...register(`locationAssignments.${index}.headquartersId`)} onChange={(event) => { const selected = eligibleHeadquarters.find((item) => item.id === event.target.value); methods.setValue(`locationAssignments.${index}.headquartersId`, event.target.value); if (selected) { const speciality = selected.specialities.find((item) => item.isActive && profesional.profesionalInfo.some((info) => info.speciality === item.value))?.value; if (speciality) methods.setValue(`locationAssignments.${index}.speciality`, speciality); methods.setValue(`locationAssignments.${index}.departmentId`, ''); } }} disabled={!isEditMode} size="sm" />
+                                                    </div>
+                                                    <div>
+                                                        <Label htmlFor={`assignment-speciality-${index}`}>Especialidad en sede</Label>
+                                                        <Select id={`assignment-speciality-${index}`} options={headquarters.specialities.filter(({ value, isActive }) => (isActive || value === assignment?.speciality) && profesional.profesionalInfo.some((item) => item.speciality === value)).map(({ value, isActive }) => ({ value, label: `${specialityT(value)}${isActive ? '' : ' (inactiva)'}` }))} value={assignment?.speciality ?? ''} {...register(`locationAssignments.${index}.speciality`)} onChange={(event) => { methods.setValue(`locationAssignments.${index}.speciality`, event.target.value as typeof assignment.speciality); const currentDepartment = headquarters.departments.find(({ id }) => id === assignment?.departmentId); if (currentDepartment && !currentDepartment.specialities.includes(event.target.value as typeof assignment.speciality)) methods.setValue(`locationAssignments.${index}.departmentId`, ''); }} disabled={!isEditMode} size="sm" />
+                                                    </div>
+                                                    <div className="flex items-end gap-2">
+                                                        <div className="flex-1">
+                                                            <Label htmlFor={`assignment-department-${index}`}>Departamento (opcional)</Label>
+                                                            <Select id={`assignment-department-${index}`} options={headquarters.departments.filter((department) => (department.isActive || department.id === assignment?.departmentId) && (!assignment?.speciality || department.specialities.includes(assignment.speciality))).map(({ id, value, isActive }) => ({ value: id, label: `${departmentT(value)}${isActive ? '' : ' (inactivo)'}` }))} value={assignment?.departmentId ?? ''} {...register(`locationAssignments.${index}.departmentId`)} placeholder="Sin departamento" canClear disabled={!isEditMode} size="sm" />
+                                                        </div>
+                                                        {isEditMode && <Button type="button" size="sm" variant="outline" onClick={() => removeLocationAssignment(index)}><Trash2 className="h-4 w-4" /></Button>}
+                                                    </div>
+                                                </div>;
+                                            })}
+                                            <p className="mt-2 text-xs text-gray">La especialidad personal es independiente de la especialidad que ejerce en cada sede.</p>
                                         </div>
 
                                         <div className="border border-gray my-2" />

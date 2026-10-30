@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import type { AuthLogin, UserSession, UserSystem } from '@/types/dataTypes';
+import type { AuthLogin, Headquarters, UserSession, UserSystem } from '@/types/dataTypes';
 import { SignJWT } from 'jose';
 import { getCollectionsFn } from '@/lib/mongodb';
 
@@ -16,8 +16,13 @@ const createToken = async (userFind: UserSystem) => {
         .sign(secret);
 
     return token;
-}
+};
 
+const getHeadquarter = async (id: string) => {
+
+    const { collectionFound } = await getCollectionsFn<Headquarters>("headquarters");
+    return collectionFound;
+};
 
 // ================================  METHODS
 export async function POST(request: NextRequest) {
@@ -41,6 +46,10 @@ export async function POST(request: NextRequest) {
     if (!userFind) {
         return NextResponse.json({ message: "El usuario no existe" }, { status: 404 });
     }
+
+    // TRAER LA DATA COMPLETA DEL USUARIO 
+    // TRAER LA DATA DE LA EMPRESA
+
 
     // VALIDA QUE CONTRASEÑA COINCIDA CON EL CORREO
     if (userFind.password !== body.password) {

@@ -1,5 +1,5 @@
 'use client'
-import { DEPARTMENT_ARRAY, SPECIALITY_ARRAY, STATUS_PROFESSIONAL_ARRAY } from "@/utils/constants";
+import { HEADQUARTERS_DATA, STATUS_PROFESSIONAL_ARRAY } from "@/utils/constants";
 import Collapse from "@/components/ui/collapse/Collapse";
 import Form from "@/components/form/Form";
 import Label from "@/components/form/Label";
@@ -13,6 +13,7 @@ import { useSelect } from "@/hooks/useSelelct";
 import { useState, useMemo } from "react";
 import type { Professional } from "@/types/dataTypes";
 import useSystemTraslations from "@/hooks/useSysteTranslations";
+import { useHeadquarterStore } from "@/store/useHeadquarterStore";
 
 
 
@@ -25,6 +26,7 @@ interface Props {
 export default function FiltersProfesionals({ dataQuery, updateDataFn }: Props) {
 
     const { commonT, specialityT, statusT, departmentT, formInputsT } = useSystemTraslations();
+    const activeHeadquarters = useHeadquarterStore((state) => state.headquarters) ?? HEADQUARTERS_DATA[0];
 
     const orderOptions = useMemo(() => [
         { value: 'asc', label: commonT('asc') },
@@ -33,13 +35,16 @@ export default function FiltersProfesionals({ dataQuery, updateDataFn }: Props) 
 
     // HOOKS
     const { resetSelectValue, resetSelectFn } = useSelect();
-    const [filtersSelected, setFiltersSelected] = useState<FilterData>(filtersProfesionalsDefault);
+    const initialFilters = { ...filtersProfesionalsDefault, headquarters: activeHeadquarters.id };
+    const [filtersSelected, setFiltersSelected] = useState<FilterData>(initialFilters);
 
     // HOOK FORM -ZOD
-    const { register, handleSubmit, reset, getValues } = useForm<FilterInput, any, FilterData>({
+    const { register, handleSubmit, reset, getValues, watch, setValue } = useForm<FilterInput, any, FilterData>({
         resolver: zodResolver(filterProfesionalsSchema),
-        defaultValues: filtersProfesionalsDefault
+        defaultValues: initialFilters
     });
+    const selectedHeadquartersId = watch('headquarters') || activeHeadquarters.id;
+    const selectedHeadquarters = HEADQUARTERS_DATA.find((item) => item.id === selectedHeadquartersId) ?? activeHeadquarters;
 
     // FILTERS & SORTING
     const onHandleFilters = async (filterValues: FilterData) => {
@@ -69,24 +74,21 @@ export default function FiltersProfesionals({ dataQuery, updateDataFn }: Props) 
             //     if (!fullName.includes(search)) return false;
             // }
 
-            // 2. Filtro por Especialidad
-            if (filterValues.speciality !== 'all') {
-                const hasSpeciality = p.profesionalInfo.some(i => i.speciality === filterValues.speciality);
-                if (!hasSpeciality) return false;
-            }
+            const locationAssignments = p.locationAssignments.filter((assignment) => assignment.headquartersId === filterValues.headquarters);
+            if (locationAssignments.length === 0) return false;
+
+            // La especialidad y el departamento se filtran desde la sede seleccionada.
+            const matchingAssignment = locationAssignments.some((assignment) => {
+                const matchesSpeciality = filterValues.speciality === 'all' || assignment.speciality === filterValues.speciality;
+                const matchesDepartment = filterValues.department === 'all'
+                    || (filterValues.department === 'no_department' ? !assignment.departmentId : assignment.departmentId === filterValues.department);
+                return matchesSpeciality && matchesDepartment;
+            });
+            if (!matchingAssignment) return false;
 
             // 3. Filtro por Estatus
             if (filterValues.status !== 'all') {
                 if (p.status !== filterValues.status) return false;
-            }
-
-            // 4. Filtro por Departamento
-            if (filterValues.department !== 'all') {
-                if (filterValues.department === 'no_department') {
-                    if (p.department !== '') return false;
-                } else {
-                    if (p.department !== filterValues.department) return false;
-                }
             }
 
             return true;
@@ -104,8 +106,8 @@ export default function FiltersProfesionals({ dataQuery, updateDataFn }: Props) 
 
             // Criterio 2: Orden por Especialidad (desempate o secundario)
             if (filterValues.orderBySpeciality) {
-                const specA = a.profesionalInfo[0]?.speciality || '';
-                const specB = b.profesionalInfo[0]?.speciality || '';
+                const specA = a.locationAssignments.find((assignment) => assignment.headquartersId === filterValues.headquarters)?.speciality || '';
+                const specB = b.locationAssignments.find((assignment) => assignment.headquartersId === filterValues.headquarters)?.speciality || '';
                 const diff = filterValues.orderBySpeciality === 'asc'
                     ? specA.localeCompare(specB)
                     : specB.localeCompare(specA);
@@ -129,21 +131,26 @@ export default function FiltersProfesionals({ dataQuery, updateDataFn }: Props) 
     const resetDataTable = () => updateDataFn(dataQuery || []);
 
     // LISTAS DE SELECTS
-    const [specialitySelect, statusSelect, departmentSelect] = useMemo(() => {
-        const specialitySelect = [...SPECIALITY_ARRAY.map((item) => ({
-            value: item,
-            label: specialityT(item),
+    const [specialitySelect, statusSelect, headquartersSelect, departmentSelect] = useMemo(() => {
+        const specialitySelect = [...selectedHeadquarters.specialities.filter(({ isActive }) => isActive).map(({ value }) => ({
+            value,
+            label: specialityT(value),
         })), { value: 'all', label: commonT('all') }];
         const statusSelect = [...STATUS_PROFESSIONAL_ARRAY.map((item) => ({
             value: item,
             label: statusT(item),
         })), { value: 'all', label: commonT('all') }];
-        const departmentSelect = [...DEPARTMENT_ARRAY.map((item) => ({
-            value: item,
-            label: departmentT(item),
-        })), { value: 'all', label: commonT('all') }];
-        return [specialitySelect, statusSelect, departmentSelect];
-    }, [specialityT, statusT, departmentT, commonT]);
+        const headquartersSelect = HEADQUARTERS_DATA.map((item) => ({
+            value: item.id,
+            label: item.name,
+        }));
+        const departmentSelect = [
+            ...selectedHeadquarters.departments.filter(({ isActive }) => isActive).map(({ id, value }) => ({ value: id, label: departmentT(value) })),
+            { value: 'no_department', label: departmentT('no_department') },
+            { value: 'all', label: commonT('all') },
+        ];
+        return [specialitySelect, statusSelect, headquartersSelect, departmentSelect];
+    }, [selectedHeadquarters, specialityT, statusT, departmentT, commonT]);
 
 
     const InfoCurrentFilters = () => (
@@ -162,13 +169,17 @@ export default function FiltersProfesionals({ dataQuery, updateDataFn }: Props) 
                     <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{specialityT(filtersSelected.speciality)}</p>
                 </div>
                 <div className="flex gap-2 items-center">
+                    <p className="text-brand-dark dark:text-light font-bold">{formInputsT('department')}:</p>
+                    <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{filtersSelected.department === 'all' ? commonT('all') : filtersSelected.department === 'no_department' ? departmentT('no_department') : selectedHeadquarters.departments.find(({ id }) => id === filtersSelected.department)?.value ? departmentT(selectedHeadquarters.departments.find(({ id }) => id === filtersSelected.department)!.value) : filtersSelected.department}</p>
+                </div>
+                <div className="flex gap-2 items-center">
                     <p className="text-brand-dark dark:text-light font-bold">{formInputsT('status')}:</p>
                     <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{statusT(filtersSelected.status)}</p>
                 </div>
                 <div className="flex gap-2 items-center">
-                    <p className="text-brand-dark dark:text-light font-bold">{formInputsT('department')}:</p>
+                    <p className="text-brand-dark dark:text-light font-bold">{formInputsT('headquarters')}:</p>
                     <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">
-                        {departmentT(filtersSelected.department)}
+                        {HEADQUARTERS_DATA.find((item) => item.id === filtersSelected.headquarters)?.name ?? activeHeadquarters.name}
                     </p>
                 </div>
                 <div className="flex gap-2 items-center">
@@ -211,6 +222,11 @@ export default function FiltersProfesionals({ dataQuery, updateDataFn }: Props) 
                             <div>
                                 <Label key={'status-profesionals'} htmlFor='status' className="flex gap-2" > <Activity className="w-4 h-4 text-theme-light-gray" /> {formInputsT('status')}</Label>
                                 <Select canClear defaultValue={getValues('status')} {...register('status')} reset={resetSelectValue} options={statusSelect} placeholder='Selecciona un estatus' />
+                            </div>
+
+                            <div>
+                                <Label key={'headquarters-profesionals'} htmlFor='headquarters' className="flex gap-2" > <Building className="w-4 h-4 text-theme-light-gray" /> {formInputsT('headquarters')}</Label>
+                                <Select canClear defaultValue={getValues('headquarters')} {...register('headquarters')} onChange={(event) => { register('headquarters').onChange(event); setValue('speciality', 'all'); setValue('department', 'all'); }} reset={resetSelectValue} options={headquartersSelect} placeholder='Selecciona una sede' />
                             </div>
 
                             <div>

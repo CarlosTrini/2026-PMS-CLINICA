@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
@@ -19,11 +20,11 @@ import {
     UserPlus,
 } from 'lucide-react';
 import {
-    DEPARTMENT_ARRAY,
     GENDER_ARRAY,
     ROLE_SYSTEM_ARRAY,
     SPECIALITY_ARRAY,
     STATUS_PROFESSIONAL_ARRAY,
+    HEADQUARTERS_DATA,
 } from '@/utils/constants';
 
 // Opciones preformateadas para los componentes Select
@@ -33,7 +34,7 @@ const ROLE_OPTIONS = ROLE_SYSTEM_ARRAY.map((role) => ({
         : role === 'professional' ? 'Médico Especialista'
             : role === 'assistant' ? 'Asistente Clínico'
                 : role === 'receptionist' ? 'Recepcionista'
-                    : 'Propietario / Director',
+                    : role === 'owner' ? 'Propietario / Director' : 'Sin rol asignado',
 }));
 
 const STATUS_OPTIONS = STATUS_PROFESSIONAL_ARRAY.map((status) => ({
@@ -44,33 +45,27 @@ const STATUS_OPTIONS = STATUS_PROFESSIONAL_ARRAY.map((status) => ({
                 : status === 'on_vacation' ? 'Vacaciones'
                     : status === 'in_consultation' ? 'En consulta'
                         : status === 'on_break' ? 'En descanso'
-                            : 'Incapacitado',
+                            : status === 'incapacitated' ? 'Incapacitado' : 'Suspendido',
 }));
 
 const GENDER_OPTIONS = GENDER_ARRAY.map((gender) => ({
     value: gender,
     label: gender === 'male' ? 'Masculino'
         : gender === 'female' ? 'Femenino'
-            : 'Otro',
-}));
-
-const DEPARTMENT_OPTIONS = DEPARTMENT_ARRAY.map((dept) => ({
-    value: dept,
-    label: dept === 'no_department' ? 'Sin departamento asignado'
-        : dept === 'general' ? 'Medicina General'
-            : dept,
-}));
-
-const SPECIALITY_OPTIONS = SPECIALITY_ARRAY.map((spec) => ({
-    value: spec,
-    label: spec,
+            : gender === 'prefer_not_to_say' ? 'Prefiero no decirlo' : 'Otro',
 }));
 
 export default function NewProfesionalView() {
+    const specialityT = useTranslations('speciality');
+    const departmentT = useTranslations('deparments');
+    const specialityOptions = SPECIALITY_ARRAY.map((speciality) => ({ value: speciality, label: specialityT(speciality) }));
     // Estado local para permitir agregar/quitar múltiples especialidades en la UI
     // (Listo para vincular con useFieldArray cuando configures react-hook-form)
     const [specialities, setSpecialities] = useState([
         { id: 1, speciality: '', cedula: '', license: '' },
+    ]);
+    const [locationAssignments, setLocationAssignments] = useState([
+        { id: 1, headquartersId: HEADQUARTERS_DATA[0].id, speciality: '', departmentId: '' },
     ]);
 
     const handleAddSpeciality = () => {
@@ -83,6 +78,21 @@ export default function NewProfesionalView() {
     const handleRemoveSpeciality = (idToRemove: number) => {
         if (specialities.length === 1) return;
         setSpecialities((prev) => prev.filter((item) => item.id !== idToRemove));
+    };
+
+    const handleAddLocationAssignment = () => setLocationAssignments((previous) => [
+        ...previous,
+        { id: Date.now(), headquartersId: HEADQUARTERS_DATA[0].id, speciality: '', departmentId: '' },
+    ]);
+
+    const updatePersonalSpeciality = (index: number, speciality: string) => {
+        setSpecialities((previous) => previous.map((item, itemIndex) => itemIndex === index ? { ...item, speciality } : item));
+        const nextPersonalSpecialities = specialities.map((item, itemIndex) => itemIndex === index ? speciality : item.speciality).filter(Boolean);
+        setLocationAssignments((previous) => previous.map((assignment) => {
+            if (nextPersonalSpecialities.includes(assignment.speciality)) return assignment;
+            const headquarters = HEADQUARTERS_DATA.find((item) => item.id === assignment.headquartersId) ?? HEADQUARTERS_DATA[0];
+            return { ...assignment, speciality: headquarters.specialities.find((item) => item.isActive && nextPersonalSpecialities.includes(item.value))?.value ?? '', departmentId: '' };
+        }));
     };
 
     return (
@@ -149,7 +159,7 @@ export default function NewProfesionalView() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div>
                             <Label htmlFor="role" className="block text-xs font-medium mb-1.5">
                                 Rol en el Sistema <span className="text-error">*</span>
@@ -174,17 +184,6 @@ export default function NewProfesionalView() {
                             />
                         </div>
 
-                        <div>
-                            <Label htmlFor="department" className="block text-xs font-medium mb-1.5">
-                                Departamento Clínico <span className="text-error">*</span>
-                            </Label>
-                            <Select
-                                id="department"
-                                options={DEPARTMENT_OPTIONS}
-                                placeholder="Selecciona un departamento"
-                                defaultValue="no_department"
-                            />
-                        </div>
                     </div>
                 </div>
 
@@ -349,6 +348,40 @@ export default function NewProfesionalView() {
                     </div>
                 </div>
 
+                {/* ASIGNACIÓN PROFESIONAL POR SEDE */}
+                <div className="rounded-xl generic-border-shadow bg-theme-light-dark p-6">
+                    <div className="flex items-center justify-between gap-3 pb-4 mb-6 border-b border-gray-light dark:border-gray-dark">
+                        <div>
+                            <h2 className="text-base font-semibold text-gray-dark dark:text-gray-light">Asignaciones por sede</h2>
+                            <p className="text-xs text-gray dark:text-gray-light/60">Elige qué especialidad ejercerá en cada sede y, opcionalmente, su departamento.</p>
+                        </div>
+                        <Button type="button" variant="outline" size="sm" onClick={handleAddLocationAssignment}>
+                            <Plus className="w-3.5 h-3.5" /> Agregar sede
+                        </Button>
+                    </div>
+                    <div className="flex flex-col gap-4">
+                        {locationAssignments.map((assignment, index) => {
+                            const headquarters = HEADQUARTERS_DATA.find((item) => item.id === assignment.headquartersId) ?? HEADQUARTERS_DATA[0];
+                            const availableSpecialities = headquarters.specialities.filter(({ value, isActive }) => isActive && specialities.some((personal) => personal.speciality === value)).map(({ value }) => ({ value, label: specialityT(value) }));
+                            const availableDepartments = headquarters.departments.filter(({ isActive }) => isActive).map(({ id, value }) => ({ value: id, label: departmentT(value) }));
+                            return <div key={assignment.id} className="grid grid-cols-1 sm:grid-cols-3 gap-4 rounded-lg border border-gray-light p-4">
+                                <div>
+                                    <Label htmlFor={`assignment-headquarters-${assignment.id}`} className="block text-xs font-medium mb-1.5">Sede</Label>
+                                    <Select id={`assignment-headquarters-${assignment.id}`} value={assignment.headquartersId} options={HEADQUARTERS_DATA.map(({ id, name }) => ({ value: id, label: name }))} onChange={(event) => setLocationAssignments((previous) => previous.map((item) => { if (item.id !== assignment.id) return item; const selectedHeadquarters = HEADQUARTERS_DATA.find((site) => site.id === event.target.value) ?? HEADQUARTERS_DATA[0]; return { ...item, headquartersId: selectedHeadquarters.id, speciality: selectedHeadquarters.specialities.find(({ value, isActive }) => isActive && specialities.some((personal) => personal.speciality === value))?.value ?? '', departmentId: '' }; }))} />
+                                </div>
+                                <div>
+                                    <Label htmlFor={`assignment-speciality-${assignment.id}`} className="block text-xs font-medium mb-1.5">Especialidad ofrecida</Label>
+                                    <Select id={`assignment-speciality-${assignment.id}`} value={assignment.speciality} options={availableSpecialities} placeholder="Primero agrega la especialidad al perfil" onChange={(event) => setLocationAssignments((previous) => previous.map((item) => { if (item.id !== assignment.id) return item; const department = headquarters.departments.find((candidate) => candidate.id === item.departmentId); return { ...item, speciality: event.target.value, departmentId: department?.specialities.some((departmentSpeciality) => departmentSpeciality === event.target.value) ? item.departmentId : '' }; }))} />
+                                </div>
+                                <div>
+                                    <Label htmlFor={`assignment-department-${assignment.id}`} className="block text-xs font-medium mb-1.5">Departamento (opcional)</Label>
+                                    <Select id={`assignment-department-${assignment.id}`} value={assignment.departmentId} options={availableDepartments} placeholder="Sin departamento" onChange={(event) => setLocationAssignments((previous) => previous.map((item) => item.id === assignment.id ? { ...item, departmentId: event.target.value } : item))} />
+                                </div>
+                            </div>;
+                        })}
+                    </div>
+                </div>
+
                 {/* SECCIÓN 4: ESPECIALIDADES MÉDICAS Y CREDENCIALES */}
                 <div className="rounded-xl generic-border-shadow bg-theme-light-dark p-6">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 mb-6 border-b border-gray-light dark:border-gray-dark">
@@ -403,8 +436,10 @@ export default function NewProfesionalView() {
                                             Especialidad Médica <span className="text-error">*</span>
                                         </Label>
                                         <Select
-                                            options={SPECIALITY_OPTIONS}
+                                            value={item.speciality}
+                                            options={specialityOptions}
                                             placeholder="Seleccionar especialidad"
+                                            onChange={(event) => updatePersonalSpeciality(index, event.target.value)}
                                         />
                                     </div>
 
