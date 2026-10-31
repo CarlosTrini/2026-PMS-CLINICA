@@ -1,129 +1,288 @@
-# Modelo de sedes, especialidades y asignaciones profesionales
+# cambio de interface.
 
-## Objetivo
+### paso 2
+> Elimina la interface UserSytem en todo el sistema y los lugares que implique
+> Elimina la interface UserSession ya que ahora la data se tomará desde professional al traer sus datos
+> Elimina la interface AuthRegister, ya que esa ruta quedará comentada, al igual que todos los imports que impliquen. Ojo, no eliminar, solo comentar.
 
-Separar el perfil y las credenciales de una persona de los servicios que ejerce en cada sede. Una especialidad puede pertenecer al perfil profesional, estar ofrecida por una sede y aparecer en una asignación profesional-sede; esos conceptos están relacionados, pero no representan el mismo dato.
+### paso 2
+> la ruta app/api/v1/auth/register se comenta para que ya no sea accesible, ojo, no eliminar, solo comentar. Las demás rutas se quedan.
 
-## Modelo
+### paso 3
+> En DataTypes.ts se modifican las las siguientes interfaces:
 
-```text
-Catálogo global de especialidades (SPECIALITY_ARRAY)
-  ├── Profesional.profesionalInfo[] (credenciales personales)
-  ├── Headquarters.specialities[] = { value, isActive }
-  └── Professional.locationAssignments[] (especialidad que ejerce en esa sede)
+```typescript
 
-Headquarters.departments[] = { id, headquartersId, value, isActive, specialities[] }
-Professional.locationAssignments[].departmentId (opcional; departamento de esa sede)
+ANTES
+export interface ProfessionalLocationAssignment {
+    id: string;
+    headquartersId: string;
+    speciality: Speciality;
+    departmentId?: string;
+}
+
+AHORA
+export interface ProfessionalLocationAssignment {
+    id: string;
+    headquartersId: string;
+    speciality: Speciality;
+    departmentId?: string;
+    roleSystem: RoleSystem; // Se agrega esta nueva propiedad 
+}
 ```
 
-- `Speciality` es el catálogo común con claves estables traducibles (`cardiology`, `dentistry`, etc.).
-- `Professional.profesionalInfo` conserva una o más especialidades personales con cédula y licencia.
-- `Headquarters.specialities` define la oferta de esa sede. Cada opción conserva una clave de catálogo y su estado activo.
-- `Headquarters.departments` contiene cero o más departamentos. Cada uno tiene su clave de catálogo, estado activo y claves de especialidades asociadas.
-- `Professional.locationAssignments` contiene cero o más asignaciones. Cada asignación tiene ID, sede, especialidad y `departmentId` opcional.
-- Un cambio de sede, especialidad ejercida o departamento se realiza en la asignación correspondiente; no altera el perfil personal ni sus credenciales.
+```typescript
 
-Los tipos y los datos actuales usan listas en memoria para el catálogo y las sedes de demostración. El modelo de relaciones es apto para persistirse como documentos/registros separados en la BD.
+ANTES
 
-## Reglas de negocio
+export interface Professional {
+    id: string;
+    image: string;
+    personalInfo: PersonalInfo;
+    contactInfo: ContactInfo;
+    profesionalInfo: ProfesionalInfo[];
+    locationAssignments: ProfessionalLocationAssignment[];
+    createdAt: string;
+    updatedAt: string;
+    role: RoleSystem; // Se elimina en la nueva esta propiedad porque ya no se utilizará 
+    status: StatusProfessional;
+}
 
-1. La sede referenciada debe existir.
-2. La sede debe ofrecer y tener activa la especialidad elegida para asignaciones nuevas.
-3. La persona debe tener esa especialidad en su perfil personal.
-4. Si se especifica `departmentId`, ese departamento debe pertenecer a la sede y estar asociado con la especialidad asignada.
-5. La asignación no requiere departamento. Una sede sin departamentos se representa con `departments: []` y la asignación omite `departmentId`.
-6. La sede puede ofrecer cero o más especialidades (`specialities: []` también es válido).
 
-`createProfesionalFormSchema` valida las reglas 1–4. Al implementar escrituras de BD, el servidor debe repetirlas: una validación hecha solo en el cliente no protege los datos persistidos.
+AHORA
 
-## Ejemplos
+export interface Professional {
+    id: string;
+    image: string;
+    personalInfo: PersonalInfo;
+    contactInfo: ContactInfo;
+    profesionalInfo?: ProfesionalInfo[] | [];  // Se modifica porque en algunos casos no se tendrá profesionalInfo
+    locationAssignments: ProfessionalLocationAssignment[];
+    termsAcceptedAt: string;  // va a ser una fecha como en createdAt o updatedAt
+    lastLoginAt: string;  // va a ser una fecha como en createdAt o updatedAt
+    createdAt: string;
+    updatedAt: string;
+    status: StatusProfessional;
+}
 
-### Profesional con más de una especialidad personal
+```
+### Paso 4
 
-```ts
-const profesional = {
-  id: "prof-021",
-  profesionalInfo: [
-    { speciality: "cardiology", cedula: "CED-123", license: "LIC-123" },
-    { speciality: "general_medicine", cedula: "CED-123", license: "LIC-123" },
-  ],
-  locationAssignments: [
-    {
-      id: "assignment-1",
-      headquartersId: "sede-insurgentes",
-      speciality: "cardiology",
-      departmentId: "insurgentes-cardiologia",
+> actualiza la data de PROFESIONALS_DATA (utils/constants) para que refleje los cambios realizados en el paso 3. Ojo, no se necesita que tenga todos los datos, solo que refleje los cambios. te anexo un ejemplo de data que puedes usar de modo aleatorio.
+Utiliza data de sedes, roles, status etc ya existentes en DataTypes.ts NO CREES NUEVOS. OJO A ESTO
+
+```typescript
+
+// ---------- DATOS DE REFERENCIA ----------
+
+// ---------- PROFESSIONALS ----------
+ 
+export const professionals = [
+  // -----------------------------------------------------------
+  // 1) Profesional con UNA sede
+  // -----------------------------------------------------------
+  {
+    id: 'prof-001',
+    status: 'active',
+    image: 'https://picsum.photos/seed/sofia/200/200',
+    personalInfo: {
+      name: 'Sofía',
+      lastName: 'García López',
+      dateOfBirth: new Date('1985-03-14'),
+      gender: 'female',
     },
-  ],
-};
+    contactInfo: {
+      email: 'sofia.garcia@example.com',
+      phone: '+525512345601',
+      address: 'Av. Insurgentes Sur 120',
+      city: 'Ciudad de México',
+      state: 'CDMX',
+      zip: '03100',
+      country: 'México',
+    },
+    professionalInfo: [
+      {
+        id: 'pinfo-001',
+        specialityId: 'spec-cardiology',
+        cedula: 'CED-100001',
+        license: 'LIC-200001',
+      },
+    ],
+    locationAssignments: [
+      {
+        id: 'assign-001',
+        headquartersId: 'sede-insurgentes',
+        departmentId: 'dep-ins-cardiology',
+        role: 'professional',
+        specialityId: 'spec-cardiology',
+        isActive: true,
+      },
+    ],
+    termsAcceptedAt: new Date('2024-01-10T09:30:00Z'),
+    lastLoginAt: new Date('2024-02-15T08:10:00Z'),
+    createdAt: new Date('2024-01-08T16:00:00Z'),
+    updatedAt: new Date('2024-02-15T14:20:00Z'),
+  },
+ 
+  // -----------------------------------------------------------
+  // 2) Recepcionista (personal NO clínico)
+  //    Sin professionalInfos y sin specialityId: se omiten los campos
+  // -----------------------------------------------------------
+  {
+    id: 'prof-002',
+    status: 'active',
+    image: 'https://picsum.photos/seed/mariana/200/200',
+    personalInfo: {
+      name: 'Mariana',
+      lastName: 'Torres Ruiz',
+      dateOfBirth: new Date('1992-07-22'),
+      gender: 'female',
+    },
+    contactInfo: {
+      email: 'mariana.torres@example.com',
+      phone: '+525512345602',
+      city: 'Ciudad de México',
+      state: 'CDMX',
+      country: 'México',
+    },
+    professionalInfo: [],
+    locationAssignments: [
+      {
+        id: 'assign-002',
+        headquartersId: 'sede-insurgentes',
+        departmentId: 'dep-ins-reception',
+        role: 'receptionist',
+        isActive: true,
+      },
+    ],
+    termsAcceptedAt: new Date('2024-01-12T10:00:00Z'),
+    lastLoginAt: new Date('2024-02-15T07:45:00Z'),
+    createdAt: new Date('2024-01-10T11:00:00Z'),
+    updatedAt: new Date('2024-02-01T09:00:00Z'),
+  },
+ 
+  // -----------------------------------------------------------
+  // 3) Profesional con UNA profesión y presencia en DOS sedes
+  //    - professionalInfos: una sola cédula (una profesión).
+  //    - locationAssignments: dos asignaciones que reutilizan esa especialidad.
+  // -----------------------------------------------------------
+  {
+    id: 'prof-003',
+    status: 'active',
+    image: 'https://picsum.photos/seed/carlos/200/200',
+    personalInfo: {
+      name: 'Carlos',
+      lastName: 'Hernández Vega',
+      dateOfBirth: new Date('1980-11-05'),
+      gender: 'male',
+    },
+    contactInfo: {
+      email: 'carlos.hernandez@example.com',
+      phone: '+525512345603',
+      address: 'Calle Durango 88',
+      city: 'Ciudad de México',
+      state: 'CDMX',
+      zip: '06700',
+      country: 'México',
+    },
+    professionalInfo: [
+      {
+        _id: 'pinfo-003',
+        specialityId: 'spec-dermatology',
+        cedula: 'CED-100003',
+        license: 'LIC-200003',
+      },
+    ],
+    locationAssignments: [
+      {
+        _id: 'assign-003',
+        headquartersId: 'sede-insurgentes',
+        departmentId: 'dep-ins-dermatology',
+        role: 'professional',
+        specialityId: 'spec-dermatology',
+        isActive: true,
+      },
+      {
+        _id: 'assign-004',
+        headquartersId: 'sede-norte',
+        departmentId: 'dep-nor-dermatology',
+        role: 'professional',
+        specialityId: 'spec-dermatology',
+        isActive: true,
+      },
+    ],
+    termsAcceptedAt: new Date('2024-01-15T12:00:00Z'),
+    lastLoginAt: new Date('2024-02-14T18:30:00Z'),
+    createdAt: new Date('2024-01-12T10:00:00Z'),
+    updatedAt: new Date('2024-02-14T18:30:00Z'),
+  },
+];
 ```
 
-En este caso el perfil tiene dos especialidades personales; en Insurgentes ejerce Cardiología y se vincula a su unidad de Cardiología.
 
-### La misma persona en otra sede, sin departamento
 
-```ts
-profesional.locationAssignments.push({
-  id: "assignment-2",
-  headquartersId: "sede-guadalajara",
-      speciality: "general_medicine",
-  // departmentId se omite porque la sede no tiene un departamento aplicable.
-});
+
+## paso 5
+
+> Verifica que todo siga funcionando una vez terminados los cambios.
+
+### Fin del proceso.
+
+---
+
+## IMPORTANTE
+
+- No modifiques las interfaces que no estén relacionadas con los cambios realizados en pasos anteriores.
+
+
+---
+
+## Guía Rápida:Formas de Enviar y Recibir Datos en Next.js App Router (`route.ts`)
+
+| Método de envío | Ejemplo en Cliente (Axios) | Archivo que responde en Next.js | Cómo se lee en `route.ts` (Next.js 16) | Cuándo usarlo (Estándar REST) | Métodos HTTP comunes |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **1. Path Params** *(Parámetros de ruta)* | `apiClient.get('/headquarters/sede-01')` | `app/api/v1/headquarters/[id]/route.ts` | `const { id } = await params;` *(2do argumento de la función)* | Identificar un **recurso único** obligatorio (`id`, `slug`, `cedula`). | `GET`, `PUT`, `PATCH`, `DELETE` |
+| **2. Query Params** *(Search Params)* | `apiClient.get('/headquarters?city=CDMX&active=true')` | `app/api/v1/headquarters/route.ts` | `const city = request.nextUrl.searchParams.get('city');` *(1er argumento)* | **Filtros**, búsquedas, paginación (`?page=1&limit=10`) u ordenamiento opcional. | `GET` |
+| **3. Body** *(Cuerpo de la petición)* | `apiClient.post('/personal', dataObj)` | `app/api/v1/personal/route.ts` | `const body = await request.json();` *(1er argumento)* | Enviar **objetos completos**, formularios, payloads grandes o datos sensibles (credenciales). **No disponible en `GET`**. | `POST`, `PUT`, `PATCH` |
+| **4. Headers / Cookies** *(Cabeceras)* | `headers: { Authorization: 'Bearer ...' }` | Cualquier `route.ts` | `request.headers.get('authorization')` / `request.cookies.get('auth_token')` | **Autenticación** (JWT), tokens de sesión, idioma (`Accept-Language`) o metadatos. | Todos |
+
+### Ejemplos prácticos en Next.js 16
+
+#### 1. Path Params (`app/api/v1/headquarters/[id]/route.ts`)
+```typescript
+import { NextRequest, NextResponse } from "next/server";
+
+// ⚠️ IMPORTANTE: request SIEMPRE es el 1er parámetro; { params } SIEMPRE es el 2do.
+export async function GET(
+    _request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    const { id } = await params; // Ej: "sede-insurgentes"
+    return NextResponse.json({ id });
+}
 ```
 
-La segunda asignación no modifica credenciales ni la asignación de Insurgentes. La especialidad debe estar en la oferta de Guadalajara.
+#### 2. Query Params (`app/api/v1/headquarters/route.ts`)
+```typescript
+import { NextRequest, NextResponse } from "next/server";
 
-### Sede sin departamentos
+// URL llamada: /api/v1/headquarters?city=CDMX&status=active
+export async function GET(request: NextRequest) {
+    const searchParams = request.nextUrl.searchParams;
+    const city = searchParams.get("city");     // "CDMX" | null
+    const status = searchParams.get("status"); // "active" | null
 
-```ts
-const sedeAmbulatoria = {
-  id: "sede-consultorios",
-  specialities: [{ value: "cardiology", isActive: true }],
-  departments: [],
-};
+    return NextResponse.json({ city, status });
+}
 ```
 
-El sitio puede ofrecer servicios sin organizarse en departamentos.
+#### 3. Body (`app/api/v1/auth/login/route.ts`)
+```typescript
+import { NextRequest, NextResponse } from "next/server";
 
-## Compatibilidad y persistencia
-
-- `HEADQUARTERS_DEPARTMENT_ARRAY` conserva las claves traducibles disponibles al configurar una sede. Las opciones de filtro y asignación se leen de la sede seleccionada.
-- La demo usa dos sedes: Insurgentes tiene departamentos y una selección de especialidades; Guadalajara no tiene departamentos y ofrece todas las claves de `SPECIALITY_ARRAY`.
-- Al iniciar sesión, `useHeadquarterStore` recibe la primera sede para establecer el contexto predeterminado.
-- `GET /api/v1/profesionals` omite el antiguo `department` global en su respuesta y entrega `locationAssignments: []` para documentos que aún no lo tengan. No modifica documentos MongoDB.
-- El proyecto no tiene una ruta de escritura de asignaciones conectada: la actualización de profesional sigue siendo simulada y la pantalla de alta sigue siendo una maqueta sin `onSubmit`/mutación. Para persistir asignaciones nuevas, falta implementar las operaciones de escritura en API y la migración explícita de documentos antiguos. No se deduce una sede ni un departamento a partir del antiguo `department`, porque ese valor no identifica de forma fiable ninguna sede.
-- Las rutas `auth/login` y `auth/register` no se modificaron; el rol `no_role` continúa disponible.
-
-## Archivos y cambios realizados
-
-Las líneas son referencias al estado actual del repositorio y pueden desplazarse con cambios posteriores.
-
-| Archivo | Modificado, eliminado o agregado |
-| --- | --- |
-| `src/types/dataTypes.ts` | Líneas 38, 44, 50 y 57: tipos de oferta de especialidades (`value`, `isActive`), departamentos (`specialities`, `isActive`), asignaciones y sede. Línea 94: eliminado `Professional.department`; agregado `Professional.locationAssignments`. |
-| `src/utils/constants.ts` | Líneas 7 y 480 en adelante: dos sedes de demo, una con departamentos/especialidades seleccionadas y otra sin departamentos con todas las especialidades globales. Departamentos enlazan claves de especialidad y ambos catálogos guardan `isActive`. |
-| `src/features/profesionals/schemas/formProfesionalSchema.ts` | Líneas 27, 53 y 61: eliminado el campo global `department`; agregadas asignaciones y reglas `superRefine` para sede, oferta, especialidad personal y pertenencia del departamento. |
-| `src/features/profesionals/schemas/formFiltersSchema.ts` | Líneas 4–10: filtros por sede, especialidad ofrecida y departamento de la sede. |
-| `src/features/profesionals/components/Filters.tsx` | Líneas 25, 45 y 128: toma la sede actual del store, actualiza opciones de especialidad/departamento al cambiar sede y filtra por asignaciones de esa sede. |
-| `src/features/profesionals/NewProfesionalView.tsx` | Líneas 62 y 346: eliminado el selector global; agregado un bloque visual para elegir sede, servicio/especialidad y departamento opcional. El formulario todavía no guarda. |
-| `src/features/profesionals/components/ViewEditProf.tsx` | Líneas 33 y 343: eliminado el selector global; agregado editor de asignaciones con selección por sede, especialidad compatible y departamento de esa sede. |
-| `src/features/profesionals/index.tsx` | Línea 28 y líneas 224, 398: la columna “Departamento” pasó a mostrar sedes y sus asignaciones. |
-| `src/features/landing/LandingView.tsx` | Líneas 108, 122 y 517: eliminada la definición duplicada de sedes; sedes, especialidades ofrecidas y departamentos se leen de `HEADQUARTERS_DATA`; directorio de profesionales se filtra por sede. |
-| `src/app/api/v1/profesionals/route.ts` | Líneas 5 y 18: normalización de lectura para documentos heredados; no escribe ni migra MongoDB. |
-| `src/store/useHeadquarterStore.ts`, `src/features/auth/SigninView.tsx` | Store cambiado a guardar el objeto completo de sede; el login selecciona Insurgentes como sede inicial. |
-| `src/messages/es.json`, `src/messages/en.json` | Líneas 83, 106 y 177: agregadas claves para sede y departamentos organizacionales. |
-
-## Símbolos principales para localizar el cambio
-
-- `src/types/dataTypes.ts`: `Professional`, `ProfessionalLocationAssignment`, `HeadquartersSpeciality`, `HeadquartersDepartment`, `Headquarters`.
-- `src/utils/constants.ts`: `HEADQUARTERS_DEPARTMENT_ARRAY`, `HEADQUARTERS_DATA`, `headquartersSpecialities`, `PROFESIONALS_DATA`.
-- `src/features/profesionals/schemas/formProfesionalSchema.ts`: `createProfesionalFormSchema.superRefine`.
-- `src/features/profesionals/components/ViewEditProf.tsx`: `useFieldArray` para editar afiliaciones por sede.
-- `src/app/api/v1/profesionals/route.ts`: normalización compatible de la respuesta `GET`.
-
-## Verificaciones ejecutadas
-
-- `.\node_modules\.bin\tsc.cmd --noEmit`: correcto.
-- `npm.cmd run build`: compilación de producción correcta, incluyendo páginas en español e inglés y la ruta de API.
-- JSON: ambos archivos de mensajes se pudieron parsear.
-- Integridad de datos de demostración: cada asignación apunta a una sede existente, la sede ofrece la especialidad, el perfil personal incluye esa especialidad y cualquier departamento pertenece a esa misma sede.
+// Llamada con POST / PUT / PATCH enviando un JSON
+export async function POST(request: NextRequest) {
+    const body = await request.json(); // { email: "...", password: "..." }
+    return NextResponse.json({ received: body });
+}
+```

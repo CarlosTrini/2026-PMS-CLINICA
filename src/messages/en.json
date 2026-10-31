@@ -26,12 +26,12 @@
   "sidebar": {
     "groups": {
       "admin": "Administration",
-      "profesionals": "Staff",
+      "personal": "Staff",
       "session": "Session"
     },
     "items": {
       "dashboard": "Dashboard",
-      "profesionals": "Staff",
+      "personal": "Staff",
       "authentication": "Authentication",
       "session": "Session",
       "signIn": "Sign In",
@@ -195,7 +195,7 @@
     "caregiver": "Caregiver"
   },
   "pages": {
-    "profesionals": {
+    "personal": {
       "tittle": "Staff Management",
       "Metrics": {
         "total_employees": "Total Staff",

@@ -8,12 +8,12 @@ import { useEffect, useState } from "react";
 import Badge from "@/components/ui/badge/Badge";
 import { simpleDate } from "@/utils/dates";
 import Metrics from "./components/Metrics";
-import { Calendar, Eye, Mail, MoreVertical, Phone, PlusCircle, Trash2 } from 'lucide-react';
+import { Calendar, Eye, Mail, Phone, PlusCircle, Trash2 } from 'lucide-react';
 import Fallback from "@/components/fallbackQuery/Fallback";
-import { ProfesionalActionsService } from "./services/service";
+import { PersonalActionsService } from "./services/service";
 import useSystemTraslations from "@/hooks/useSysteTranslations";
-import { Professional } from "@/types/dataTypes";
-import FiltersProfesionals from "./components/Filters";
+import { Personal } from "@/types/dataTypes";
+import FiltersPersonal from "./components/Filters";
 import { useModal } from "@/hooks/useModal";
 import { Link } from "@/i18n/navigation";
 import { HEADQUARTERS_DATA } from "@/utils/constants";
@@ -21,30 +21,35 @@ import { HEADQUARTERS_DATA } from "@/utils/constants";
 
 
 // QUERY
-import { useQuery } from "@tanstack/react-query";
-import ViewEditProf from "./components/ViewEditProf";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import ViewEditPersonal from "./components/ViewEditPersonal";
+import { useHeadquarterStore } from "@/store/useHeadquarterStore";
 
 
 const columns = ['name', 'speciality', 'headquarters', 'contact', 'status', 'createdAt', 'actions'];
 
 
 
-export default function Profesionals() {
+export default function PersonalView() {
 
-    const { profT, commonT, statusT, tableColumnsT, specialityT, departmentT } = useSystemTraslations();
+    const { personalT, commonT, statusT, tableColumnsT, specialityT, departmentT, rolesSystemT } = useSystemTraslations();
+    const { currentHeadquarter } = useHeadquarterStore();
 
     // HOOKS
-    const [dataTable, setDataTable] = useState<Professional[]>([]);
-    const [userSelected, setUserSelected] = useState<Professional | null>(null);
+    const [dataTable, setDataTable] = useState<Personal[]>([]);
+    const [userSelected, setUserSelected] = useState<Personal | null>(null);
     const { isOpen, openModal, closeModal } = useModal(false);
 
 
-
-    // QUERY
-    const { data: dataQuery, isLoading, isError, error } = useQuery({
-        queryKey: ['profesionalsTable'],
-        queryFn: () => ProfesionalActionsService.getProfesionales(),
-
+    const { mutate: handlePersonal, isSuccess, isError, error } = useMutation({
+        mutationKey: ['personalTable', currentHeadquarter?.id],
+        mutationFn: (id: string) => PersonalActionsService.getPersonalByHeadquarter(id),
+        onSuccess: (data) => {
+            setDataTable(data);
+        },
+        onError: (err) => {
+            console.error('Error al obtener el personal:', err);
+        }
     });
 
 
@@ -84,30 +89,29 @@ export default function Profesionals() {
         );
     };
 
-
     useEffect(() => {
-        if (!dataQuery) return;
-        console.log("dataQuery", dataQuery);
-        setDataTable(dataQuery);
-    }, [dataQuery]);
+        if (!currentHeadquarter) return;
+        handlePersonal(currentHeadquarter.id)
+    }, [currentHeadquarter]);
 
     useEffect(() => {
         if (isError) {
-            console.log("error", error.message);
+            console.error("error", error.message);
         }
     }, [isError]);
 
 
-    // agre el modal con la info cunaod está listo el state
+    // abre el modal con la info cuando está listo el state
     useEffect(() => {
         if (userSelected) {
             openModal();
         }
     }, [userSelected]);
 
+
     return (
         <>
-            <PageBreadcrumb pageTitle={profT('tittle')} />
+            <PageBreadcrumb pageTitle={personalT('tittle')} />
 
 
 
@@ -115,12 +119,12 @@ export default function Profesionals() {
             <Metrics />
 
             {/* FILTERS */}
-            <FiltersProfesionals dataQuery={dataQuery as Professional[]} updateDataFn={setDataTable} />
+            <FiltersPersonal dataQuery={dataTable as Personal[]} updateDataFn={setDataTable} />
 
             {/* EXTRA BUTTONS */}
             <section className="flex items-center justify-end">
                 <Link
-                    href="/admin/profesionals/new"
+                    href="/admin/personal/new"
                     className="flex items-center text-sm font-medium gap-2 px-4 py-2 rounded-lg bg-brand hover:bg-brand/90 dark:bg-brand-dark dark:hover:bg-brand-dark/80 text-light transition-colors shadow-theme-xs"
                 >
                     <PlusCircle className="w-4 h-4" />
@@ -130,8 +134,8 @@ export default function Profesionals() {
 
             {/* TABLE */}
             <Fallback
-                id='profesionals-table'
-                isLoading={isLoading}
+                id='personal-table-fallback'
+                isLoading={!isSuccess}
                 isError={error}
                 data={dataTable}
                 errorMsg={error?.message}
@@ -177,7 +181,9 @@ export default function Profesionals() {
                                                     <div className="flex min-w-0 flex-1 flex-col">
                                                         <p className="truncate text-sm font-bold text-gray dark:text-gray-light">{p.personalInfo.name} {p.personalInfo.lastName}</p>
                                                         <p className="truncate text-sm italic text-gray/50 dark:text-gray-light/50">{p.contactInfo.city} - {p.contactInfo.state}</p>
-                                                        <p className="truncate text-sm italic text-gray/50 dark:text-gray-light/50">Role: {p.role}</p>
+                                                        <p className="truncate text-sm italic text-gray/50 dark:text-gray-light/50">
+                                                            Role: {p.locationAssignments?.[0]?.roleSystem ? rolesSystemT(p.locationAssignments[0].roleSystem) : '-'}
+                                                        </p>
 
                                                         <Tooltip content={
                                                             <>
@@ -193,11 +199,11 @@ export default function Profesionals() {
                                             </TableCell>
                                             <TableCell className="p-3">
                                                 {
-                                                    p.profesionalInfo[0] && (
+                                                    p.profesionalInfo?.[0] ? (
                                                         <>
                                                             <div className="flex items-center gap-2">
                                                                 {
-                                                                    p?.profesionalInfo.length > 1 && (
+                                                                    (p.profesionalInfo?.length ?? 0) > 1 && (
                                                                         <Tooltip content={`${p.profesionalInfo.length} ${commonT('specialities')}`}>
                                                                             <button className="p-1 rounded-md text-xs flex gap-1 items-center bg-brand-light/60 dark:bg-gray" onClick={() => { }}>
                                                                                 <Eye className="w-3 h-3 text-brand-dark dark:text-light" />
@@ -212,8 +218,9 @@ export default function Profesionals() {
                                                             <p className="text-xs italic text-gray/50 dark:text-gray-light/50">Ced: {p.profesionalInfo[0].cedula}</p>
                                                             <p className="text-xs italic text-gray/50 dark:text-gray-light/50">Lic: {p.profesionalInfo[0].license}</p>
                                                         </>
+                                                    ) : (
+                                                        <span className="text-xs text-gray/40 italic">Sin especialidad</span>
                                                     )
-
                                                 }
 
 
@@ -321,7 +328,7 @@ export default function Profesionals() {
                                                                 {p.personalInfo.name} {p.personalInfo.lastName}
                                                             </p>
                                                             <span className="text-xs text-gray/60 dark:text-gray-light/60">
-                                                                {p.contactInfo.city} - {p.contactInfo.state} &bull; <span className="italic">Role: {p.role}</span>
+                                                                {p.contactInfo.city} - {p.contactInfo.state} &bull; <span className="italic">Role: {p.locationAssignments?.[0]?.roleSystem ? rolesSystemT(p.locationAssignments[0].roleSystem) : '-'}</span>
                                                             </span>
                                                         </div>
                                                     </div>
@@ -370,13 +377,13 @@ export default function Profesionals() {
                                                         <span className="text-[11px] text-gray/50 dark:text-gray-light/50 font-medium block mb-0.5">
                                                             {tableColumnsT("speciality")}
                                                         </span>
-                                                        {p.profesionalInfo[0] ? (
+                                                        {p.profesionalInfo?.[0] ? (
                                                             <div>
                                                                 <div className="flex items-center gap-1.5">
                                                                     <p className="font-semibold uppercase text-gray dark:text-gray-light truncate">
                                                                         {specialityT(p.profesionalInfo[0].speciality)}
                                                                     </p>
-                                                                    {p.profesionalInfo.length > 1 && (
+                                                                    {(p.profesionalInfo?.length ?? 0) > 1 && (
                                                                         <Tooltip content={`${p.profesionalInfo.length} especialidades más`}>
                                                                             <button type="button" className="p-0.5 rounded text-xs bg-brand-light/60 dark:bg-gray">
                                                                                 <Eye className="w-3 h-3 text-brand-dark dark:text-light" />
@@ -478,8 +485,8 @@ export default function Profesionals() {
             {/* MODAL EDIT AND VIEW DATA */}
             {
                 userSelected && isOpen && (
-                    <ViewEditProf
-                        profesional={userSelected}
+                    <ViewEditPersonal
+                        personal={userSelected}
                         isOpen={isOpen}
                         closeModal={closeModal}
                         resetValues={() => setUserSelected(null)}
@@ -490,3 +497,4 @@ export default function Profesionals() {
         </>
     );
 }
+

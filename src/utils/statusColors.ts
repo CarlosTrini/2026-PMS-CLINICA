@@ -1,9 +1,9 @@
-import type { StatusProfessional, AppointmentStatus } from "@/types/dataTypes";
+import type { StatusPersonal, AppointmentStatus } from "@/types/dataTypes";
 
 
 
 export const STATUS_COLOR_SOLID: {
-    [key in StatusProfessional | AppointmentStatus]: string;
+    [key in StatusPersonal | AppointmentStatus]: string;
 } = {
     // Éxito / Operativo (Verdes: success -> success-dark)
     "active": "bg-gradient-to-r from-success to-success-dark text-light-accent shadow-xs",
@@ -36,7 +36,7 @@ export const STATUS_COLOR_SOLID: {
 
 
 export const STATUS_COLOR_LIGHT: {
-    [key in StatusProfessional | AppointmentStatus]: string;
+    [key in StatusPersonal | AppointmentStatus]: string;
 } = {
     // Éxito
     "active": "bg-success/20 border border-success/40 text-success-dark dark:text-success-light backdrop-blur-xs",

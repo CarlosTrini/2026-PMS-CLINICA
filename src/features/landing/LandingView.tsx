@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import {
   SPECIALITY_ARRAY,
-  PROFESIONALS_DATA,
+  PERSONAL_DATA,
   HEADQUARTERS_DATA,
 } from "@/utils/constants";
 
@@ -118,8 +118,8 @@ export default function LandingView() {
       ? branchSpecialities.slice(0, 12)
       : branchSpecialities.filter((spec) => spec === selectedSpecialty);
 
-  // Datos de doctores destacados tomados de PROFESIONALS_DATA
-  const featuredDoctors = PROFESIONALS_DATA.filter((doctor) => doctor.locationAssignments.some((assignment) => assignment.headquartersId === selectedBranch)).slice(0, 4);
+  // Datos de doctores destacados tomados de PERSONAL_DATA
+  const featuredDoctors = PERSONAL_DATA.filter((doctor) => doctor.locationAssignments.some((assignment) => assignment.headquartersId === selectedBranch)).slice(0, 4);
 
   return (
     <div className="min-h-screen bg-white text-gray-dark font-outfit antialiased selection:bg-brand selection:text-white">
@@ -623,7 +623,7 @@ export default function LandingView() {
       </section>
 
       {/* ============================================================ */}
-      {/* 8. DIRECTORIO MÉDICO (DATOS DE PROFESIONALS_DATA)            */}
+      {/* 8. DIRECTORIO MÉDICO (DATOS DE PERSONAL_DATA)                */}
       {/* ============================================================ */}
       <section id="medicos" className="py-16 bg-white border-b border-gray-light">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -641,7 +641,7 @@ export default function LandingView() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredDoctors.map((doc, idx) => {
-              const specKey = doc.profesionalInfo[0]?.speciality || "generalMedicine";
+              const specKey = doc.profesionalInfo?.[0]?.speciality || "generalMedicine";
               const specLabel = SPECIALITY_DETAILS[specKey]?.label || specKey;
               // Static picsum portrait IDs
               const staticPortraits = [
@@ -671,7 +671,7 @@ export default function LandingView() {
                     {specLabel}
                   </div>
                   <div className="text-2xs text-gray space-y-0.5 mb-4">
-                    <div>Cédula: <strong>{doc.profesionalInfo[0]?.cedula}</strong></div>
+                    <div>Cédula: <strong>{doc.profesionalInfo?.[0]?.cedula}</strong></div>
                     <div>Sede: {doc.contactInfo.city}</div>
                   </div>
                   <a

@@ -1,4 +1,4 @@
-import { APPOINTMENT_STATUS_ARRAY, GENDER_ARRAY, RELATIONSHIP_ARRAY, ROLE_SYSTEM_ARRAY, SPECIALITY_ARRAY, STATUS_PROFESSIONAL_ARRAY, HEADQUARTERS_DEPARTMENT_ARRAY } from '@/utils/constants';
+import { APPOINTMENT_STATUS_ARRAY, GENDER_ARRAY, RELATIONSHIP_ARRAY, ROLE_SYSTEM_ARRAY, SPECIALITY_ARRAY, STATUS_PERSONAL_ARRAY, HEADQUARTERS_DEPARTMENT_ARRAY } from '@/utils/constants';
 
 export type Relationships = typeof RELATIONSHIP_ARRAY[number];
 export type Genders = typeof GENDER_ARRAY[number];
@@ -6,7 +6,7 @@ export type Speciality = typeof SPECIALITY_ARRAY[number];
 export type RoleSystem = typeof ROLE_SYSTEM_ARRAY[number];
 export type AppointmentStatus = typeof APPOINTMENT_STATUS_ARRAY[number];
 export type Department = typeof HEADQUARTERS_DEPARTMENT_ARRAY[number];
-export type StatusProfessional = typeof STATUS_PROFESSIONAL_ARRAY[number];
+export type StatusPersonal = typeof STATUS_PERSONAL_ARRAY[number];
 
 // formato fechas ISO 8601 en UTC, por ejemplo, 2024-11-18T15:35:00.000Z
 
@@ -35,11 +35,6 @@ export interface ProfesionalInfo {
     license: string;
 }
 
-export interface HeadquartersSpeciality {
-    value: Speciality;
-    isActive: boolean;
-}
-
 export interface HeadquartersDepartment {
     id: string;
     headquartersId: string;
@@ -48,11 +43,12 @@ export interface HeadquartersDepartment {
     specialities: Speciality[];
 }
 
-export interface ProfessionalLocationAssignment {
+export interface PersonalLocationAssignment {
     id: string;
     headquartersId: string;
     speciality: Speciality;
     departmentId?: string;
+    roleSystem: RoleSystem;
 }
 
 export interface Headquarters {
@@ -66,7 +62,7 @@ export interface Headquarters {
     emergency: string;
     image: string;
     services: string[];
-    specialities: HeadquartersSpeciality[];
+    specialities: Speciality[];
     departments: HeadquartersDepartment[];
 }
 
@@ -92,25 +88,44 @@ export interface Guardian {
 }
 
 
-export interface Professional {
+export interface Personal {
     id: string;
     image: string;
     personalInfo: PersonalInfo;
     contactInfo: ContactInfo;
-    profesionalInfo: ProfesionalInfo[];
-    locationAssignments: ProfessionalLocationAssignment[];
+    profesionalInfo?: ProfesionalInfo[] | [];
+    locationAssignments: PersonalLocationAssignment[];
+    termsAcceptedAt: string;
+    lastLoginAt: string;
     createdAt: string;
     updatedAt: string;
-    role: RoleSystem;
-    status: StatusProfessional;
+    status: StatusPersonal;
+    security: {
+        password: string;
+        mustChangePassword: boolean;
+        emailVerified: boolean;
+        inviteTokenHash?: string;       // guarda el hash del token, no el token
+        inviteTokenExpiresAt?: string;
+    }
 }
 
+export interface UserSystem {
+    id: Personal["id"]
+    image: Personal["image"]
+    name: Personal["personalInfo"]["name"]
+    lastName: Personal["personalInfo"]["lastName"],
+    assigments: Personal["locationAssignments"],
+    status: Personal["status"]
+    emailVerified: Personal["security"]["emailVerified"]
+
+
+}
 
 // ==================== APPOINTMENT DATA STRUCTURES ====================
 export interface Appointment {
     id: string;
     patientId: string;
-    professionalId: string;
+    personalId: string;
     string: string;
     time: string;
     reason: string;
@@ -140,7 +155,7 @@ export interface Inventory {
 
 
 
-// ====================== DATA DE MÉTRICAS DE PROFESSIONALS
+// ====================== DATA DE MÉTRICAS DE PERSONAL
 
 export interface Metrics {
     total: number;
@@ -159,32 +174,7 @@ export interface Metrics {
     };
 }
 
-
-
-
-// ==================== USER SYSTEM DATA STRUCTURES ====================
-
-// data general del usuario registrar para uso del sistema
-export interface UserSystem {
-    id: string;
-    picture: string;
-    name: string;
-    lastName: string;
-    email: string;
-    password: string;
-    role: RoleSystem;
-    createdAt: string;
-    updatedAt: string;
-    termsAndConditions?: boolean;
-    idEnterprise?: string;
-}
-
-// data del usuario usando el sistema
-export interface UserSession extends Pick<UserSystem, 'id' | 'name' | 'email' | 'role' | 'picture' | 'idEnterprise'> { }
-
-// ====================== DATA DE AUTH: REGISTRO/LOGIN
-
-export interface AuthRegister extends Pick<UserSystem, 'name' | 'lastName' | 'email' | 'password' | 'termsAndConditions'> { }
+// ====================== DATA DE AUTH: LOGIN
 
 export interface AuthLogin {
     email: string;

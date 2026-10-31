@@ -1,4 +1,4 @@
-import { STATUS_PROFESSIONAL_ARRAY, ROLE_SYSTEM_ARRAY, GENDER_ARRAY, SPECIALITY_ARRAY, HEADQUARTERS_DATA } from '@/utils/constants';
+import { STATUS_PERSONAL_ARRAY, ROLE_SYSTEM_ARRAY, GENDER_ARRAY, SPECIALITY_ARRAY, HEADQUARTERS_DATA } from '@/utils/constants';
 import z from 'zod';
 
 
@@ -18,15 +18,14 @@ const birthDateSchema = dateStringSchema
         const minAgeDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
         return birthDate <= minAgeDate;
     }, {
-        message: 'El profesional debe ser mayor de 18 años'
+        message: 'El personal debe ser mayor de 18 años'
     });
 
 
 
 
-export const createProfesionalFormSchema = z.object({
-    role: z.enum(ROLE_SYSTEM_ARRAY, { message: 'Rol no válido' }),
-    status: z.enum(STATUS_PROFESSIONAL_ARRAY, { message: 'Estado no válido' }),
+export const createPersonalFormSchema = z.object({
+    status: z.enum(STATUS_PERSONAL_ARRAY, { message: 'Estado no válido' }),
     personalInfo: z.object({
         name: z.string().min(3, { message: 'Nombre debe tener al menos 3 caracteres' }),
         lastName: z.string().min(3, { message: 'Apellido debe tener al menos 3 caracteres' }),
@@ -49,16 +48,20 @@ export const createProfesionalFormSchema = z.object({
             cedula: z.string({ message: 'Cédula no válida' }),
             license: z.string({ message: 'Licencia no válida' })
         })
-    ),
+    ).optional(),
     locationAssignments: z.array(z.object({
         id: z.string(),
         headquartersId: z.string().min(1, { message: 'Sede requerida' }),
         speciality: z.enum(SPECIALITY_ARRAY, { message: 'Especialidad no válida' }),
         departmentId: z.string().optional(),
+        roleSystem: z.enum(ROLE_SYSTEM_ARRAY, { message: 'Rol no válido' }),
     })),
+    termsAcceptedAt: z.string().optional(),
+    lastLoginAt: z.string().optional(),
     createdAt: z.string(),
     updatedAt: z.string()
 }).superRefine(({ profesionalInfo, locationAssignments }, context) => {
+    const personalSpecialities = profesionalInfo ?? [];
     locationAssignments.forEach((assignment, index) => {
         const headquarters = HEADQUARTERS_DATA.find((item) => item.id === assignment.headquartersId);
         if (!headquarters) {
@@ -68,18 +71,17 @@ export const createProfesionalFormSchema = z.object({
         if (!headquarters.specialities.some((item) => item.value === assignment.speciality)) {
             context.addIssue({ code: 'custom', path: ['locationAssignments', index, 'speciality'], message: 'La sede no ofrece esta especialidad' });
         }
-        if (!profesionalInfo.some((item) => item.speciality === assignment.speciality)) {
-            context.addIssue({ code: 'custom', path: ['locationAssignments', index, 'speciality'], message: 'El profesional no tiene esta especialidad personal' });
+        if (personalSpecialities.length > 0 && !personalSpecialities.some((item) => item.speciality === assignment.speciality)) {
+            context.addIssue({ code: 'custom', path: ['locationAssignments', index, 'speciality'], message: 'El personal no tiene esta especialidad registrada' });
         }
         if (assignment.departmentId && !headquarters.departments.some((item) => item.id === assignment.departmentId && item.specialities.includes(assignment.speciality))) {
             context.addIssue({ code: 'custom', path: ['locationAssignments', index, 'departmentId'], message: 'El departamento no pertenece a esta sede' });
         }
     });
 });
-export type CreateProfesionalData = z.infer<typeof createProfesionalFormSchema>;
+export type CreatePersonalData = z.infer<typeof createPersonalFormSchema>;
 
-export const createProfesionalDefault: CreateProfesionalData = {
-    role: "professional",
+export const createPersonalDefault: CreatePersonalData = {
     status: "inactive",
     personalInfo: {
         name: "",
@@ -104,6 +106,9 @@ export const createProfesionalDefault: CreateProfesionalData = {
         }
     ],
     locationAssignments: [],
+    termsAcceptedAt: "",
+    lastLoginAt: "",
     createdAt: "",
     updatedAt: ""
 }
+

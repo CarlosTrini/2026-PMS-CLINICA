@@ -1,24 +1,21 @@
-
-import { UserSession } from '@/types/dataTypes';
-import { createJSONStorage, persist } from 'zustand/middleware';
+import type { RoleSystem, UserSystem } from '@/types/dataTypes';
+import { persist } from 'zustand/middleware';
 import { create } from 'zustand';
-import { RoleSystem } from '@/types/dataTypes';
+
 
 
 
 interface UserStore {
     userRole: RoleSystem;
     setUserRole: (userRole: RoleSystem) => void;
-    userInfo: UserSession | null;
-    setUserInfo: (user: UserSession) => void;
+    userInfo: UserSystem | null;
+    setUserInfo: (user: UserSystem) => void;
     token: string | null;
     setToken: (token: string) => void;
     isAuthenticated: boolean;
     setIsAuthenticated: (isAuthenticated: boolean) => void;
     clearAllSession: () => void;
 }
-
-
 
 export const useUserStore = create<UserStore>()(
     persist(

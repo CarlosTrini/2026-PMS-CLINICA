@@ -39,8 +39,8 @@ const adminItems: NavItem[] = [
   },
   {
     icon: <UserCircleIcon />,
-    key: "profesionals",
-    path: "/admin/profesionals"
+    key: "personal",
+    path: "/admin/personal"
   }
 ];
 

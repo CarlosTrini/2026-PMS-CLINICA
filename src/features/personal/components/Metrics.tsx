@@ -1,19 +1,19 @@
 'use client'
 import Badge from "@/components/ui/badge/Badge";
 import { useQuery } from "@tanstack/react-query";
-import { ProfesionalActionsService } from "../services/service";
+import { PersonalActionsService } from "../services/service";
 import { Activity, ChartBar, Stethoscope, User2Icon } from 'lucide-react';
-import Fallback from "@/components/fallbackQuery/Fallback"; // mas que nada usar cuando se use query
+import Fallback from "@/components/fallbackQuery/Fallback";
 import type { Metrics } from "@/types/dataTypes";
 import useSystemTraslations from "@/hooks/useSysteTranslations";
 
 export default function Metrics() {
 
-    const { statusT, profMetricsT } = useSystemTraslations();
+    const { statusT, personalMetricsT } = useSystemTraslations();
 
     const { data: metrics, isLoading: isLoadingMetrics, error: errorMetrics } = useQuery({
         queryKey: ['metrics-query'],
-        queryFn: () => ProfesionalActionsService.getProfesionalsMetrics(),
+        queryFn: () => PersonalActionsService.getPersonalMetrics(),
     });
 
     return (
@@ -35,7 +35,7 @@ export default function Metrics() {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-theme-sm font-medium text-theme-light-gray">
-                                    {profMetricsT('total_employees')}
+                                    {personalMetricsT('total_employees')}
                                 </p>
                                 <h3 className="mt-1 text-title-md font-bold text-gray-dark dark:text-light-accent">
                                     {metrics?.total}
@@ -48,7 +48,7 @@ export default function Metrics() {
 
                         <div className="mt-3 flex items-center justify-end">
                             <span className="text-theme-xs text-gray dark:text-gray-light">
-                                {profMetricsT('registered_staff')}
+                                {personalMetricsT('registered_staff')}
                             </span>
                         </div>
                     </div>
@@ -60,7 +60,7 @@ export default function Metrics() {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-theme-sm font-medium text-theme-light-gray">
-                                    {profMetricsT('in_consultation')}
+                                    {personalMetricsT('in_consultation')}
                                 </p>
                                 <h3 className="mt-1 text-title-md font-bold text-gray-dark dark:text-light-accent">
                                     {metrics?.status.in_consultation}
@@ -74,10 +74,10 @@ export default function Metrics() {
                         <div className="mt-3 flex items-center justify-between">
                             <span className="inline-flex items-center gap-1.5 text-theme-xs text-success font-medium">
                                 <span className="size-2 rounded-full bg-success animate-pulse" />
-                                {profMetricsT('active_staff')}
+                                {personalMetricsT('active_staff')}
                             </span>
                             <span className="text-theme-xs font-semibold text-gray dark:text-gray-light">
-                                {metrics?.operatives.percentaje}% {profMetricsT('operative')}
+                                {metrics?.operatives.percentaje}% {personalMetricsT('operative')}
                             </span>
                         </div>
                     </div>
@@ -89,7 +89,7 @@ export default function Metrics() {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-theme-sm font-medium text-theme-light-gray">
-                                    {profMetricsT('specialities')}
+                                    {personalMetricsT('specialities')}
                                 </p>
                                 <h3 className="mt-1 text-title-md font-bold text-gray-dark dark:text-light-accent">
                                     {metrics?.specialities}
@@ -99,12 +99,6 @@ export default function Metrics() {
                                 <Stethoscope className="size-8 stroke-2" />
                             </div>
                         </div>
-
-                        {/* <div className="mt-3 flex items-center justify-between">
-                            <span className="text-theme-xs text-gray dark:text-gray-light">
-                                Ramas clínicas cubiertas
-                            </span>
-                        </div> */}
                     </div>
 
                     {/* CARD 4: ESTATUS */}
@@ -114,7 +108,7 @@ export default function Metrics() {
                         <div className="flex items-center justify-between">
                             <div className="w-full">
                                 <p className="text-theme-sm font-medium text-theme-light-gray">
-                                    {profMetricsT('status')}
+                                    {personalMetricsT('status')}
                                 </p>
                                 <div className="flex flex-wrap gap-1 mt-2">
                                     <Badge color="success" size="sm">
@@ -129,15 +123,6 @@ export default function Metrics() {
                                     <Badge color="primary" size="sm">
                                         <span>{statusT('in_consultation')}: {metrics?.status.in_consultation}</span>
                                     </Badge>
-                                    {/* <Badge color="info" size="sm">
-                                        <span>Vacaciones: {metrics?.status.on_vacation}</span>
-                                    </Badge>
-                                    <Badge color="error" size="sm">
-                                        <span>Incapacitados: {metrics?.status.incapacitated}</span>
-                                    </Badge>
-                                    <Badge color="error" size="sm">
-                                        <span>En descanso: {metrics?.status.on_leave}</span>
-                                    </Badge> */}
                                 </div>
                             </div>
                             <div className="flex size-15 shrink-0 items-center justify-center rounded-2xl bg-warning/10 text-warning dark:bg-warning-dark/25 dark:text-warning-light">
@@ -152,3 +137,4 @@ export default function Metrics() {
         </>
     )
 }
+

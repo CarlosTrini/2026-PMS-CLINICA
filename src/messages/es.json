@@ -21,17 +21,18 @@
     "thisActionCannotBeUndone": "Esta acción no se puede deshacer",
     "deleteUser": "Estás seguro que deseas dar de baja a",
     "whitout": "Sin",
-    "specialities": "Especialidades"
+    "specialities": "Especialidades",
+    "services": "Servicios"
   },
   "sidebar": {
     "groups": {
       "admin": "Administrador",
-      "profesionals": "Personal",
+      "personal": "Personal",
       "session": "Sesión"
     },
     "items": {
       "dashboard": "Dashboard",
-      "profesionals": "Personal",
+      "personal": "Personal",
       "authentication": "Autenticación",
       "session": "Sesión",
       "signIn": "Iniciar Sesión",
@@ -78,6 +79,8 @@
     "gender": "Género",
     "searchByName": "Bucar por nombre",
     "speciality": "Especialidad",
+    "specialityHeadquarter": "Especialidades de la sede",
+    "specialitiesForDepto": "Especialidades del departamento",
     "status": "Estatus",
     "department": "Departamento",
     "headquarters": "Sede",
@@ -156,6 +159,28 @@
     "imaging": "Imagenología",
     "no_department": "Sin departamento asignado"
   },
+  "services": {
+    "hospitalization": "Hospitalizacion",
+    "intensive_care": "Terapia Intensiva",
+    "magnetic_resonance": "Resonancia Magnetica",
+    "laboratory_24h": "Laboratorio 24h",
+    "blood_bank": "Banco de Sangre",
+    "specialized_consultation": "Consulta Especializada",
+    "axial_tomography": "Tomografia Axial",
+    "executive_checkups": "Check-ups Ejecutivos",
+    "dental_clinic": "Clinica Dental",
+    "pharmacy": "Farmacia",
+    "emergency_room": "Urgencias",
+    "operating_room": "Quirófano",
+    "pediatrics": "Pediatría",
+    "radiology": "Radiología",
+    "ultrasound": "Ultrasonido",
+    "physical_therapy": "Terapia Física",
+    "ophthalmology": "Oftalmología",
+    "cardiology": "Cardiología",
+    "nutrition": "Nutrición",
+    "vaccination": "Vacunación"
+  },
   "all_status": {
     "active": "Activo",
     "inactive": "Inactivo",
@@ -195,7 +220,7 @@
     "caregiver": "Cuidador/a"
   },
   "pages": {
-    "profesionals": {
+    "personal": {
       "tittle": "Administración de personal",
       "Metrics": {
         "total_employees": "Total de personal",

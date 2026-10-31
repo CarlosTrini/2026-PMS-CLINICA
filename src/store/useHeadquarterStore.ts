@@ -3,18 +3,18 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface HeadquarterStore {
-    headquarters: Headquarters | null;
-    setHeadquarters: (headquarters: Headquarters) => void;
-    clearHeadquarters: () => void;
+    currentHeadquarter: Headquarters | null;
+    setCurrentHeadquarter: (headquarters: Headquarters) => void;
+    clearHeadquarter: () => void;
 }
 
 export const useHeadquarterStore = create<HeadquarterStore>()(
     persist(
         (set) => ({
-            headquarters: null,
-            setHeadquarters: (headquarters) => set({ headquarters }),
-            clearHeadquarters: () => set({ headquarters: null }),
+            currentHeadquarter: null,
+            setCurrentHeadquarter: (headquarter) => set({ currentHeadquarter: headquarter }),
+            clearHeadquarter: () => set({ currentHeadquarter: null }),
         }),
-        { name: 'headquarter' },
+        { name: 'currentHeadquarter' },
     ),
 );

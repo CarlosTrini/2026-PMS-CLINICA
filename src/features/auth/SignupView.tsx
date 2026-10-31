@@ -1,7 +1,7 @@
 "use client";
 
 // HOOKS
-import { useState, useEffect } from "react";
+import { useState } from "react";
 // NAVIGATION
 import { useRouter } from "@/i18n/navigation";
 // COMPONENTS
@@ -13,24 +13,22 @@ import Button from "@/components/ui/button/Button";
 //ICONS
 import { EyeCloseIcon, EyeIcon } from "@/icons";
 import { Loader } from "lucide-react";
-// TYPES
-import { UserSystem } from "@/types/dataTypes";
 // FORM
 import { useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authRegisterData, authRegisterDefaultValues, auhtRegisterSchema } from "./schemas/authRegisterSchema";
 // QUERY
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+// import { useMutation, useQueryClient } from '@tanstack/react-query';
 //SERVICE
-import { AuthActionsService } from "./services/authService";
+// import { AuthActionsService } from "./services/authService";
 // LIBS Y OTROS
 import { Link } from "@/i18n/navigation";
-import { v4 as uuidv4 } from 'uuid';
-import { getISODate } from "@/utils/dates";
+// import { v4 as uuidv4 } from 'uuid';
+// import { getISODate } from "@/utils/dates";
 import Alert from "@/components/ui/alert/Alert";
 // STORE
 import { useUserStore } from "@/store/userStore";
-import Fallback from "@/components/fallbackQuery/Fallback";
+// import Fallback from "@/components/fallbackQuery/Fallback";
 
 export default function SignupView() {
 
@@ -52,45 +50,27 @@ export default function SignupView() {
 
     // QUERY
     // const queryClient = useQueryClient();
-    const { mutate: handleRegister, isPending, error } = useMutation({
-        mutationKey: ['register-new-user'],
-        retry: 0,
-        mutationFn: (dataUser: UserSystem) => AuthActionsService.registerUserSystem(dataUser),
-        onSuccess: (response) => {
-            setErrorMsg('');
-            setShowAlertSuccess(true);
-            reset();
-        },
-        onError: (err: any) => {
-            setErrorMsg(err?.response?.data?.message || 'Ha ocurrido un error')
-        }
-
-    });
+    // const { mutate: handleRegister, isPending, error } = useMutation({
+    //     mutationKey: ['register-new-user'],
+    //     retry: 0,
+    //     mutationFn: (dataUser: authRegisterData) => AuthActionsService.registerUserSystem(dataUser),
+    //     onSuccess: (response) => {
+    //         setErrorMsg('');
+    //         setShowAlertSuccess(true);
+    //         reset();
+    //     },
+    //     onError: (err: any) => {
+    //         setErrorMsg(err?.response?.data?.message || 'Ha ocurrido un error')
+    //     }
+    // });
+    const isPending = false;
 
 
 
     const handleRegisterSubmit = (data: authRegisterData) => {
-        // HACK: LA DATA 'data' ES DE TIPO authRegisterData, PERO DEBE CONVERTIRSE A 
-        //TIPO UserSystem para enviarla al servicio con ID, rol, fechas, etc...
         setErrorMsg('');
-
-        const registerDate = getISODate();
-
-        const userSystemData: UserSystem = {
-            id: uuidv4(),
-            name: data.name,
-            lastName: data.lastName,
-            email: data.email,
-            password: data.password,
-            role: 'no_role',
-            termsAndConditions: data.termsAndConditions,
-            picture: "",
-            createdAt: registerDate,
-            updatedAt: registerDate
-        }
-
-        handleRegister(userSystemData); // SE EJECUTA EL MUTATE
-
+        // const registerDate = getISODate();
+        // handleRegister(data);
     }
 
 

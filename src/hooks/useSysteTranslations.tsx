@@ -10,9 +10,10 @@ export default function useSystemTraslations() {
     const formInputsT = useTranslations("formInputs");
     const tableColumnsT = useTranslations("tablesColumns");
     const rolesSystemT = useTranslations("rolesSystem");
+    const servicesT = useTranslations("services");
     //página personal
-    const profT = useTranslations("pages.profesionals");
-    const profMetricsT = useTranslations("pages.profesionals.Metrics");
+    const personalT = useTranslations("pages.personal");
+    const personalMetricsT = useTranslations("pages.personal.Metrics");
 
     return {
         commonT,
@@ -22,8 +23,9 @@ export default function useSystemTraslations() {
         tableColumnsT,
         formInputsT,
         rolesSystemT,
+        servicesT,
         // página de personal
-        profT,
-        profMetricsT,
+        personalT,
+        personalMetricsT,
     }
 }

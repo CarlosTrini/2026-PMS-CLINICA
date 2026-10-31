@@ -23,7 +23,7 @@ import {
     GENDER_ARRAY,
     ROLE_SYSTEM_ARRAY,
     SPECIALITY_ARRAY,
-    STATUS_PROFESSIONAL_ARRAY,
+    STATUS_PERSONAL_ARRAY,
     HEADQUARTERS_DATA,
 } from '@/utils/constants';
 
@@ -37,7 +37,7 @@ const ROLE_OPTIONS = ROLE_SYSTEM_ARRAY.map((role) => ({
                     : role === 'owner' ? 'Propietario / Director' : 'Sin rol asignado',
 }));
 
-const STATUS_OPTIONS = STATUS_PROFESSIONAL_ARRAY.map((status) => ({
+const STATUS_OPTIONS = STATUS_PERSONAL_ARRAY.map((status) => ({
     value: status,
     label: status === 'active' ? 'Activo'
         : status === 'inactive' ? 'Inactivo'
@@ -55,7 +55,7 @@ const GENDER_OPTIONS = GENDER_ARRAY.map((gender) => ({
             : gender === 'prefer_not_to_say' ? 'Prefiero no decirlo' : 'Otro',
 }));
 
-export default function NewProfesionalView() {
+export default function NewPersonalView() {
     const specialityT = useTranslations('speciality');
     const departmentT = useTranslations('deparments');
     const specialityOptions = SPECIALITY_ARRAY.map((speciality) => ({ value: speciality, label: specialityT(speciality) }));
@@ -65,7 +65,7 @@ export default function NewProfesionalView() {
         { id: 1, speciality: '', cedula: '', license: '' },
     ]);
     const [locationAssignments, setLocationAssignments] = useState([
-        { id: 1, headquartersId: HEADQUARTERS_DATA[0].id, speciality: '', departmentId: '' },
+        { id: 1, headquartersId: HEADQUARTERS_DATA[0].id, speciality: '', departmentId: '', roleSystem: 'professional' },
     ]);
 
     const handleAddSpeciality = () => {
@@ -82,7 +82,7 @@ export default function NewProfesionalView() {
 
     const handleAddLocationAssignment = () => setLocationAssignments((previous) => [
         ...previous,
-        { id: Date.now(), headquartersId: HEADQUARTERS_DATA[0].id, speciality: '', departmentId: '' },
+        { id: Date.now(), headquartersId: HEADQUARTERS_DATA[0].id, speciality: '', departmentId: '', roleSystem: 'professional' },
     ]);
 
     const updatePersonalSpeciality = (index: number, speciality: string) => {
@@ -100,11 +100,11 @@ export default function NewProfesionalView() {
             {/* CABECERA & NAVEGACIÓN */}
             <header className="mb-8">
                 <Link
-                    href="/admin/profesionals"
+                    href="/admin/personal"
                     className="inline-flex items-center gap-2 text-sm text-gray hover:text-brand dark:text-gray-light dark:hover:text-brand-light transition-colors mb-4"
                 >
                     <ArrowLeft className="w-4 h-4" />
-                    <span>Volver al listado de profesionales</span>
+                    <span>Volver al listado de personal</span>
                 </Link>
 
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-light dark:border-gray-dark pb-6">
@@ -114,26 +114,26 @@ export default function NewProfesionalView() {
                         </div>
                         <div>
                             <h1 className="text-xl sm:text-2xl font-bold text-gray-dark dark:text-gray-light">
-                                Registrar Nuevo Profesional
+                                Registrar Nuevo Personal
                             </h1>
                             <p className="text-xs sm:text-sm text-gray dark:text-gray-light/60 mt-0.5">
-                                Ingresa la información personal, datos de contacto y credenciales médicas para dar de alta en la clínica.
+                                Ingresa la información personal, datos de contacto y credenciales médicas u operativas para dar de alta en la clínica.
                             </p>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <Link href="/admin/profesionals">
+                        <Link href="/admin/personal">
                             <Button variant="outline" size="sm">
                                 Cancelar
                             </Button>
                         </Link>
                         {/* 
-                          TODO: Cuando vincules useForm, puedes colocar type="submit" form="create-prof-form"
+                          TODO: Cuando vincules useForm, puedes colocar type="submit" form="create-personal-form"
                         */}
                         <Button size="sm" className="flex items-center gap-2">
                             <Save className="w-4 h-4" />
-                            <span>Guardar Profesional</span>
+                            <span>Guardar Personal</span>
                         </Button>
                     </div>
                 </div>
@@ -143,35 +143,23 @@ export default function NewProfesionalView() {
             {/* 
               TODO: Conectar con onSubmit={handleSubmit(onHandleSubmit)} de react-hook-form
             */}
-            <form id="create-prof-form" className="flex flex-col gap-8">
+            <form id="create-personal-form" className="flex flex-col gap-8">
 
-                {/* SECCIÓN 1: ROL, ESTADO Y DEPARTAMENTO */}
+                {/* SECCIÓN 1: ESTADO DEL PERSONAL */}
                 <div className="rounded-xl generic-border-shadow bg-theme-light-dark p-6">
                     <div className="flex items-center gap-2.5 pb-4 mb-6 border-b border-gray-light dark:border-gray-dark">
                         <ShieldCheck className="w-5 h-5 text-brand dark:text-brand-light shrink-0" />
                         <div>
                             <h2 className="text-base font-semibold text-gray-dark dark:text-gray-light">
-                                Rol y Estado del Personal
+                                Estado del Personal
                             </h2>
                             <p className="text-xs text-gray dark:text-gray-light/60">
-                                Asigna los permisos en el sistema clínico y el departamento operativo.
+                                Define el estado operativo inicial del personal en la clínica.
                             </p>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                        <div>
-                            <Label htmlFor="role" className="block text-xs font-medium mb-1.5">
-                                Rol en el Sistema <span className="text-error">*</span>
-                            </Label>
-                            <Select
-                                id="role"
-                                options={ROLE_OPTIONS}
-                                placeholder="Selecciona un rol"
-                                defaultValue="professional"
-                            />
-                        </div>
-
                         <div>
                             <Label htmlFor="status" className="block text-xs font-medium mb-1.5">
                                 Estado Inicial <span className="text-error">*</span>
@@ -183,7 +171,6 @@ export default function NewProfesionalView() {
                                 defaultValue="active"
                             />
                         </div>
-
                     </div>
                 </div>
 
@@ -234,7 +221,7 @@ export default function NewProfesionalView() {
                                 type="date"
                             />
                             <p className="text-[11px] text-gray dark:text-gray-light/50 mt-1 italic">
-                                * El profesional debe ser mayor de 18 años.
+                                * El personal debe ser mayor de 18 años.
                             </p>
                         </div>
 
@@ -348,26 +335,30 @@ export default function NewProfesionalView() {
                     </div>
                 </div>
 
-                {/* ASIGNACIÓN PROFESIONAL POR SEDE */}
+                {/* ASIGNACIÓN DE PERSONAL POR SEDE */}
                 <div className="rounded-xl generic-border-shadow bg-theme-light-dark p-6">
                     <div className="flex items-center justify-between gap-3 pb-4 mb-6 border-b border-gray-light dark:border-gray-dark">
                         <div>
                             <h2 className="text-base font-semibold text-gray-dark dark:text-gray-light">Asignaciones por sede</h2>
-                            <p className="text-xs text-gray dark:text-gray-light/60">Elige qué especialidad ejercerá en cada sede y, opcionalmente, su departamento.</p>
+                            <p className="text-xs text-gray dark:text-gray-light/60">Elige qué rol y especialidad ejercerá en cada sede y, opcionalmente, su departamento.</p>
                         </div>
                         <Button type="button" variant="outline" size="sm" onClick={handleAddLocationAssignment}>
                             <Plus className="w-3.5 h-3.5" /> Agregar sede
                         </Button>
                     </div>
                     <div className="flex flex-col gap-4">
-                        {locationAssignments.map((assignment, index) => {
+                        {locationAssignments.map((assignment) => {
                             const headquarters = HEADQUARTERS_DATA.find((item) => item.id === assignment.headquartersId) ?? HEADQUARTERS_DATA[0];
                             const availableSpecialities = headquarters.specialities.filter(({ value, isActive }) => isActive && specialities.some((personal) => personal.speciality === value)).map(({ value }) => ({ value, label: specialityT(value) }));
                             const availableDepartments = headquarters.departments.filter(({ isActive }) => isActive).map(({ id, value }) => ({ value: id, label: departmentT(value) }));
-                            return <div key={assignment.id} className="grid grid-cols-1 sm:grid-cols-3 gap-4 rounded-lg border border-gray-light p-4">
+                            return <div key={assignment.id} className="grid grid-cols-1 sm:grid-cols-4 gap-4 rounded-lg border border-gray-light p-4">
                                 <div>
                                     <Label htmlFor={`assignment-headquarters-${assignment.id}`} className="block text-xs font-medium mb-1.5">Sede</Label>
                                     <Select id={`assignment-headquarters-${assignment.id}`} value={assignment.headquartersId} options={HEADQUARTERS_DATA.map(({ id, name }) => ({ value: id, label: name }))} onChange={(event) => setLocationAssignments((previous) => previous.map((item) => { if (item.id !== assignment.id) return item; const selectedHeadquarters = HEADQUARTERS_DATA.find((site) => site.id === event.target.value) ?? HEADQUARTERS_DATA[0]; return { ...item, headquartersId: selectedHeadquarters.id, speciality: selectedHeadquarters.specialities.find(({ value, isActive }) => isActive && specialities.some((personal) => personal.speciality === value))?.value ?? '', departmentId: '' }; }))} />
+                                </div>
+                                <div>
+                                    <Label htmlFor={`assignment-role-${assignment.id}`} className="block text-xs font-medium mb-1.5">Rol en Sede</Label>
+                                    <Select id={`assignment-role-${assignment.id}`} value={assignment.roleSystem} options={ROLE_OPTIONS} onChange={(event) => setLocationAssignments((previous) => previous.map((item) => item.id === assignment.id ? { ...item, roleSystem: event.target.value } : item))} />
                                 </div>
                                 <div>
                                     <Label htmlFor={`assignment-speciality-${assignment.id}`} className="block text-xs font-medium mb-1.5">Especialidad ofrecida</Label>
@@ -470,7 +461,7 @@ export default function NewProfesionalView() {
 
                 {/* BOTONES DE ACCIÓN INFERIORES */}
                 <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-4 border-t border-gray-light dark:border-gray-dark">
-                    <Link href="/admin/profesionals" className="w-full sm:w-auto">
+                    <Link href="/admin/personal" className="w-full sm:w-auto">
                         <Button variant="outline" size="md" className="w-full sm:w-auto">
                             Cancelar y Volver
                         </Button>
@@ -492,3 +483,4 @@ export default function NewProfesionalView() {
         </div>
     );
 }
+

@@ -21,13 +21,14 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 // TYPES
-import { AuthLogin } from "@/types/dataTypes";
+import type { AuthLogin, Personal } from "@/types/dataTypes";
 // STORES
 import { useUserStore } from "@/store/userStore";
 import { useHeadquarterStore } from "@/store/useHeadquarterStore";
 import { HEADQUARTERS_DATA } from "@/utils/constants";
 //SERVICES
 import { AuthActionsService } from "./services/authService";
+import { HeadquartersService } from "@/services/headquartersService";
 
 export default function SignInView() {
 
@@ -36,8 +37,8 @@ export default function SignInView() {
     const [errorMsg, setErrorMsg] = useState('');
     const Navigate = useRouter();
 
-    const { setToken, setUserInfo, setIsAuthenticated, isAuthenticated } = useUserStore();
-    const setHeadquarters = useHeadquarterStore((state) => state.setHeadquarters);
+    const { setToken, setUserInfo, setIsAuthenticated } = useUserStore();
+    const { setCurrentHeadquarter } = useHeadquarterStore();
 
 
     // HOOK-FORM
@@ -46,9 +47,28 @@ export default function SignInView() {
         defaultValues: authLoginDefaultValues
     });
 
+
+
     // QUERY
+
+
+    // MUTATE PARA HEADEQUARTERS
+    const { mutate: handleQuarters } = useMutation({
+        mutationKey: ['headquarterbyid'],
+        mutationFn: (id: string) => HeadquartersService.getHearquarterById(id),
+        onSuccess: (res) => {
+            const headquarter = res;
+            setCurrentHeadquarter(headquarter);
+        },
+        onError: (err) => {
+            console.log('Error al obtener la sede')
+        }
+    });
+
+
     // const queryClient = useQueryClient();
-    const { mutate: handleLogin, isPending, error } = useMutation({
+    // MUTAT PARA USUARIO LOGUEADO
+    const { mutate: handleLogin, isPending } = useMutation({
         mutationKey: ['login'],
         mutationFn: (data: AuthLogin) => AuthActionsService.loginUserSystem(data),
         onSuccess: (res) => {
@@ -59,13 +79,32 @@ export default function SignInView() {
             if (dataUser) {
                 // Guardar cookie por 1 día
                 document.cookie = `auth_token=${dataUser.token}; path=/; max-age=86400; SameSite=Lax`;
+                const userInfo = dataUser.user as Personal;
 
                 setToken(dataUser.token);
-                setUserInfo(dataUser.user);
+                setUserInfo({
+                    id: userInfo.id,
+                    assigments: userInfo.locationAssignments,
+                    emailVerified: userInfo.security.emailVerified,
+                    image: userInfo.image,
+                    name: userInfo.personalInfo.name,
+                    lastName: userInfo.personalInfo.lastName,
+                    status: userInfo.status
+                });
                 setIsAuthenticated(true);
                 reset();
                 setErrorMsg('');
-                setHeadquarters(HEADQUARTERS_DATA[0]);
+
+                // revisar a cuantás sedes pertenece este persona
+                // SE VA A TREAR LA DATA DE LA SEDE...
+                if (userInfo.locationAssignments.length > 1) {
+                    // TOOD: SE VA A MOSTRAR UN OVERLAY EN EL QUE SELECCIONÉ LA SEDE QUE VA A USAR
+                } else {
+                    handleQuarters(userInfo.locationAssignments[0].headquartersId);
+                }
+
+
+
 
 
                 Navigate.push('/admin');
