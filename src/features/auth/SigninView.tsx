@@ -28,7 +28,7 @@ import { useHeadquarterStore } from "@/store/useHeadquarterStore";
 import { HEADQUARTERS_DATA } from "@/utils/constants";
 //SERVICES
 import { AuthActionsService } from "./services/authService";
-import { HeadquartersService } from "@/services/headquartersService";
+import { HeadquartersService } from "@/features/headquarters/services/headquartersService";
 
 export default function SignInView() {
 

@@ -33,6 +33,7 @@
     "items": {
       "dashboard": "Dashboard",
       "personal": "Personal",
+      "headquarters": "Sedes",
       "authentication": "Autenticación",
       "session": "Sesión",
       "signIn": "Iniciar Sesión",
@@ -95,7 +96,9 @@
     "state": "Estado",
     "zip": "Código Postal",
     "country": "País",
-    "dateJoined": "Fecha de Ingreso"
+    "dateJoined": "Fecha de Ingreso",
+    "services": "Servicios",
+    "deptoSpeciality": "Especialidades del departamento"
   },
   "tablesColumns": {
     "name": "Nombre",
@@ -231,6 +234,9 @@
         "active_staff": "Personal activo",
         "operative": "Operativo"
       }
+    },
+    "headquarters": {
+      "title": "Administración de sedes"
     }
   }
 }

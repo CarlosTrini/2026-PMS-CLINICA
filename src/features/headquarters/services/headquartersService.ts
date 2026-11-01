@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/axios";
-import { Headquarters } from "@/types/dataTypes";
+import type { Headquarters } from "@/types/dataTypes";
 
 export const HeadquartersService = {
     async getHearquarterById(id: string): Promise<Headquarters> {
@@ -9,6 +9,15 @@ export const HeadquartersService = {
         } catch (err: any) {
             throw new Error(err.response?.data?.message || "Error al obtener la sede");
         }
-    }
+    },
 
+
+    async getAllHeadquarters(): Promise<Headquarters[]> {
+        try {
+            const { data } = await apiClient.get<Headquarters[]>('/headquarters')
+            return data;
+        } catch (err: any) {
+            throw new Error(err.response?.data?.message || "Error al obtener el personal");
+        }
+    }
 }

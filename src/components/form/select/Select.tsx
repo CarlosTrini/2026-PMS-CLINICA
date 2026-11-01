@@ -47,9 +47,14 @@ const Select: React.FC<SelectProps> = ({
   ...props
 }) => {
   const [internalValue, setInternalValue] = useState<string>(defaultValue || '');
-  const [defaultVal] = useState<string>(defaultValue || '');
+  const [defaultVal, setDefaultVal] = useState<string>(defaultValue || '');
   const isControlled = controlledValue !== undefined;
   const selectedValue = isControlled ? controlledValue : internalValue;
+
+  useEffect(() => {
+    setInternalValue(defaultValue || '');
+    setDefaultVal(defaultValue || '');
+  }, [defaultValue]);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;

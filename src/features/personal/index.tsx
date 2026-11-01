@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import Badge from "@/components/ui/badge/Badge";
 import { simpleDate } from "@/utils/dates";
 import Metrics from "./components/Metrics";
-import { Calendar, Eye, Mail, Phone, PlusCircle, Trash2 } from 'lucide-react';
+import { Building, Calendar, Eye, Mail, Phone, PlusCircle, Trash2 } from 'lucide-react';
 import Fallback from "@/components/fallbackQuery/Fallback";
 import { PersonalActionsService } from "./services/service";
 import useSystemTraslations from "@/hooks/useSysteTranslations";
@@ -227,13 +227,9 @@ export default function PersonalView() {
 
                                             </TableCell>
                                             <TableCell className="p-3 ">
-                                                <p className="text-xs font-bold uppercase text-gray dark:text-gray-light">
-                                                    {p.locationAssignments.length ? p.locationAssignments.map((assignment) => {
-                                                        const headquarters = HEADQUARTERS_DATA.find((item) => item.id === assignment.headquartersId);
-                                                        const department = headquarters?.departments.find((item) => item.id === assignment.departmentId);
-                                                        return <span key={assignment.id} className="block">{headquarters?.name ?? assignment.headquartersId} · {specialityT(assignment.speciality)}{department ? ` · ${departmentT(department.value)}` : ''}</span>;
-                                                    }) : 'Sin sede asignada'}
-                                                </p>
+                                                <div className="text-xs font-semibold capitalize text-gray dark:text-gray-light ">
+                                                    {p.locationAssignments.length ? p.locationAssignments.map((assignment) => <span key={assignment.id} className="flex gap-1.5"><Building className="w-3 h-3 cursor-pointer text-brand-dark dark:text-brand" /> {assignment.headquartersId}</span>) : 'Sin sede asignada'}
+                                                </div>
                                             </TableCell>
                                             <TableCell className="p-3 min-w-0 overflow-hidden whitespace-nowrap">
                                                 <div className="flex items-center gap-1">

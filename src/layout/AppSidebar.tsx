@@ -3,7 +3,6 @@
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { cn } from "@/utils";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSidebar } from "../context/SidebarContext";
 import {
@@ -14,7 +13,7 @@ import {
   UserCircleIcon,
 } from "../icons/index";
 import { useUserStore } from "@/store/userStore";
-import { LogOut } from "lucide-react";
+import { Building2, LogOut } from "lucide-react";
 
 type NavItem = {
   key: string;
@@ -41,6 +40,11 @@ const adminItems: NavItem[] = [
     icon: <UserCircleIcon />,
     key: "personal",
     path: "/admin/personal"
+  },
+  {
+    icon: <Building2 />,
+    key: "headquarters",
+    path: "/admin/headquarters"
   }
 ];
 
@@ -51,7 +55,8 @@ const sessionItems: NavItem[] = [
     subItems: [
       { key: "signIn", path: "/signin", pro: false },
       { key: "signUp", path: "/signup", pro: false },
-    ],
+      { key: "headquarters", path: "/admin/headquarters", pro: false }
+    ]
   },
 ];
 

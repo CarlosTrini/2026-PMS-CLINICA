@@ -14,6 +14,8 @@ export default function useSystemTraslations() {
     //página personal
     const personalT = useTranslations("pages.personal");
     const personalMetricsT = useTranslations("pages.personal.Metrics");
+    //página sedes
+    const headquartersT = useTranslations("pages.headquarters");
 
     return {
         commonT,
@@ -27,5 +29,7 @@ export default function useSystemTraslations() {
         // página de personal
         personalT,
         personalMetricsT,
+        // página de sedes
+        headquartersT,
     }
 }

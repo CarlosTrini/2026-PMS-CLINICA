@@ -5,13 +5,13 @@ const MONGO_LOCAL = process.env.MONGO_LOCAL;
 const NAME_CLUSTER_MONGO = process.env.NAME_CLUSTER_MONGO;
 
 
-const MONGO_CLIENT_URI = MONGO_LOCAL || `mongodb+srv://${USERNAME}:${PASSWORD}@${NAME_CLUSTER_MONGO}.un9ru7t.mongodb.net/`;
+const MONGO_CLIENT_URI = MONGO_LOCAL; //|| `mongodb+srv://${USERNAME}:${PASSWORD}@${NAME_CLUSTER_MONGO}.un9ru7t.mongodb.net/`;
 
 
 
 
 function createClientPromise(): Promise<MongoClient> {
-    const client = new MongoClient(MONGO_CLIENT_URI);
+    const client = new MongoClient(MONGO_CLIENT_URI!);
     return client.connect()
         .then((connectedClient) => {
             console.log("✅ Conectado exitosamente a MongoDB Atlas");

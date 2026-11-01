@@ -35,17 +35,16 @@ export default function FiltersPersonal({ dataQuery, updateDataFn }: Props) {
 
     // HOOKS
     const { resetSelectValue, resetSelectFn } = useSelect();
-    const initialFilters = { ...filtersPersonalDefault, headquarters: currentHeadquarter?.id };
-    const [filtersSelected, setFiltersSelected] = useState<FilterData>(initialFilters as FilterData);
-    const [departmentSpecialitiesSelect, setDepartmentSpecialitiesSelect] = useState<Speciality[]>([]);
+    const [filtersSelected, setFiltersSelected] = useState<FilterData>(filtersPersonalDefault);
+    const [departmentSpecialitiesSelect, setDepartmentSpecialitiesSelect] = useState<{ value: string; label: string }[]>([]);
 
     // HOOK FORM -ZOD
-    const { register, handleSubmit, reset, getValues, watch, subscribe, setValue } = useForm<FilterInput, any, FilterData>({
+    const { register, handleSubmit, reset, getValues, subscribe, setValue } = useForm<FilterInput, any, FilterData>({
         resolver: zodResolver(filterPersonalSchema),
-        defaultValues: initialFilters
+        defaultValues: filtersPersonalDefault
     });
-    const selectedHeadquartersId = watch('headquarters') || currentHeadquarter?.id;
-    const selectedHeadquarters = HEADQUARTERS_DATA.find((item) => item.id === selectedHeadquartersId) ?? currentHeadquarter;
+
+
 
     // FILTERS & SORTING
     const onHandleFilters = async (filterValues: FilterData) => {
@@ -126,15 +125,15 @@ export default function FiltersPersonal({ dataQuery, updateDataFn }: Props) {
 
     // LISTAS DE SELECTS
     const [specialitySelect, statusSelect, headquartersSelect, departmentSelect, servicesSelect] = useMemo(() => {
-
         let specialitiesHead = currentHeadquarter && currentHeadquarter?.specialities.length > 0 ? currentHeadquarter.specialities : []; // revisa si la se actual tiene especialidades
         let deptosHead = currentHeadquarter && currentHeadquarter?.departments.length > 0 ? currentHeadquarter.departments : []; // revisa si la se actual tiene especialidades
-        let servicesHead = currentHeadquarter && currentHeadquarter?.services.length > 0 ? currentHeadquarter.services : []; // revisa si la se actual tiene especialidades
+        let servicesHead = currentHeadquarter && currentHeadquarter?.services.length > 0 ? currentHeadquarter.services : []; // revisa si la se actual tiene especialidades   
 
+        setValue('headquarters', currentHeadquarter?.id || ''); //valor default para el select de sede 
 
         const specialitySelect = specialitiesHead.length > 0
             ? [
-                specialitiesHead.map(s => ({ value: s, label: specialityT(s) })),
+                ...specialitiesHead.map(s => ({ value: s, label: specialityT(s) })),
                 { value: 'all', label: commonT('all') }
             ] : [];
 
@@ -143,15 +142,15 @@ export default function FiltersPersonal({ dataQuery, updateDataFn }: Props) {
             label: statusT(item),
         })), { value: 'all', label: commonT('all') }];
 
-        const headquartersSelect = HEADQUARTERS_DATA.map((item) => ({
-            value: item.id,
-            label: item.name,
-        }));
+        const headquartersSelect = [currentHeadquarter].map((item) => ({
+            value: item?.id,
+            label: item?.name,
+        })) as { value: string; label: string }[];
 
         const departmentSelect = deptosHead.length > 0
             ? [
-                deptosHead.map(s => ({ value: s.value, label: departmentT(s.value) })),
-                { value: 'no_department', label: departmentT('no_department') },
+                ...deptosHead.map(s => ({ value: s.value, label: departmentT(s.value) })),
+                // { value: 'no_department', label: departmentT('no_department') },
                 { value: 'all', label: commonT('all') },
             ] : [];
 
@@ -162,32 +161,57 @@ export default function FiltersPersonal({ dataQuery, updateDataFn }: Props) {
             ] : [];
 
         return [specialitySelect, statusSelect, headquartersSelect, departmentSelect, servicesSelect];
+    }, [currentHeadquarter]);
 
-    }, [selectedHeadquarters, currentHeadquarter]);
 
-
+    // cambia especialidedes del departametno (no la sede) al cambiar de departamento
     const getSpecialitiesDepto = (deptoName: string) => {
-        if (deptoName == 'all') return [];
+
+        if (deptoName == 'all') {
+            setDepartmentSpecialitiesSelect([]);
+            setTimeout(() => {
+                setValue('deptoSpeciality', 'all');
+            }, 450);
+            return;
+        };
 
         const depto = currentHeadquarter?.departments.find((depto) => depto.value == deptoName);
         if (!depto) return [];
 
-        return setDepartmentSpecialitiesSelect(depto.specialities);
+        // SI HAY ESPECIALIDADES ASIGNADAS AL DEPARTAMENTO
+        const deptoSpecs = [
+            ...depto.specialities.map((sp) => ({ value: sp, label: specialityT(sp) })),
+            { value: 'all', label: commonT('all') }
+        ];
+
+        setDepartmentSpecialitiesSelect(deptoSpecs);
+        setTimeout(() => {
+            setValue('deptoSpeciality', 'all'); // se pone el default 
+            // SE LIMPIA 'Especialidades de la sede'
+            setValue('speciality', 'all');
+        }, 450);
+
+
     }
 
+    // detecta cambios en los valores de los filtros
     useEffect(() => {
         const unsubscribe = subscribe({
             formState: {
                 values: true,  // ← SIN ESTO NO REACCIONA A CAMBIOS DE VALOR
             },
             callback: ({ values, name }) => {
-                console.log(values, name) // ✅ ahora sí funciona
+                // obtener el departamento seleccionado
+                if (name == 'department') {
+                    getSpecialitiesDepto(values.department);
+                }
+
+                // ACTUALIZA LOS PREVIEWS DE FILTROS 
+                setFiltersSelected({ ...values });
             },
         })
         return unsubscribe
-    }, [subscribe])
-
-
+    }, [subscribe, currentHeadquarter])
 
     const InfoCurrentFilters = () => (
         <>
@@ -200,36 +224,104 @@ export default function FiltersPersonal({ dataQuery, updateDataFn }: Props) {
                         </div>
                     )
                 }
-                <div className="flex gap-2 items-center">
-                    <p className="text-brand-dark dark:text-light font-bold" >{formInputsT('speciality')}:</p>
-                    <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{specialityT(filtersSelected.speciality)}</p>
-                </div>
-                <div className="flex gap-2 items-center">
-                    <p className="text-brand-dark dark:text-light font-bold">{formInputsT('department')}:</p>
-                    <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{filtersSelected.department === 'all' ? commonT('all') : filtersSelected.department === 'no_department' ? departmentT('no_department') : selectedHeadquarters?.departments.find(({ id }) => id === filtersSelected.department)?.value ? departmentT(selectedHeadquarters.departments.find(({ id }) => id === filtersSelected.department)!.value) : filtersSelected.department}</p>
-                </div>
-                <div className="flex gap-2 items-center">
-                    <p className="text-brand-dark dark:text-light font-bold">{formInputsT('status')}:</p>
-                    <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{statusT(filtersSelected.status)}</p>
-                </div>
-                <div className="flex gap-2 items-center">
-                    <p className="text-brand-dark dark:text-light font-bold">{formInputsT('headquarters')}:</p>
-                    <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">
-                        {HEADQUARTERS_DATA.find((item) => item.id === filtersSelected.headquarters)?.name ?? currentHeadquarter?.name}
-                    </p>
-                </div>
-                <div className="flex gap-2 items-center">
-                    <p className="text-brand-dark dark:text-light font-bold">{formInputsT('orderByCreatedAt')}:</p>
-                    <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{commonT(filtersSelected.orderByCreatedAt)}</p>
-                </div>
-                <div className="flex gap-2 items-center">
-                    <p className="text-brand-dark dark:text-light font-bold">{formInputsT('orderBySpeciality')}:</p>
-                    <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{commonT(filtersSelected.orderBySpeciality)}</p>
-                </div>
-                <div className="flex gap-2 items-center">
-                    <p className="text-brand-dark dark:text-light font-bold">{formInputsT('orderByStatus')}:</p>
-                    <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{commonT(filtersSelected.orderByStatus)}</p>
-                </div>
+
+                {/* SEDE */}
+                {
+                    filtersSelected.headquarters !== 'all' && (
+                        <div className="flex gap-2 items-center">
+                            <p className="text-brand-dark dark:text-light font-bold">{formInputsT('headquarters')}:</p>
+                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">
+                                {currentHeadquarter?.name}
+                            </p>
+                        </div>
+                    )
+                }
+
+                {/* SERVICIOS DE LA SEDE */}
+                {
+                    filtersSelected.services !== 'all' && (
+                        <div className="flex gap-2 items-center">
+                            <p className="text-brand-dark dark:text-light font-bold" >{formInputsT('services')}:</p>
+                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{servicesT(filtersSelected.services)}</p>
+                        </div>
+                    )
+                }
+
+                {/* ESPECIALIDAESD DE LA SEDE */}
+                {
+                    filtersSelected.speciality !== 'all' && (
+                        <div className="flex gap-2 items-center">
+                            <p className="text-brand-dark dark:text-light font-bold" >{formInputsT('speciality')}:</p>
+                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{specialityT(filtersSelected.speciality)}</p>
+                        </div>
+                    )
+                }
+
+                {/* DEPARTAMENTO */}
+                {
+                    filtersSelected.department !== 'all' && (
+
+                        <div className="flex gap-2 items-center">
+                            <p className="text-brand-dark dark:text-light font-bold">{formInputsT('department')}:</p>
+                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{departmentT(filtersSelected.department)}</p>
+                        </div>
+                    )
+                }
+
+
+                {/* ESPECIALIDAESD DEL DEPARTAMENTO */}
+                {
+                    filtersSelected.deptoSpeciality !== 'all' && (
+                        <div className="flex gap-2 items-center">
+                            <p className="text-brand-dark dark:text-light font-bold" >{formInputsT('deptoSpeciality')}:</p>
+                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{specialityT(filtersSelected.deptoSpeciality)}</p>
+                        </div>
+                    )
+                }
+
+                {/* STATUS */}
+                {
+                    filtersSelected.status !== 'all' && (
+                        <div className="flex gap-2 items-center">
+                            <p className="text-brand-dark dark:text-light font-bold">{formInputsT('status')}:</p>
+                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{statusT(filtersSelected.status)}</p>
+                        </div>
+
+                    )
+                }
+
+                {/* ORDER BY CRATED AT */}
+                {
+                    filtersSelected.orderByCreatedAt !== 'asc' && (
+                        <div className="flex gap-2 items-center">
+                            <p className="text-brand-dark dark:text-light font-bold">{formInputsT('orderByCreatedAt')}:</p>
+                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{commonT(filtersSelected.orderByCreatedAt)}</p>
+                        </div>
+
+                    )
+                }
+
+
+                {/* ORDER BY SPECIALITY */}
+                {
+
+                    filtersSelected.orderBySpeciality !== 'asc' && (
+                        <div className="flex gap-2 items-center">
+                            <p className="text-brand-dark dark:text-light font-bold">{formInputsT('orderBySpeciality')}:</p>
+                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{commonT(filtersSelected.orderBySpeciality)}</p>
+                        </div>
+                    )
+                }
+
+                {
+                    filtersSelected.orderByStatus !== 'asc' && (
+                        <div className="flex gap-2 items-center">
+                            <p className="text-brand-dark dark:text-light font-bold">{formInputsT('orderByStatus')}:</p>
+                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{commonT(filtersSelected.orderByStatus)}</p>
+                        </div>
+                    )
+                }
+
             </div>
 
         </>
@@ -248,40 +340,61 @@ export default function FiltersPersonal({ dataQuery, updateDataFn }: Props) {
                             <Input type="text" {...register('name')} className="max-w-55" id={`name-personal`} placeholder={formInputsT('searchByName')} />
                         </div>
 
-                        {/* OTROS FILTROS */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mt-10 mb-5">
-
+                        {/* FILTROS DE SEDE */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 mt-10 mb-5">
+                            {/* SEDE */}
                             <div>
                                 <Label key={'headquarters-personal'} htmlFor='headquarters' className="flex gap-2" > <Building className="w-4 h-4 text-theme-light-gray" /> {formInputsT('headquarters')}</Label>
-                                <Select canClear defaultValue={getValues('headquarters')} {...register('headquarters')} onChange={(event) => { register('headquarters').onChange(event); setValue('speciality', 'all'); setValue('department', 'all'); }} reset={resetSelectValue} options={headquartersSelect} placeholder='Selecciona una sede' />
-                            </div>
+                                {
+                                    headquartersSelect.length >= 2
+                                        ? <Select canClear defaultValue={getValues('headquarters')} {...register('headquarters')} reset={resetSelectValue} options={headquartersSelect} placeholder='Selecciona una sede' />
+                                        : <p className="text-sm ml-2 text-brand-dark dark:text-brand-light">{currentHeadquarter?.name}</p>
+                                }
 
+                            </div>
+                            {/* SERVICIOS */}
                             <div>
                                 <Label key={'services-personal'} htmlFor='services' className="flex gap-2" > <Briefcase className="w-4 h-4 text-theme-light-gray" /> {commonT('services')}</Label>
-                                <Select canClear defaultValue={getValues('services')} {...register('services')} reset={resetSelectValue} options={servicesSelect as { value: string; label: string }[]} placeholder='Selecciona un servicio' />
+                                <Select canClear defaultValue={getValues('services')} {...register('services')} reset={resetSelectValue} options={servicesSelect} placeholder='Selecciona un servicio' />
                             </div>
+                            {/* ESPECIALIDAD EN GENERAL DE LA SEDE*/}
                             <div>
                                 <Label key={'speciality-personal'} htmlFor='speciality' className="flex gap-2" > <Stethoscope className="w-4 h-4 text-theme-light-gray" /> {formInputsT('specialityHeadquarter')}</Label>
                                 {
                                     specialitySelect.length > 0
-                                        ? <Select canClear defaultValue={getValues('speciality')} {...register('speciality')} reset={resetSelectValue} options={specialitySelect as { value: string; label: string }[]} placeholder='Selecciona una especialidad' />
-                                        : <p className="font-light text-xs text-brand-dark dark:text-brand-light">No hay especialidades disponibles para esta sede</p>
+                                        ? <Select canClear disabled={departmentSpecialitiesSelect?.length > 0} defaultValue={getValues('speciality')} {...register('speciality')} reset={resetSelectValue} options={specialitySelect as { value: string; label: string }[]} placeholder='Selecciona una especialidad' />
+                                        : <p className="w-[85%] mx-auto font-light text-xs text-brand-dark dark:text-brand-light">Sin especialidades disponibles para esta sede</p>
                                 }
                             </div>
 
+                            {/* DEPARTAMENTOS */}
+                            <div>
+                                <Label key={'department-personal'} htmlFor='department' className="flex gap-2" > <Building className="w-4 h-4 text-theme-light-gray" /> {formInputsT('department')}</Label>
+                                {
+                                    departmentSelect.length > 0
+                                        ? <Select canClear defaultValue={getValues('department')} {...register('department')} reset={resetSelectValue} options={departmentSelect as { value: string; label: string }[]} placeholder='Selecciona un departamento' />
+                                        : <p className="w-[85%] mx-auto font-light text-xs text-brand-dark dark:text-brand-light">Sin departamentos disponibles para esta sede</p>
+                                }
+
+                            </div>
+                            {/* ESPECIALIDADES DEL DEPARTAMENTO DE LA SEDE... cambian al cambiar el departamento*/}
                             {
                                 departmentSpecialitiesSelect.length > 0 &&
                                 < div >
                                     <Label key={'speciality-personal-depto'} htmlFor='specialityForDepto' className="flex gap-2" > <Stethoscope className="w-4 h-4 text-theme-light-gray" /> {formInputsT('specialitiesForDepto')}</Label>
                                     {
                                         specialitySelect.length > 0
-                                            ? <Select canClear defaultValue={getValues('speciality')} {...register('speciality')} reset={resetSelectValue} options={specialitySelect as { value: string; label: string }[]} placeholder='Selecciona una especialidad' />
-                                            : <p className="font-light text-xs text-brand-dark dark:text-brand-light">No hay especialidades disponibles para esta sede</p>
+                                            ? <Select canClear defaultValue={getValues('deptoSpeciality')} {...register('deptoSpeciality')} reset={resetSelectValue} options={departmentSpecialitiesSelect} placeholder='Selecciona una especialidad' />
+                                            : <p className="w-[85%] mx-auto font-light text-xs text-brand-dark dark:text-brand-light">Sin especialidades disponibles para esta sede</p>
                                     }
                                 </div>
                             }
 
 
+                        </div>
+
+                        {/* OTROS FILTROS */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 pt-5  border-t border-gray-light  dark:border-gray-light/30">
 
                             <div>
                                 <Label key={'status-personal'} htmlFor='status' className="flex gap-2" > <Activity className="w-4 h-4 text-theme-light-gray" /> {formInputsT('status')}</Label>
@@ -290,15 +403,6 @@ export default function FiltersPersonal({ dataQuery, updateDataFn }: Props) {
 
 
 
-                            <div>
-                                <Label key={'department-personal'} htmlFor='department' className="flex gap-2" > <Building className="w-4 h-4 text-theme-light-gray" /> {formInputsT('department')}</Label>
-                                {
-                                    departmentSelect.length > 0
-                                        ? <Select canClear defaultValue={getValues('department')} {...register('department')} reset={resetSelectValue} options={departmentSelect as { value: string; label: string }[]} placeholder='Selecciona un departamento' />
-                                        : <p className="font-light text-xs text-brand-dark dark:text-brand-light">No hay departamentos disponibles para esta sede</p>
-                                }
-
-                            </div>
 
                             <div>
                                 <Label key={'order-by-createdat-personal'} htmlFor='orderBy' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {formInputsT('orderByCreatedAt')}</Label>
@@ -313,8 +417,8 @@ export default function FiltersPersonal({ dataQuery, updateDataFn }: Props) {
                                 <Select canClear defaultValue={getValues('orderByStatus')} {...register('orderByStatus')} reset={resetSelectValue} options={orderOptions} placeholder='Selecciona un orden' />
                             </div>
 
-
                         </div>
+
 
 
                         {/* BOTÓN SUBMIT */}
