@@ -106,18 +106,18 @@ export interface Personal {
         emailVerified: boolean;
         inviteTokenHash?: string;       // guarda el hash del token, no el token
         inviteTokenExpiresAt?: string;
-    }
+    };
 }
 
 export interface UserSystem {
-    id: Personal["id"]
-    image: Personal["image"]
-    name: Personal["personalInfo"]["name"]
+    id: Personal["id"];
+    image: Personal["image"];
+    name: Personal["personalInfo"]["name"];
     lastName: Personal["personalInfo"]["lastName"],
     assigments: Personal["locationAssignments"],
-    status: Personal["status"]
-    emailVerified: Personal["security"]["emailVerified"]
-
+    status: Personal["status"];
+    emailVerified: Personal["security"]["emailVerified"];
+    email: Personal["contactInfo"]["email"];
 
 }
 

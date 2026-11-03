@@ -3,7 +3,7 @@
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { cn } from "@/utils";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSidebar } from "../context/SidebarContext";
 import {
   ChevronDownIcon,
@@ -13,15 +13,24 @@ import {
   UserCircleIcon,
 } from "../icons/index";
 import { useUserStore } from "@/store/userStore";
-import { Building2, LogOut } from "lucide-react";
+import { useHeadquarterStore } from "@/store/useHeadquarterStore";
+import { Building2, LogOut, User2, UserRoundGroupIcon } from "lucide-react";
+import Select from "@/components/form/select/Select";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { HeadquartersService } from "@/features/headquarters/services/headquartersService";
+import { RoleSystem } from "@/types/dataTypes";
 
+
+// TYPES - INTERFACES
 type NavItem = {
   key: string;
   icon: React.ReactNode;
   path?: string;
   new?: boolean;
+  permissions: RoleSystem[];
   target?: string;
   subItems?: {
+    permissions: RoleSystem[];
     key: string;
     path: string;
     pro?: boolean;
@@ -29,45 +38,183 @@ type NavItem = {
     target?: string;
   }[];
 };
+type MenuType = "main" | "patients";
+const MenyTypesValues: MenuType[] = ["main", "patients"];
 
-const adminItems: NavItem[] = [
-  {
-    icon: <GridIcon />,
-    key: "dashboard",
-    path: "/admin"
-  },
-  {
-    icon: <UserCircleIcon />,
-    key: "personal",
-    path: "/admin/personal"
-  },
-  {
-    icon: <Building2 />,
-    key: "headquarters",
-    path: "/admin/headquarters"
-  }
-];
+// =========================================================================================================
+// =========================================================================================================
+// =========================================================================================================
+// =========================================================================================================
+// =========================================================================================================
+// =========================================================================================================
+// =========================================================================================================
+// =========================================================================================================
+// =========================================================================================================
 
-const sessionItems: NavItem[] = [
-  {
-    icon: <PlugInIcon />,
-    key: "session",
-    subItems: [
-      { key: "signIn", path: "/signin", pro: false },
-      { key: "signUp", path: "/signup", pro: false },
-      { key: "headquarters", path: "/admin/headquarters", pro: false }
-    ]
-  },
-];
-
-type MenuType = "main" | "session";
-const MenyTypesValues: MenuType[] = ["main", "session"];
 
 const AppSidebar: React.FC = () => {
-  const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
-  const pathname = usePathname();
+  // TRADUCCIONES
   const t = useTranslations("sidebar");
 
+  // HOOKS - STATES ---
+  const pathname = usePathname();
+  const [openSubmenu, setOpenSubmenu] = useState<{
+    type: MenuType;
+    index: number;
+  } | null>(null);
+  const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>(
+    {},
+  );
+  const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  const Navigate = useRouter();
+  const isActive = useCallback((path: string) => path === pathname, [pathname]);
+
+
+
+  // ZUSTAN
+  const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const { setUserRole, userRole, clearAllSession, userInfo } = useUserStore();
+  const { currentHeadquarter, setCurrentHeadquarter, allHeadquarters, clearHeadquarter } = useHeadquarterStore();
+
+  // TANKSTACK
+  const queryClient = useQueryClient();
+  const { mutate: dataUpdateHeadquarter, isPending } = useMutation({
+    mutationKey: ['updateHeadquarter-sidebar'],
+    mutationFn: (id: string) => HeadquartersService.getHearquarterById(id),
+    onSuccess: (res) => {
+      //  se actaluza data de sede
+      setCurrentHeadquarter(res);
+
+      // actualizar role del suaurio en esta sede
+      const newHqId = res.id;
+      const newRole = userInfo?.assigments.find((hq) => hq.headquartersId === newHqId)?.roleSystem || 'no_role';
+      setUserRole(newRole);
+
+
+      queryClient.resetQueries();
+    },
+    onError: (err) => {
+      console.error('Error al obtener la sede');
+    }
+  });
+
+  // MEMO 
+  const [patientsItems, adminItems] = useMemo(() => {
+    // NAVEGACIÓN MENU
+    const adminItems: NavItem[] = [
+      {
+        icon: <GridIcon />,
+        key: "dashboard",
+        path: "/admin",
+        permissions: ["admin", "owner"],
+      },
+      {
+        icon: <UserCircleIcon />,
+        key: "personal",
+        path: "/admin/personal",
+        permissions: ["admin", "owner", "receptionist"],
+      },
+      {
+        icon: <Building2 />,
+        key: "headquarters",
+        path: "/admin/headquarters",
+        permissions: ["admin", "owner", "receptionist", "assistant"],
+      },
+      {
+        icon: <UserRoundGroupIcon />,
+        key: "patientsDrop",
+        permissions: ["admin", "owner", "professional", "assistant"],
+        subItems: [
+          {
+            key: "patientsAll",
+            path: "/admin/patients",
+            permissions: ["admin", "owner", "professional", "assistant"],
+          },
+          {
+            key: "patientsToday",
+            path: "/admin/patients/today",
+            permissions: ["admin", "owner", "professional", "assistant"],
+          }
+        ]
+      }
+    ];
+
+    const patientsItems: NavItem[] = [];
+
+    return [patientsItems, adminItems];
+
+  }, [currentHeadquarter, allHeadquarters]);
+
+
+  // HANDLERS
+  const handleSubmenuToggle = (
+    index: number,
+    menuType: MenuType,
+  ) => {
+    setOpenSubmenu((prevOpenSubmenu) => {
+      if (
+        prevOpenSubmenu &&
+        prevOpenSubmenu.type === menuType &&
+        prevOpenSubmenu.index === index
+      ) {
+        return null;
+      }
+      return { type: menuType, index };
+    });
+  };
+
+  const closeSession = () => {
+    clearAllSession();
+    clearHeadquarter();
+    document.cookie = "auth_token=; path=/; max-age=0;";
+    Navigate.replace('/signin');
+  };
+
+  const handleUpdateHeadquarter = (headquarterId: string) => {
+    // TREAR DE BASE la data de la sede seleccionada y guardarla en el store
+    dataUpdateHeadquarter(headquarterId);
+  };
+
+  // EFFECTS
+  useEffect(() => {
+    let submenuMatched = false;
+    MenyTypesValues.forEach((menuType) => {
+      const items = menuType === "main" ? adminItems : patientsItems;
+      items.forEach((nav, index) => {
+        if (nav.subItems) {
+          nav.subItems.forEach((subItem) => {
+            if (isActive(subItem.path)) {
+              setOpenSubmenu({
+                type: menuType,
+                index,
+              });
+              submenuMatched = true;
+            }
+          });
+        }
+      });
+    });
+
+    if (!submenuMatched) {
+      setOpenSubmenu(null);
+    }
+  }, [pathname, isActive]);
+
+  useEffect(() => {
+    if (openSubmenu !== null) {
+      const key = `${openSubmenu.type}-${openSubmenu.index}`;
+      if (subMenuRefs.current[key]) {
+        setSubMenuHeight((prevHeights) => ({
+          ...prevHeights,
+          [key]: subMenuRefs.current[key]?.scrollHeight || 0,
+        }));
+      }
+    }
+  }, [openSubmenu]);
+
+
+  // RENDERS EXTRA
   const renderMenuItems = (
     navItems: NavItem[],
     menuType: MenuType,
@@ -75,7 +222,7 @@ const AppSidebar: React.FC = () => {
     <ul className="flex flex-col gap-1.5">
       {navItems.map((nav, index) => (
         <li key={nav.key}>
-          {nav.subItems ? (
+          {nav.subItems && (nav.permissions.some(p => p == userRole)) ? (
             <button
               onClick={() => handleSubmenuToggle(index, menuType)}
               className={cn(
@@ -117,43 +264,47 @@ const AppSidebar: React.FC = () => {
                 />
               )}
             </button>
-          ) : (
-            nav.path && (
-              <Link
-                href={nav.path}
-                target={nav.target}
-                className={cn(
-                  "group relative flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200",
-                  isActive(nav.path)
-                    ? "bg-brand/10 text-brand dark:bg-brand/15 dark:text-brand-light font-semibold shadow-theme-xs"
-                    : "text-gray dark:text-gray-light hover:text-gray-dark dark:hover:text-light hover:bg-light dark:hover:bg-light-accent/5",
-                  !isExpanded && !isHovered
-                    ? "lg:justify-center px-0"
-                    : "lg:justify-start",
-                )}
-              >
-                {/* Active Indicator Line */}
-                {isActive(nav.path) && (isExpanded || isHovered || isMobileOpen) && (
-                  <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-brand" />
-                )}
-                <span
+          )
+
+            : (
+              nav.path && (nav.permissions.some(p => p === userRole)) && (
+                <Link
+                  href={nav.path}
+                  target={nav.target}
                   className={cn(
-                    "flex h-5 w-6 shrink-0 items-center justify-center transition-colors",
+                    "group relative flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200",
                     isActive(nav.path)
-                      ? "text-brand dark:text-brand-light"
-                      : "text-gray dark:text-gray-light group-hover:text-gray-dark dark:group-hover:text-light",
+                      ? "bg-brand/10 text-brand dark:bg-brand/15 dark:text-brand-light font-semibold shadow-theme-xs"
+                      : "text-gray dark:text-gray-light hover:text-gray-dark dark:hover:text-light hover:bg-light dark:hover:bg-light-accent/5",
+                    !isExpanded && !isHovered
+                      ? "lg:justify-center px-0"
+                      : "lg:justify-start",
                   )}
                 >
-                  {nav.icon}
-                </span>
-                {(isExpanded || isHovered || isMobileOpen) && (
-                  <span className="truncate">
-                    {t(`items.${nav.key}`)}
+                  {/* Active Indicator Line */}
+                  {isActive(nav.path) && (isExpanded || isHovered || isMobileOpen) && (
+                    <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-brand" />
+                  )}
+                  <span
+                    className={cn(
+                      "flex h-5 w-6 shrink-0 items-center justify-center transition-colors",
+                      isActive(nav.path)
+                        ? "text-brand dark:text-brand-light"
+                        : "text-gray dark:text-gray-light group-hover:text-gray-dark dark:group-hover:text-light",
+                    )}
+                  >
+                    {nav.icon}
                   </span>
-                )}
-              </Link>
-            )
-          )}
+                  {(isExpanded || isHovered || isMobileOpen) && (
+                    <span className="truncate">
+                      {t(`items.${nav.key}`)}
+                    </span>
+                  )}
+                </Link>
+              )
+            )}
+
+          {/* ABRIR Y CERRAR SIDEBAR SI ES COLLAPSE */}
           {nav.subItems && (isExpanded || isHovered || isMobileOpen) && (
             <div
               ref={(el) => {
@@ -212,78 +363,14 @@ const AppSidebar: React.FC = () => {
     </ul>
   );
 
-  const [openSubmenu, setOpenSubmenu] = useState<{
-    type: MenuType;
-    index: number;
-  } | null>(null);
-  const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>(
-    {},
-  );
-  const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
-  const { clearAllSession } = useUserStore();
-  const Navigate = useRouter();
-
-
-  const isActive = useCallback((path: string) => path === pathname, [pathname]);
-
-  useEffect(() => {
-    let submenuMatched = false;
-    MenyTypesValues.forEach((menuType) => {
-      const items = menuType === "main" ? adminItems : sessionItems;
-      items.forEach((nav, index) => {
-        if (nav.subItems) {
-          nav.subItems.forEach((subItem) => {
-            if (isActive(subItem.path)) {
-              setOpenSubmenu({
-                type: menuType,
-                index,
-              });
-              submenuMatched = true;
-            }
-          });
-        }
-      });
-    });
-
-    if (!submenuMatched) {
-      setOpenSubmenu(null);
-    }
-  }, [pathname, isActive]);
-
-  useEffect(() => {
-    if (openSubmenu !== null) {
-      const key = `${openSubmenu.type}-${openSubmenu.index}`;
-      if (subMenuRefs.current[key]) {
-        setSubMenuHeight((prevHeights) => ({
-          ...prevHeights,
-          [key]: subMenuRefs.current[key]?.scrollHeight || 0,
-        }));
-      }
-    }
-  }, [openSubmenu]);
-
-  const handleSubmenuToggle = (
-    index: number,
-    menuType: MenuType,
-  ) => {
-    setOpenSubmenu((prevOpenSubmenu) => {
-      if (
-        prevOpenSubmenu &&
-        prevOpenSubmenu.type === menuType &&
-        prevOpenSubmenu.index === index
-      ) {
-        return null;
-      }
-      return { type: menuType, index };
-    });
-  };
-
-
-  const closeSession = () => {
-    clearAllSession();
-    document.cookie = "auth_token=; path=/; max-age=0;";
-    Navigate.replace('/signin');
-  }
+  // =========================================================================================================
+  // =========================================================================================================
+  // =========================================================================================================
+  // =========================================================================================================
+  // =========================================================================================================
+  // =========================================================================================================
+  // =========================================================================================================
+  // =========================================================================================================
 
   return (
     <aside
@@ -334,8 +421,23 @@ const AppSidebar: React.FC = () => {
         </Link>
       </div>
 
-      {/* Navigation List */}
+      {/* lsita de nav */}
       <div className="no-scrollbar flex flex-1 flex-col overflow-y-auto p-4 duration-300 ease-linear">
+
+        <div className={"mb-4 bg-brand  overflow-hidden rounded-lg font-bold italic "}>
+          <Select
+            placeholder={"Seleciona una sede"}
+            options={allHeadquarters?.map((hq) => ({ value: hq.headquartersId, label: hq.headquartersId })) || []}
+            value={currentHeadquarter?.id || ''}
+            className="text-light dark:bg-transparent "
+            colorIcon="text-light"
+            onChange={(e) => {
+              const hqId = e.target.value;
+              handleUpdateHeadquarter(hqId);
+            }}
+
+          />
+        </div>
         <nav className="space-y-6">
           <div>
             <h2
@@ -355,26 +457,10 @@ const AppSidebar: React.FC = () => {
             {renderMenuItems(adminItems, "main")}
           </div>
 
-          {/* <div>
-            <h2
-              className={cn(
-                "mb-2.5 px-3 text-xs italic uppercase tracking-wider text-gray-dark/70 dark:text-light/50",
-                !isExpanded && !isHovered
-                  ? "lg:flex lg:justify-center px-0"
-                  : "flex justify-start",
-              )}
-            >
-              {isExpanded || isHovered || isMobileOpen ? (
-                t("groups.session")
-              ) : (
-                <span className="h-1 w-3 rounded-full bg-gray-light dark:bg-gray/40" />
-              )}
-            </h2>
-            {renderMenuItems(sessionItems, "session")}
-          </div> */}
+
         </nav>
 
-        {/* Bottom Section: Status & Logout */}
+        {/* BOTÓN DE CERRAR SESIÓN */}
         <div className="mt-auto pt-4 pb-4">
           {(isExpanded || isHovered || isMobileOpen) ? (
             <div className="rounded-xl border border-gray-light dark:border-gray/30 bg-light/70 dark:bg-black/30 p-3 space-y-2.5">

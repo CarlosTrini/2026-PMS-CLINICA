@@ -33,6 +33,7 @@ export const useUserStore = create<UserStore>()(
                     userInfo: null,
                     token: null,
                     isAuthenticated: false,
+                    userRole: 'no_role',
                 });
             }
         }),

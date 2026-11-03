@@ -2,7 +2,6 @@
 
 //HOOKS
 import { useEffect, useState } from "react";
-import { useRouter } from '@/i18n/navigation';
 //COMPONENTS
 import Checkbox from "@/components/form/input/Checkbox";
 import Input from "@/components/form/input/InputField";
@@ -12,33 +11,36 @@ import TopAuth from "./components/TopAuth";
 // SCHEMA
 import { authLoginSchema, authLoginData, authLoginDefaultValues } from './schemas/authLoginSchema';
 // NAVIGATION
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 // ICONS
 import { EyeCloseIcon, EyeIcon } from "@/icons";
 import { Loader } from "lucide-react";
 // LIBRARIES
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 // TYPES
 import type { AuthLogin, Personal } from "@/types/dataTypes";
 // STORES
 import { useUserStore } from "@/store/userStore";
 import { useHeadquarterStore } from "@/store/useHeadquarterStore";
-import { HEADQUARTERS_DATA } from "@/utils/constants";
 //SERVICES
 import { AuthActionsService } from "./services/authService";
 import { HeadquartersService } from "@/features/headquarters/services/headquartersService";
 
+
 export default function SignInView() {
 
-    //HOOKS
+
+    // ROUTER - STATES--
     const [showPassword, setShowPassword] = useState(false);
+    const [showOverlay, setShowOverlay] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
     const Navigate = useRouter();
 
-    const { setToken, setUserInfo, setIsAuthenticated } = useUserStore();
-    const { setCurrentHeadquarter } = useHeadquarterStore();
+    // ZUSTAND
+    const { setToken, setUserInfo, setIsAuthenticated, setUserRole } = useUserStore();
+    const { setCurrentHeadquarter, setAllHeadquarters, allHeadquarters } = useHeadquarterStore();
 
 
     // HOOK-FORM
@@ -49,19 +51,20 @@ export default function SignInView() {
 
 
 
-    // QUERY
-
-
     // MUTATE PARA HEADEQUARTERS
+    // TRAER LA DATA DE LA SEDE SELECCIONADA POR EL USUARIO
     const { mutate: handleQuarters } = useMutation({
         mutationKey: ['headquarterbyid'],
         mutationFn: (id: string) => HeadquartersService.getHearquarterById(id),
         onSuccess: (res) => {
-            const headquarter = res;
-            setCurrentHeadquarter(headquarter);
+            setCurrentHeadquarter(res);
+            // se actualiza el role del suaurio en el sistema
+
+
+            Navigate.push('/admin');
         },
         onError: (err) => {
-            console.log('Error al obtener la sede')
+            console.error('Error al obtener la sede');
         }
     });
 
@@ -89,25 +92,27 @@ export default function SignInView() {
                     image: userInfo.image,
                     name: userInfo.personalInfo.name,
                     lastName: userInfo.personalInfo.lastName,
-                    status: userInfo.status
+                    status: userInfo.status,
+                    email: userInfo.contactInfo.email
                 });
                 setIsAuthenticated(true);
                 reset();
                 setErrorMsg('');
 
                 // revisar a cuantás sedes pertenece este persona
-                // SE VA A TREAR LA DATA DE LA SEDE...
-                if (userInfo.locationAssignments.length > 1) {
+                if (userInfo.locationAssignments.length >= 2) {
                     // TOOD: SE VA A MOSTRAR UN OVERLAY EN EL QUE SELECCIONÉ LA SEDE QUE VA A USAR
+                    setAllHeadquarters(userInfo.locationAssignments);
+                    Navigate.push('/admin/overlay');
                 } else {
                     handleQuarters(userInfo.locationAssignments[0].headquartersId);
+                    setUserRole(userInfo.locationAssignments[0].roleSystem);
                 }
 
 
 
 
 
-                Navigate.push('/admin');
             }
         },
         onError: (err: any) => {
@@ -122,19 +127,20 @@ export default function SignInView() {
     };
 
 
-    // useEffect(() => {
-    //     if (isAuthenticated) {
-    //         Navigate.replace('/admin'); // Usamos 'replace' para que no vuelva al login con el botón 'Atrás'
-    //     }
-    // }, [isAuthenticated, Navigate]);
-
-
-    // if (isAuthenticated) {
-    //     return null;
-    // }
+    // =================================================================
+    // =================================================================
+    // =================================================================
+    // =================================================================
+    // =================================================================
+    // =================================================================
+    // =================================================================
+    // =================================================================
 
     return (
         <div className="mx-auto flex w-full max-w-md flex-col justify-center">
+
+
+
 
             <TopAuth
                 breadcrumbText='Portal Profesional'

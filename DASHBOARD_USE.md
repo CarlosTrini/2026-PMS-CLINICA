@@ -311,3 +311,41 @@ const { data, isFetching } = useQuery({
         queryKey: ['profesionalsTable'],
         queryFn: () => ProfesionalActionsService.getProfesionales()
     });
+
+
+
+fuera del perfil owner, los demás tiene una o más sedes en las
+que pueden vivir...
+por lo que la información siempre se muestra según la sede seleccionada...
+y en cada sede pueden tener el mismo rol o diferente, mismo departamento o diferente
+
+owner
+    pantallas full
+
+admin
+    personal (solo lo referente a su sede)
+    sedes (no)
+    citas (de sede)
+    pacientes (de sede)
+    departamentos (de sede)
+    especialidadesd y sevicios (de sede)
+
+
+recepcionista
+    personal (de sede para ver su status pero sin ejecutar acciones de update o delete)
+    citas (de sede)
+    pacientes (de sede)
+
+médico
+    citas
+    pacientes
+
+
+
+
+Módulo / Ruta	owner	admin (de sede)	receptionist (de sede)	doctor (médico)
+Sedes (/admin/headquarters)	Full (CRUD global)	❌ Oculto	❌ Oculto	❌ Oculto
+Personal (/admin/personal)	Full (Todas las sedes)	Full (Solo su sede)	👁️ Solo lectura (ver disponibilidad/estatus)	❌ Oculto
+Pacientes (/admin/patients)	Full	Full (De su sede)	Full (Crear, registrar, ver)	👁️/✏️ (Solo sus pacientes asignados/citas)
+Citas (/admin/appointments)	Full	Full (De su sede)	Full (Agendar, reasignar, cobrar)	✏️ (Solo su agenda y consulta médica)
+Servicios / Deptos	Full (Global)	👁️/✏️ (Configurar en su sede)	❌ Oculto	❌ Oculto

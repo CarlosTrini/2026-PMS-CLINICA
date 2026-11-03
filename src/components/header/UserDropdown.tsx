@@ -2,7 +2,7 @@
 
 import { useClickOutside } from "@/hooks/useClickOutside";
 import { getLanguage, languages } from "@/i18n/languages";
-import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { ChevronDownIcon } from "@/icons";
 import { cn } from "@/utils";
@@ -11,11 +11,16 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
+
 import { useUserStore } from "@/store/userStore";
+import { useHeadquarterStore } from "@/store/useHeadquarterStore";
+import useSystemTraslations from "@/hooks/useSysteTranslations";
+import Badge from "../ui/badge/Badge";
 
 export default function UserDropdown() {
-  const t = useTranslations("userDropdown");
-  const { clearAllSession } = useUserStore();
+
+
+  // STATES - HOOKS...
   const locale = useLocale() as Locale;
   const router = useRouter();
   const pathname = usePathname();
@@ -23,9 +28,23 @@ export default function UserDropdown() {
   const [isSubDropdownOpen, setIsSubDropdownOpen] = useState(false);
   const subDropdownRef = useRef<HTMLLIElement>(null);
 
+  // TRADUCCIONES
+  const t = useTranslations("userDropdown");
   const currentLang = getLanguage(locale);
   const CurrentFlagIcon = currentLang.FlagIcon;
 
+  // STORE
+  const { rolesSystemT } = useSystemTraslations();
+  const { userInfo, userRole } = useUserStore();
+  const { currentHeadquarter } = useHeadquarterStore();
+
+  // ZUSTAN
+  const { clearAllSession } = useUserStore();
+
+
+
+
+  // HANDLERS - FUNCTIONS
   useClickOutside(subDropdownRef, () => {
     setIsSubDropdownOpen(false);
   });
@@ -51,7 +70,13 @@ export default function UserDropdown() {
     clearAllSession();
     document.cookie = "auth_token=; path=/; max-age=0;";
     router.push('/signin');
-  }
+  };
+
+
+  // EFFECTS
+
+
+  // ================================  RENDER
 
   return (
     <div className="relative">
@@ -59,7 +84,7 @@ export default function UserDropdown() {
         onClick={toggleDropdown}
         className="dropdown-toggle flex items-center gap-2.5 rounded-xl p-1 sm:pe-2.5 transition-colors hover:bg-light dark:hover:bg-black-light border border-transparent hover:border-gray-light dark:hover:border-gray/30 cursor-pointer"
       >
-        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl ring-2 ring-brand/20 dark:ring-brand/40">
+        <div className="relative h-10 w-10 shrink-0 rounded-xl ring-2 ring-brand/20 dark:ring-brand/40">
           <Image
             width={40}
             height={40}
@@ -72,11 +97,15 @@ export default function UserDropdown() {
 
         <div className="hidden text-start sm:block">
           <span className="block text-sm font-semibold text-gray-dark dark:text-light leading-tight">
-            Dr. Carlos Trini
+            {userInfo?.name} {userInfo?.lastName}
           </span>
-          <span className="block text-2xs text-theme-light-gray font-normal">
-            Administrador
-          </span>
+          {/* <span className="block text-2xs text-theme-light-gray font-normal">
+           {rolesSystemT(userRole)}
+          </span> */}
+          <Badge color="info" variant="light" size="sm" >
+            {rolesSystemT(userRole)}
+          </Badge>
+
         </div>
 
         <ChevronDownIcon
@@ -94,10 +123,10 @@ export default function UserDropdown() {
       >
         <div className="mb-3 border-b border-gray-light pb-3 dark:border-gray/30">
           <span className="block text-theme-sm font-semibold text-gray-dark dark:text-light">
-            Dr. Carlos Trini
+            {userInfo?.name}
           </span>
           <span className="mt-0.5 block text-xs text-theme-light-gray">
-            carlos.trini@clinicapms.com
+            {userInfo?.email}
           </span>
         </div>
 

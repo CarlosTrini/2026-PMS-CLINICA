@@ -6,15 +6,37 @@ import { Activity, ChartBar, Stethoscope, User2Icon } from 'lucide-react';
 import Fallback from "@/components/fallbackQuery/Fallback";
 import type { Metrics } from "@/types/dataTypes";
 import useSystemTraslations from "@/hooks/useSysteTranslations";
+import { useEffect } from "react";
 
 export default function Metrics() {
 
+    // TRADUCCIÓNES
     const { statusT, personalMetricsT } = useSystemTraslations();
 
+    // STATES 
+
+    // ZUSTAND
+
+
+    //QUERY - MUTATE
     const { data: metrics, isLoading: isLoadingMetrics, error: errorMetrics } = useQuery({
         queryKey: ['metrics-query'],
         queryFn: () => PersonalActionsService.getPersonalMetrics(),
     });
+
+    // EFFECTS
+    useEffect(() => {
+
+    }, []);
+
+    // ===================================================================================================
+    // ===================================================================================================
+    // ===================================================================================================
+    // ===================================================================================================
+    // ===================================================================================================
+    // ===================================================================================================
+    // ===================================================================================================
+
 
     return (
         <>

@@ -28,7 +28,10 @@
     "groups": {
       "admin": "Administrador",
       "personal": "Personal",
-      "session": "Sesión"
+      "session": "Sesión",
+      "patientsDrop": "Pacientes",
+      "patientsAll": "Todos los pacientes",
+      "patientsToday": "Pacientes de hoy"
     },
     "items": {
       "dashboard": "Dashboard",
@@ -37,7 +40,10 @@
       "authentication": "Autenticación",
       "session": "Sesión",
       "signIn": "Iniciar Sesión",
-      "signUp": "Registrarse"
+      "signUp": "Registrarse",
+      "patientsDrop": "Pacientes",
+      "patientsAll": "Todos los pacientes",
+      "patientsToday": "Pacientes de hoy"
     }
   },
   "header": {

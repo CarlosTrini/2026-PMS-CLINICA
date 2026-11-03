@@ -16,6 +16,7 @@ interface SelectProps
   defaultValue?: string;
   // onChange?: (value: string) => void;
   size?: "sm" | "md" | "lg";
+  colorIcon?: string;
   canClear?: boolean;
   reset?: boolean;
 }
@@ -44,6 +45,7 @@ const Select: React.FC<SelectProps> = ({
   canClear = false,
   reset,
   name,
+  colorIcon = '',
   ...props
 }) => {
   const [internalValue, setInternalValue] = useState<string>(defaultValue || '');
@@ -142,7 +144,7 @@ const Select: React.FC<SelectProps> = ({
         )}
 
         <span className="pointer-events-none text-gray dark:text-gray-light">
-          <ChevronDownIcon className={ICON_SIZE[size]} />
+          <ChevronDownIcon className={`${ICON_SIZE[size]} ${colorIcon}`} />
         </span>
       </div>
     </div>
