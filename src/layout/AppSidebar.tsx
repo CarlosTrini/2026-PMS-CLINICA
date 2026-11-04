@@ -27,10 +27,10 @@ type NavItem = {
   icon: React.ReactNode;
   path?: string;
   new?: boolean;
-  permissions: RoleSystem[];
+  permissions: RoleSystem[]; // quienes SI pueden ver o navegar a las páginas en el sidebar
   target?: string;
   subItems?: {
-    permissions: RoleSystem[];
+    permissions: RoleSystem[]; // quienes SI pueden ver o navegar a las páginas en el sidebar
     key: string;
     path: string;
     pro?: boolean;
@@ -72,7 +72,7 @@ const AppSidebar: React.FC = () => {
 
 
 
-  // ZUSTAN
+  // ZUSTAN - STORE
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const { setUserRole, userRole, clearAllSession, userInfo } = useUserStore();
   const { currentHeadquarter, setCurrentHeadquarter, allHeadquarters, clearHeadquarter } = useHeadquarterStore();
@@ -124,7 +124,7 @@ const AppSidebar: React.FC = () => {
       {
         icon: <UserRoundGroupIcon />,
         key: "patientsDrop",
-        permissions: ["admin", "owner", "professional", "assistant"],
+        permissions: ["admin", "owner", "professional", "assistant", "receptionist"],
         subItems: [
           {
             key: "patientsAll",
@@ -424,20 +424,25 @@ const AppSidebar: React.FC = () => {
       {/* lsita de nav */}
       <div className="no-scrollbar flex flex-1 flex-col overflow-y-auto p-4 duration-300 ease-linear">
 
-        <div className={"mb-4 bg-brand  overflow-hidden rounded-lg font-bold italic "}>
-          <Select
-            placeholder={"Seleciona una sede"}
-            options={allHeadquarters?.map((hq) => ({ value: hq.headquartersId, label: hq.headquartersId })) || []}
-            value={currentHeadquarter?.id || ''}
-            className="text-light dark:bg-transparent "
-            colorIcon="text-light"
-            onChange={(e) => {
-              const hqId = e.target.value;
-              handleUpdateHeadquarter(hqId);
-            }}
+        {
+          allHeadquarters && allHeadquarters?.length > 1 && (
+            <div className={"mb-4 bg-brand  overflow-hidden rounded-lg font-bold italic "}>
+              <Select
+                placeholder={"Seleciona una sede"}
+                options={allHeadquarters?.map((hq) => ({ value: hq.headquartersId, label: hq.headquartersId })) || []}
+                value={currentHeadquarter?.id || ''}
+                className="text-light dark:bg-transparent "
+                colorIcon="text-light"
+                onChange={(e) => {
+                  const hqId = e.target.value;
+                  handleUpdateHeadquarter(hqId);
+                }}
 
-          />
-        </div>
+              />
+            </div>
+
+          )
+        }
         <nav className="space-y-6">
           <div>
             <h2

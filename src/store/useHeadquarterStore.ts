@@ -9,6 +9,7 @@ interface HeadquarterStore {
     setAllHeadquarters: (headquarters: Personal['locationAssignments']) => void;
     showOverlay: boolean; // controla la visibilidad del overlay de selección de sede para el caso de que el usuario tenga más de una sede asignada
     setShowOverlay: (show: boolean) => void;
+
     clearHeadquarter: () => void;
 }
 

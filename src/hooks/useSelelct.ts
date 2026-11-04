@@ -6,7 +6,7 @@ export const useSelect = (initialState: boolean = false) => {
     const [resetSelectValue, setResetSelectValue] = useState(initialState);
     const resetSelectFn = useCallback(() => {
         setResetSelectValue(true);
-        setTimeout(() => setResetSelectValue(false), 1500);
+        setResetSelectValue(false);// se regresa a false para que al resetear otravez, lo haga
     }, []);
 
     return { resetSelectValue, resetSelectFn };

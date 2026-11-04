@@ -60,7 +60,7 @@ export const PersonalActionsService = {
         }
     },
 
-    updatePersonal: async (personal: Personal): Promise<{ success: boolean, message: string }> => {
+    updatePersonal: async (personal: Personal): Promise<{ success: boolean, message: string; }> => {
         // const response = await apiClient.put(`/personal/${id}`, personal);
 
         await mockDelay;

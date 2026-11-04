@@ -1,11 +1,13 @@
 {
   "editor.inlineSuggest.enabled": true,
-  "editor.inlineSuggest.suppressSuggestions": true,
+  "editor.inlineSuggest.suppressSuggestions": "never",
+  "editor.suggest.preview": true,
   "editor.quickSuggestions": {
-    "other": "off",
-    "comments": "off",
-    "strings": "off"
+    "other": "on",
+    "comments": "on",
+    "strings": "on"
   },
+  "editor.suggestOnTriggerCharacters": true,
   "editor.acceptSuggestionOnCommitCharacter": false,
   "editor.formatOnType": false,
   "editor.autoClosingBrackets": "languageDefined",
@@ -18,5 +20,12 @@
   "workbench.iconTheme": "vs-nomo-dark",
   "breadcrumbs.icons": true,
   "breadcrumbs.showArrays": true,
-  "editor.cursorBlinking": "smooth"
+  "editor.cursorBlinking": "smooth",
+  "github.copilot.editor.enableAutoCompletions": true,
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": true,
+    "markdown": true,
+    "scminput": true
+  }
 }

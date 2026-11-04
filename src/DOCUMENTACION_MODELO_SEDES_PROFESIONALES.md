@@ -16,7 +16,7 @@ a la cual desea iniciar sesión, luego se guarda la data de la sede seleccionada
 
 ## ☢️PANEL ADMIN (/ADMIN)
 
-### Sidebar 
+### PANEL LATERAL (SIDEBAR) 
 
 #### Una asignación
 Se mostrará menú normal con las vistas/páginas que pueda ver según su rol se lo permita
@@ -24,7 +24,69 @@ Se mostrará menú normal con las vistas/páginas que pueda ver según su rol se
 #### Asignación mútiple
 Se mostrará en la parte superios un select, que indique primeramente la sede que se ha seleccionado y al desplegar, las demás, opciones que puede seleccionar, para intercambiar de sede.
 
+### HEADER
 
+- Debe mostrár un tag con el nombre de la sede de la cual se está visualizando la data en el momento.
+
+- Botones de theme y notificaciones.
+
+- Dropdown para foto de usuario logueado, nombre, rol y al desplegar mostar: Editar perfil, configuración de la cuenta, Idioma(drop con idioma) y el botón de cerrar sesión
+
+## PÁGINA DE PERSONAL
+
+### Métricas
+Muestra 4 cards sencillas con información relevante rápida correspondiente a la sede seleccionada.
+- Total de personal
+- cantidad de médicos en 'consulta'
+- especialidades
+- cantidad de personal con estatus: Activo, inactivo, en descanso y en consulta
+
+### Filtros
+Collapse con filtros para la tabla del personal que se muestra debajo, debe contener botones de:
+- Quitar filtros
+- Filtrar
+
+Los filtros a usar son: 
+- Buscar por nombre: Si este filtro tiene valor, todos los demás se anulan
+  
+  Filtros de sede: 
+- Sede, solo muestra la sede actual
+- Servicios: select con servicios de la sede
+- Especialidades de la sede: select (si la sede no  cuenta con especialidades, mostrar 'sin especialidades disponibles para esta sede')
+- Departamento: select (si la sede no  cuenta con departamentos, mostrar 'sin departamentos disponibles para esta sede') 
+- Especialidades de departamento: Si el departamento cuenta con especialidades, se muestra un select adicional con su especialidades. Al regresar el departamento a su valor 'Todos' este filtro debe ocultarse
+
+    Filtros generales: 
+- Estatus : select de estatus del personal
+- Ordernar por ingreso: select asc y desc para filtrar por fechas de alta del personal
+- Orden por especialidad: select asc y desc para especialidades
+- Orden por estatus: select de asc y desc para estatus
+
+### Tabla del personal
+
+Mostrará información del personal asi como acciones para editar o eliminar.
+
+En el footer, dos botones: 
+
+- Cerrar
+- Guardar cambios (este solo se mostrará si se encuentra en 'modo edición')
+
+Columnas: 
+
+- Nombre: Mostrará un avatar con foto del usuario, nombre en negritas, Ciudad y estado, Role en el sistema y id
+- Especialidad: Especialidad en la cuál está asignada en dicha sede, Ced y lic (Si aplica)
+- Sede: Sedes a las que pertenece
+- Contacto: correo y teléfono
+- Estatus
+- Ingreso
+- acciones: Botones con iconos para ver y eliminar 
+    - Ver: Abre un modal y muestra por tabs info del personal seleccionado. En el header el nobmre y su/s especialidad/es, su estatus. En el body un icono para eliminar y un switch de "editar datos" esto activará el modo edición.
+    - Tab 'información personal': Nombre, apellido, fecha de nacimiento y género.
+    - Tab 'Datos de contacto': Todos como inputs en disabled hasta que se habilite edición. Correo, Teléfono, Dirección, Ciudad, Estado, Código postal y País
+    - Tab 'Sedes': Todos como inputs en disabled hasta que se habilite edición. Estatus, en tabs muestra las sedes a la que pertenece, aqui se peude editar sede, rol en sede, especialidad en sede y departemento (si la sede tiene deptos), o asignar a una nueva sede o eliminarlo de alguna sede
+    - Si se está en el modo edición y se editaron o no valores, en caso de cerra el modal, los cambios no se guardan
+    
+     
 
 
 ```typescript

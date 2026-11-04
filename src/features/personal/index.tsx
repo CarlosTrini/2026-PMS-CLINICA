@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import Tooltip from "@/components/ui/tooltip/Tooltip";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
@@ -12,7 +12,7 @@ import { Building, Calendar, Eye, Mail, Phone, PlusCircle, Trash2 } from 'lucide
 import Fallback from "@/components/fallbackQuery/Fallback";
 import { PersonalActionsService } from "./services/service";
 import useSystemTraslations from "@/hooks/useSysteTranslations";
-import { Personal } from "@/types/dataTypes";
+import type { Personal, RoleSystem } from "@/types/dataTypes";
 import FiltersPersonal from "./components/Filters";
 import { useModal } from "@/hooks/useModal";
 import { Link } from "@/i18n/navigation";
@@ -24,9 +24,20 @@ import { HEADQUARTERS_DATA } from "@/utils/constants";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import ViewEditPersonal from "./components/ViewEditPersonal";
 import { useHeadquarterStore } from "@/store/useHeadquarterStore";
+import { useUserStore } from "@/store/userStore";
 
 
-const columns = ['name', 'speciality', 'headquarters', 'contact', 'status', 'createdAt', 'actions'];
+const COLUMNS = ['name', 'speciality', 'headquarters', 'contact', 'status', 'createdAt', 'actions'];
+const permissionsTablePersonal: Record<typeof COLUMNS[number], RoleSystem[]> = { // no permitidos ver o accionar
+    'name': [],
+    'speciality': [],
+    'headquarters': [],
+    'contact': [],
+    'status': [],
+    'createdAt': ['assistant', 'receptionist', 'no_role', 'professional'],
+    'actions': ['assistant', 'receptionist', 'no_role', 'professional']
+};
+
 
 
 
@@ -34,9 +45,11 @@ export default function PersonalView() {
 
     const { personalT, commonT, statusT, tableColumnsT, specialityT, departmentT, rolesSystemT } = useSystemTraslations();
     const { currentHeadquarter } = useHeadquarterStore();
+    const { userRole } = useUserStore();
 
     // HOOKS
     const [dataTable, setDataTable] = useState<Personal[]>([]);
+    const [dataMetrics, setDataMetrics] = useState<Personal[]>([]);
     const [userSelected, setUserSelected] = useState<Personal | null>(null);
     const { isOpen, openModal, closeModal } = useModal(false);
 
@@ -45,7 +58,9 @@ export default function PersonalView() {
         mutationKey: ['personalTable', currentHeadquarter?.id],
         mutationFn: (id: string) => PersonalActionsService.getPersonalByHeadquarter(id),
         onSuccess: (data) => {
-            setDataTable(data);
+            const dataPersonal = Array.isArray(data) ? data : [];
+            setDataTable(dataPersonal);
+            setDataMetrics(dataPersonal); // es lo mismo, solo que esta no cambia con los filtros... solo al cambiar de sede
         },
         onError: (err) => {
             console.error('Error al obtener el personal:', err);
@@ -69,8 +84,8 @@ export default function PersonalView() {
             console.error('Error al copiar al portapapeles:', error);
         }
     };
-    const PhoneAction = ({ phone }: { phone: string }) => {
-        if (!phone) return <></>
+    const PhoneAction = ({ phone }: { phone: string; }) => {
+        if (!phone) return <></>;
         return (
             <>
                 <div className="grid grid-cols-1 w-full gap-1 ">
@@ -89,16 +104,17 @@ export default function PersonalView() {
         );
     };
 
+    // REVISAR PERMISOS PARA TABLA Y FILTROS
+    const checkPermissionsTable = (col: string): boolean => {
+        return permissionsTablePersonal[col] && permissionsTablePersonal[col].some(ur => ur === userRole);
+    };
+
+
+    // DATA DEL PERSONAL POR ID SEDE
     useEffect(() => {
         if (!currentHeadquarter) return;
-        handlePersonal(currentHeadquarter.id)
+        handlePersonal(currentHeadquarter.id);
     }, [currentHeadquarter]);
-
-    useEffect(() => {
-        if (isError) {
-            console.error("error", error.message);
-        }
-    }, [isError]);
 
 
     // abre el modal con la info cuando está listo el state
@@ -116,20 +132,31 @@ export default function PersonalView() {
 
 
             {/* CARDS SECTION */}
-            <Metrics />
+            <Metrics dataPersonal={dataMetrics} />
 
             {/* FILTERS */}
-            <FiltersPersonal dataQuery={dataTable as Personal[]} updateDataFn={setDataTable} />
+            <FiltersPersonal
+                dataQuery={dataTable as Personal[]}
+                updateDataFn={setDataTable}
+                checkPermissionCb={(colName) => checkPermissionsTable(colName)} // En caso de filtros relacoinados a columnas.,..  ejemplo: Filtro: Orden por ingreso, Col: createdAt
+            />
 
             {/* EXTRA BUTTONS */}
-            <section className="flex items-center justify-end">
-                <Link
-                    href="/admin/personal/new"
-                    className="flex items-center text-sm font-medium gap-2 px-4 py-2 rounded-lg bg-brand hover:bg-brand/90 dark:bg-brand-dark dark:hover:bg-brand-dark/80 text-light transition-colors shadow-theme-xs"
-                >
-                    <PlusCircle className="w-4 h-4" />
-                    <span>Agregar Personal</span>
-                </Link>
+            <section className="flex items-center justify-between ">
+
+                <div className={`${dataTable.length > 0 ? 'visible' : 'opacity-0'}`}>
+                    <p className="italic font-semibold text-sm items-baseline text-gray/70 dark:text-gray-light/70">Coincidencias: {dataTable.length}</p>
+                </div>
+
+                <div>
+                    <Link
+                        href="/admin/personal/new"
+                        className="flex items-center text-sm font-medium gap-2 px-4 py-2 rounded-lg bg-brand hover:bg-brand/90 dark:bg-brand-dark dark:hover:bg-brand-dark/80 text-light transition-colors shadow-theme-xs"
+                    >
+                        <PlusCircle className="w-4 h-4" />
+                        <span>Agregar Personal</span>
+                    </Link>
+                </div>
             </section>
 
             {/* TABLE */}
@@ -151,27 +178,33 @@ export default function PersonalView() {
                 </>}
             >
                 <section className=" w-full min-w-0 mt-2 ">
+
                     <div className="hidden xl:block w-full h-full max-h-[65vh]  min-w-0 overflow-auto rounded-lg generic-border-shadow bg-theme-light-dark">
                         <Table className="w-full table-fixed" id={'personal-table'}>
-                            <colgroup>
-                                <col className="w-60 lg:w-60" />
-                                <col className="w-50 lg:w-40" />
-                                <col className="w-50 lg:w-40" />
-                                <col className="w-60 lg:w-50" />
-                                <col className="w-50 lg:w-40" />
-                                <col className="w-50 lg:w-35" />
-                                <col className="w-50 lg:w-40" />
-                            </colgroup>
+                            {/* <colgroup>
+                                <col className="min-w-60 lg:min-w-60" />
+                                <col className="min-w-50 lg:min-w-40" />
+                                <col className="min-w-50 lg:min-w-40" />
+                                <col className="min-w-60 lg:min-w-50" />
+                                <col className="min-w-50 lg:min-w-40" />
+                                <col className="min-w-50 lg:min-w-35" />
+                                <col className="min-w-50 lg:min-w-40" />
+                            </colgroup> */}
                             <TableHeader className="sticky top-0 border-b z-50 bg-brand dark:bg-brand-dark border-gray/20 dark:border-gray/40">
-                                <TableRow>
-                                    {columns.map(col => (
-                                        <TableCell key={col} isHeader><p className="generic-header-table">{tableColumnsT(`${col}`)}</p></TableCell>
-                                    ))}
+                                <TableRow className="">
+                                    {COLUMNS.map(col => {
+                                        const showClass = checkPermissionsTable(col) ? 'w-0 h-0 hidden' : 'nada';
+
+                                        return (
+                                            <TableCell key={col} isHeader className={`${showClass} generic-header-table`}><p className={`generic-header-table`}>{tableColumnsT(`${col}`)}</p></TableCell>
+                                        );
+                                    }
+                                    )}
                                 </TableRow>
                             </TableHeader>
                             <TableBody className="divide-y divide-gray/10 dark:divide-gray/30 text-theme-light-gray">
                                 {
-                                    dataTable.map(p => (
+                                    dataTable && dataTable?.map(p => (
                                         <TableRow key={p.id} className="transition-colors hover:bg-gray/5 dark:hover:bg-gray-light/5">
                                             <TableCell className="p-3 min-w-0 overflow-hidden whitespace-nowrap">
                                                 <div className="flex min-w-0 items-center gap-2">
@@ -266,29 +299,38 @@ export default function PersonalView() {
                                                     </Badge>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="p-2 ">
-                                                <p className="text-sm flex items-center justify-center gap-2 text-gray dark:text-gray-light"> <Calendar className="w-4 h-4 text-gray dark:text-gray-light" /> {simpleDate(p.createdAt)}</p>
-                                            </TableCell>
-                                            <TableCell className="p-2 ">
-                                                <div className="flex justify-center items-center gap-2">
+                                            {
+                                                !checkPermissionsTable('createdAt') && (
+                                                    <TableCell className="p-2 ">
+                                                        <p className="text-sm flex items-center justify-center gap-2 text-gray dark:text-gray-light"> <Calendar className="w-4 h-4 text-gray dark:text-gray-light" /> {simpleDate(p.createdAt)}</p>
+                                                    </TableCell>
+                                                )
+                                            }
 
-                                                    <button className="p-1 rounded-md bg-brand dark:bg-brand-dark hover:bg-brand/60 dark:hover:bg-brand-dark/70 text-light" onClick={() => { setUserSelected(p); }}><Eye className="w-4 h-4 " /></button>
+                                            {
+                                                !checkPermissionsTable('actions') && (
+                                                    <TableCell className="p-2 ">
+                                                        <div className="flex justify-center items-center gap-2">
 
-                                                    <Tooltip content={<>
-                                                        <div className="p-2.5  bg-error-dark/60 ">
-                                                            <p className="text-xs  text-theme-light">¿{commonT("deleteUser")} <span className="font-bold italic">{p.personalInfo.name + " " + p.personalInfo.lastName}</span> ?</p>
-                                                            <p className="text-xs mt-1  text-theme-light italic">({commonT("thisActionCannotBeUndone")})</p>
-                                                            <button className="p-1 mt-2 text-xs rounded-md bg-error dark:bg-error-dark hover:bg-error/60 dark:hover:bg-error-dark/70 text-gray-light">{commonT('delete')}</button>
+                                                            <button className="p-1 rounded-md bg-brand dark:bg-brand-dark hover:bg-brand/60 dark:hover:bg-brand-dark/70 text-light" onClick={() => { setUserSelected(p); }}><Eye className="w-4 h-4 " /></button>
+
+                                                            <Tooltip content={<>
+                                                                <div className="p-2.5  bg-error-dark/60 ">
+                                                                    <p className="text-xs  text-theme-light">¿{commonT("deleteUser")} <span className="font-bold italic">{p.personalInfo.name + " " + p.personalInfo.lastName}</span> ?</p>
+                                                                    <p className="text-xs mt-1  text-theme-light italic">({commonT("thisActionCannotBeUndone")})</p>
+                                                                    <button className="p-1 mt-2 text-xs rounded-md bg-error dark:bg-error-dark hover:bg-error/60 dark:hover:bg-error-dark/70 text-gray-light">{commonT('delete')}</button>
+                                                                </div>
+                                                            </>}
+                                                                position="left"
+                                                                trigger="click"
+                                                            >
+
+                                                                <button className="p-1 rounded-md bg-error dark:bg-error-dark hover:bg-error/60 dark:hover:bg-error-dark/70 text-gray-light"><Trash2 className="w-4 h-4 " /></button>
+                                                            </Tooltip>
                                                         </div>
-                                                    </>}
-                                                        position="left"
-                                                        trigger="click"
-                                                    >
-
-                                                        <button className="p-1 rounded-md bg-error dark:bg-error-dark hover:bg-error/60 dark:hover:bg-error-dark/70 text-gray-light"><Trash2 className="w-4 h-4 " /></button>
-                                                    </Tooltip>
-                                                </div>
-                                            </TableCell>
+                                                    </TableCell>
+                                                )
+                                            }
                                         </TableRow>
                                     )
 
@@ -403,8 +445,7 @@ export default function PersonalView() {
                                                         <p className="font-semibold uppercase text-gray dark:text-gray-light truncate">
                                                             {p.locationAssignments.length ? p.locationAssignments.map((assignment) => {
                                                                 const headquarters = HEADQUARTERS_DATA.find((item) => item.id === assignment.headquartersId);
-                                                                const department = headquarters?.departments.find((item) => item.id === assignment.departmentId);
-                                                                return <span key={assignment.id} className="block">{headquarters?.name ?? assignment.headquartersId} · {specialityT(assignment.speciality)}{department ? ` · ${departmentT(department.value)}` : ''}</span>;
+                                                                return <span key={assignment.id} className="block">{headquarters?.name ?? assignment.headquartersId} · {specialityT(assignment.speciality)}</span>;
                                                             }) : 'Sin sede asignada'}
                                                         </p>
                                                     </div>

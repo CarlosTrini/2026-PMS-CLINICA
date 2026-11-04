@@ -181,7 +181,7 @@ export default function UserDropdown() {
               {t("accountSettings")}
             </DropdownItem>
           </li>
-          <li>
+          {/* <li>
             <DropdownItem
               onItemClick={closeDropdown}
               tag="a"
@@ -205,7 +205,7 @@ export default function UserDropdown() {
               </svg>
               {t("support")}
             </DropdownItem>
-          </li>
+          </li> */}
           <li className="relative" ref={subDropdownRef}>
             <button
               type="button"
@@ -295,7 +295,7 @@ export default function UserDropdown() {
 
         <button
           onClick={closeSession}
-          className="generic-border group mt-3 flex items-center justify-center gap-3 rounded-lg px-3 py-2 text-theme-sm font-medium text-gray-dark hover:bg-light hover:text-gray-dark dark:text-gray-light dark:hover:bg-light-accent/5 dark:hover:text-gray-light"
+          className="generic-border bg-error text-light group mt-3 flex items-center justify-center gap-3 rounded-lg px-3 py-2 text-theme-sm font-medium hover:bg-error-dark "
         >
           {t("signOut")}
         </button>

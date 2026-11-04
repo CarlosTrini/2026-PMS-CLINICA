@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { HEADQUARTERS_DATA, STATUS_PERSONAL_ARRAY } from "@/utils/constants";
 import Collapse from "@/components/ui/collapse/Collapse";
 import Form from "@/components/form/Form";
@@ -7,7 +7,7 @@ import Input from "@/components/form/input/InputField";
 import Select from "@/components/form/select/Select";
 import { FilterData, FilterInput, filterPersonalSchema, filtersPersonalDefault } from "../schemas/formFiltersSchema";
 import { Activity, Briefcase, Building, Delete, Filter, ListOrdered, Search, Stethoscope } from 'lucide-react';
-import { FormState, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSelect } from "@/hooks/useSelelct";
 import { useState, useMemo, useEffect } from "react";
@@ -20,10 +20,11 @@ import { useHeadquarterStore } from "@/store/useHeadquarterStore";
 interface Props {
     dataQuery: Personal[];
     updateDataFn: (data: Personal[]) => void;
+    checkPermissionCb: (colFilterName: string) => boolean;
 
 }
 
-export default function FiltersPersonal({ dataQuery, updateDataFn }: Props) {
+export default function FiltersPersonal({ dataQuery, updateDataFn, checkPermissionCb }: Props) {
 
     const { commonT, specialityT, statusT, departmentT, formInputsT, servicesT } = useSystemTraslations();
     const { currentHeadquarter } = useHeadquarterStore();
@@ -36,7 +37,8 @@ export default function FiltersPersonal({ dataQuery, updateDataFn }: Props) {
     // HOOKS
     const { resetSelectValue, resetSelectFn } = useSelect();
     const [filtersSelected, setFiltersSelected] = useState<FilterData>(filtersPersonalDefault);
-    const [departmentSpecialitiesSelect, setDepartmentSpecialitiesSelect] = useState<{ value: string; label: string }[]>([]);
+    const [departmentSpecialitiesSelect, setDepartmentSpecialitiesSelect] = useState<{ value: string; label: string; }[]>([]);
+    const [backupData, setBackupData] = useState(dataQuery);
 
     // HOOK FORM -ZOD
     const { register, handleSubmit, reset, getValues, subscribe, setValue } = useForm<FilterInput, any, FilterData>({
@@ -45,6 +47,15 @@ export default function FiltersPersonal({ dataQuery, updateDataFn }: Props) {
     });
 
 
+    // ------- FUNCIONES
+
+    // DA UN RESET A FILTER EN DATA Y SELECTS
+    const resetAllFilters = () => {
+        resetSelectFn();
+        reset();
+        resetDataTable();
+        setFiltersSelected(filtersPersonalDefault);
+    };
 
     // FILTERS & SORTING
     const onHandleFilters = async (filterValues: FilterData) => {
@@ -121,7 +132,7 @@ export default function FiltersPersonal({ dataQuery, updateDataFn }: Props) {
     };
 
     // RESET DATA TABLE
-    const resetDataTable = () => updateDataFn(dataQuery || []);
+    const resetDataTable = () => updateDataFn(backupData || []);
 
     // LISTAS DE SELECTS
     const [specialitySelect, statusSelect, headquartersSelect, departmentSelect, servicesSelect] = useMemo(() => {
@@ -145,7 +156,7 @@ export default function FiltersPersonal({ dataQuery, updateDataFn }: Props) {
         const headquartersSelect = [currentHeadquarter].map((item) => ({
             value: item?.id,
             label: item?.name,
-        })) as { value: string; label: string }[];
+        })) as { value: string; label: string; }[];
 
         const departmentSelect = deptosHead.length > 0
             ? [
@@ -192,8 +203,10 @@ export default function FiltersPersonal({ dataQuery, updateDataFn }: Props) {
         }, 450);
 
 
-    }
+    };
 
+
+    // EFFECTS
     // detecta cambios en los valores de los filtros
     useEffect(() => {
         const unsubscribe = subscribe({
@@ -209,9 +222,23 @@ export default function FiltersPersonal({ dataQuery, updateDataFn }: Props) {
                 // ACTUALIZA LOS PREVIEWS DE FILTROS 
                 setFiltersSelected({ ...values });
             },
-        })
-        return unsubscribe
-    }, [subscribe, currentHeadquarter])
+        });
+        return unsubscribe;
+    }, [subscribe, currentHeadquarter]);
+
+
+    useEffect(() => {
+        if (backupData.length > 0) return; // ya guardó el bakcup para cuando se quiten los filtros 'Quitar filtros'
+        setBackupData(dataQuery);
+    }, [dataQuery]);
+
+    useEffect(() => {
+        resetAllFilters();
+    }, [currentHeadquarter]);
+
+
+
+    //  RENDERS
 
     const InfoCurrentFilters = () => (
         <>
@@ -292,11 +319,12 @@ export default function FiltersPersonal({ dataQuery, updateDataFn }: Props) {
 
                 {/* ORDER BY CRATED AT */}
                 {
-                    filtersSelected.orderByCreatedAt !== 'asc' && (
+                    !checkPermissionCb('createdAt') && filtersSelected.orderByCreatedAt !== 'asc' && (
                         <div className="flex gap-2 items-center">
                             <p className="text-brand-dark dark:text-light font-bold">{formInputsT('orderByCreatedAt')}:</p>
                             <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{commonT(filtersSelected.orderByCreatedAt)}</p>
                         </div>
+
 
                     )
                 }
@@ -326,6 +354,7 @@ export default function FiltersPersonal({ dataQuery, updateDataFn }: Props) {
 
         </>
     );
+
 
 
     return (
@@ -362,7 +391,7 @@ export default function FiltersPersonal({ dataQuery, updateDataFn }: Props) {
                                 <Label key={'speciality-personal'} htmlFor='speciality' className="flex gap-2" > <Stethoscope className="w-4 h-4 text-theme-light-gray" /> {formInputsT('specialityHeadquarter')}</Label>
                                 {
                                     specialitySelect.length > 0
-                                        ? <Select canClear disabled={departmentSpecialitiesSelect?.length > 0} defaultValue={getValues('speciality')} {...register('speciality')} reset={resetSelectValue} options={specialitySelect as { value: string; label: string }[]} placeholder='Selecciona una especialidad' />
+                                        ? <Select canClear disabled={departmentSpecialitiesSelect?.length > 0} defaultValue={getValues('speciality')} {...register('speciality')} reset={resetSelectValue} options={specialitySelect as { value: string; label: string; }[]} placeholder='Selecciona una especialidad' />
                                         : <p className="w-[85%] mx-auto font-light text-xs text-brand-dark dark:text-brand-light">Sin especialidades disponibles para esta sede</p>
                                 }
                             </div>
@@ -372,7 +401,7 @@ export default function FiltersPersonal({ dataQuery, updateDataFn }: Props) {
                                 <Label key={'department-personal'} htmlFor='department' className="flex gap-2" > <Building className="w-4 h-4 text-theme-light-gray" /> {formInputsT('department')}</Label>
                                 {
                                     departmentSelect.length > 0
-                                        ? <Select canClear defaultValue={getValues('department')} {...register('department')} reset={resetSelectValue} options={departmentSelect as { value: string; label: string }[]} placeholder='Selecciona un departamento' />
+                                        ? <Select canClear defaultValue={getValues('department')} {...register('department')} reset={resetSelectValue} options={departmentSelect as { value: string; label: string; }[]} placeholder='Selecciona un departamento' />
                                         : <p className="w-[85%] mx-auto font-light text-xs text-brand-dark dark:text-brand-light">Sin departamentos disponibles para esta sede</p>
                                 }
 
@@ -403,15 +432,22 @@ export default function FiltersPersonal({ dataQuery, updateDataFn }: Props) {
 
 
 
+                            {/* ORDERNAR POR INGRESO CREATED_AT */}
+                            {
+                                !checkPermissionCb('createdAt') && (
+                                    <div>
+                                        <Label key={'order-by-createdat-personal'} htmlFor='orderBy' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {formInputsT('orderByCreatedAt')}</Label>
+                                        <Select canClear defaultValue={getValues('orderByCreatedAt')} {...register('orderByCreatedAt')} reset={resetSelectValue} options={orderOptions} placeholder='Selecciona un orden' />
+                                    </div>
+                                )
 
-                            <div>
-                                <Label key={'order-by-createdat-personal'} htmlFor='orderBy' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {formInputsT('orderByCreatedAt')}</Label>
-                                <Select canClear defaultValue={getValues('orderByCreatedAt')} {...register('orderByCreatedAt')} reset={resetSelectValue} options={orderOptions} placeholder='Selecciona un orden' />
-                            </div>
+                            }
+                            {/* ORDENAR POR ESPECIALIDAD */}
                             <div>
                                 <Label key={'order-by-speciality-personal'} htmlFor='orderBySpeciality' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {formInputsT('orderBySpeciality')}</Label>
                                 <Select canClear defaultValue={getValues('orderBySpeciality')} {...register('orderBySpeciality')} reset={resetSelectValue} options={orderOptions} placeholder='Selecciona un orden' />
                             </div>
+                            {/* ORDENAR POR STATUS */}
                             <div>
                                 <Label key={'order-by-status-personal'} htmlFor='orderByStatus' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {formInputsT('orderByStatus')}</Label>
                                 <Select canClear defaultValue={getValues('orderByStatus')} {...register('orderByStatus')} reset={resetSelectValue} options={orderOptions} placeholder='Selecciona un orden' />
@@ -423,7 +459,7 @@ export default function FiltersPersonal({ dataQuery, updateDataFn }: Props) {
 
                         {/* BOTÓN SUBMIT */}
                         <div className="flex gap-2 justify-end mt-5">
-                            <button type="button" onClick={() => { resetSelectFn(); reset(); resetDataTable(); }} className="flex items-center gap-1 py-2 px-3 rounded-lg text-theme-light font-semibold bg-error dark:bg-error-dark"> <Delete className="w-4 h-4" /> {commonT('removeFilters')}</button>
+                            <button type="button" onClick={resetAllFilters} className="flex items-center gap-1 py-2 px-3 rounded-lg text-theme-light font-semibold bg-error dark:bg-error-dark"> <Delete className="w-4 h-4" /> {commonT('removeFilters')}</button>
                             <button type="submit" className="flex items-center gap-1 py-2 px-3 rounded-lg text-theme-light font-semibold bg-brand dark:bg-brand-dark"> <Filter className="w-4 h-4" /> {commonT('filter')}</button>
                         </div>
                     </Form>
@@ -431,6 +467,6 @@ export default function FiltersPersonal({ dataQuery, updateDataFn }: Props) {
                 </Collapse >
             </section >
         </>
-    )
+    );
 }
 

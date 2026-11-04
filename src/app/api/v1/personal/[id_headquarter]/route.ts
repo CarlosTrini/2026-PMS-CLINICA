@@ -1,8 +1,9 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getCollectionsFn } from "@/lib/mongodb";
 
-export async function GET(req: NextRequest, { params }: { params: { id_headquarter: string } }) {
+export async function GET(req: NextRequest, { params }: { params: { id_headquarter: string; }; }) {
     try {
+        const { id_headquarter } = await params;
         const { collectionFound } = await getCollectionsFn('personal');
         if (!collectionFound) {
             return NextResponse.json(
@@ -11,8 +12,9 @@ export async function GET(req: NextRequest, { params }: { params: { id_headquart
             );
         }
 
-        const documents = await collectionFound.find({}).toArray();
-        console.log('HEADQUARTGERS ==>', documents)
+        const documents = await collectionFound.find({
+            "locationAssignments.headquartersId": id_headquarter
+        }).toArray();
         if (documents.length == 0) {
             return NextResponse.json(
                 { message: "No se han encontrado coincidencias" },
