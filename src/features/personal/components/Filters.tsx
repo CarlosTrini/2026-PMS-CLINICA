@@ -61,9 +61,10 @@ export default function FiltersPersonal({ dataQuery, updateDataFn, checkPermissi
     const onHandleFilters = async (filterValues: FilterData) => {
         // actualiza badge de filtros (cabecera de collapse)
         setFiltersSelected(filterValues);
+        console.log(dataQuery)
 
         if (!dataQuery) return;
-        // HACK: REGLA => SI SE FILTRA POR NOMBRE, LOS DEMÁS FILTROS SE IGNORAN
+        //  REGLA => SI SE FILTRA POR NOMBRE, LOS DEMÁS FILTROS SE IGNORAN
         if (filterValues.name?.trim()) {
             const filtered = dataQuery.filter(p => {
                 const search = filterValues.name?.trim().toLowerCase();
@@ -77,20 +78,22 @@ export default function FiltersPersonal({ dataQuery, updateDataFn, checkPermissi
         }
 
         // FASE 1: FILTRAR (¿Quién se queda y quién se va?)
-        const filtered = dataQuery.filter(p => {
-            const locationAssignments = p.locationAssignments.filter((assignment) => assignment.headquartersId === filterValues.headquarters);
-            if (locationAssignments.length === 0) return false;
+        const filtered = dataQuery.filter((p:Personal) => {
 
-            // La especialidad y el departamento se filtran desde la sede seleccionada.
-            const matchingAssignment = locationAssignments.some((assignment) => {
-                const matchesSpeciality = filterValues.speciality === 'all' || assignment.speciality === filterValues.speciality;
-                const matchesDepartment = filterValues.department === 'all'
-                    || (filterValues.department === 'no_department' ? !assignment.departmentId : assignment.departmentId === filterValues.department);
-                return matchesSpeciality && matchesDepartment;
-            });
-            if (!matchingAssignment) return false;
+            // filtro por especialidades del personal (gral) sin importar el depto
+            if (filterValues.speciality !== 'all') {
+                if (!p.locationAssignments.find(l => l.speciality == filterValues.speciality)) return false;
+            }
 
-            // 3. Filtro por Estatus
+            // filtro del depto
+            if (filterValues.department !== 'all') {
+                if (!p.locationAssignments.find(l => l.departmentId == filterValues.department)) return false;
+            }
+
+
+
+
+            // Filtro por Estatus
             if (filterValues.status !== 'all') {
                 if (p.status !== filterValues.status) return false;
             }
@@ -135,7 +138,7 @@ export default function FiltersPersonal({ dataQuery, updateDataFn, checkPermissi
     const resetDataTable = () => updateDataFn(backupData || []);
 
     // LISTAS DE SELECTS
-    const [specialitySelect, statusSelect, headquartersSelect, departmentSelect, servicesSelect] = useMemo(() => {
+    const [specialitySelect, statusSelect, headquartersSelect, departmentSelect] = useMemo(() => {
         let specialitiesHead = currentHeadquarter && currentHeadquarter?.specialities.length > 0 ? currentHeadquarter.specialities : []; // revisa si la se actual tiene especialidades
         let deptosHead = currentHeadquarter && currentHeadquarter?.departments.length > 0 ? currentHeadquarter.departments : []; // revisa si la se actual tiene especialidades
         let servicesHead = currentHeadquarter && currentHeadquarter?.services.length > 0 ? currentHeadquarter.services : []; // revisa si la se actual tiene especialidades   
@@ -165,13 +168,13 @@ export default function FiltersPersonal({ dataQuery, updateDataFn, checkPermissi
                 { value: 'all', label: commonT('all') },
             ] : [];
 
-        const servicesSelect = servicesHead.length > 0
-            ? [
-                ...servicesHead.map(s => ({ value: s, label: servicesT(s) })),
-                { value: 'all', label: commonT('all') },
-            ] : [];
+        // const servicesSelect = servicesHead.length > 0
+        //     ? [
+        //         ...servicesHead.map(s => ({ value: s, label: servicesT(s) })),
+        //         { value: 'all', label: commonT('all') },
+        //     ] : [];
 
-        return [specialitySelect, statusSelect, headquartersSelect, departmentSelect, servicesSelect];
+        return [specialitySelect, statusSelect, headquartersSelect, departmentSelect];
     }, [currentHeadquarter]);
 
 
@@ -265,20 +268,20 @@ export default function FiltersPersonal({ dataQuery, updateDataFn, checkPermissi
                 }
 
                 {/* SERVICIOS DE LA SEDE */}
-                {
+                {/* {
                     filtersSelected.services !== 'all' && (
                         <div className="flex gap-2 items-center">
                             <p className="text-brand-dark dark:text-light font-bold" >{formInputsT('services')}:</p>
                             <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{servicesT(filtersSelected.services)}</p>
                         </div>
                     )
-                }
+                } */}
 
-                {/* ESPECIALIDAESD DE LA SEDE */}
+                {/* ESPECIALIDAESD DEL Personal */}
                 {
                     filtersSelected.speciality !== 'all' && (
                         <div className="flex gap-2 items-center">
-                            <p className="text-brand-dark dark:text-light font-bold" >{formInputsT('speciality')}:</p>
+                            <p className="text-brand-dark dark:text-light font-bold" >{formInputsT('specialityPersonal')}:</p>
                             <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{specialityT(filtersSelected.speciality)}</p>
                         </div>
                     )
@@ -382,13 +385,13 @@ export default function FiltersPersonal({ dataQuery, updateDataFn, checkPermissi
 
                             </div>
                             {/* SERVICIOS */}
-                            <div>
+                            {/* <div>
                                 <Label key={'services-personal'} htmlFor='services' className="flex gap-2" > <Briefcase className="w-4 h-4 text-theme-light-gray" /> {commonT('services')}</Label>
                                 <Select canClear defaultValue={getValues('services')} {...register('services')} reset={resetSelectValue} options={servicesSelect} placeholder='Selecciona un servicio' />
-                            </div>
+                            </div> */}
                             {/* ESPECIALIDAD EN GENERAL DE LA SEDE*/}
                             <div>
-                                <Label key={'speciality-personal'} htmlFor='speciality' className="flex gap-2" > <Stethoscope className="w-4 h-4 text-theme-light-gray" /> {formInputsT('specialityHeadquarter')}</Label>
+                                <Label key={'speciality-personal'} htmlFor='speciality' className="flex gap-2" > <Stethoscope className="w-4 h-4 text-theme-light-gray" /> {formInputsT('specialityPersonal')}</Label>
                                 {
                                     specialitySelect.length > 0
                                         ? <Select canClear disabled={departmentSpecialitiesSelect?.length > 0} defaultValue={getValues('speciality')} {...register('speciality')} reset={resetSelectValue} options={specialitySelect as { value: string; label: string; }[]} placeholder='Selecciona una especialidad' />

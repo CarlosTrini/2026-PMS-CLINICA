@@ -39,8 +39,6 @@ const permissionsTablePersonal: Record<typeof COLUMNS[number], RoleSystem[]> = {
 };
 
 
-
-
 export default function PersonalView() {
 
     const { personalT, commonT, statusT, tableColumnsT, specialityT, departmentT, rolesSystemT } = useSystemTraslations();
