@@ -26,8 +26,9 @@
   },
   "sidebar": {
     "groups": {
-      "admin": "Administrador",
+      "admin": "Principal",
       "personal": "Personal",
+      "catalog": "Catálogo",
       "session": "Sesión",
       "patientsDrop": "Pacientes",
       "patientsAll": "Todos los pacientes",
@@ -43,7 +44,10 @@
       "signUp": "Registrarse",
       "patientsDrop": "Pacientes",
       "patientsAll": "Todos los pacientes",
-      "patientsToday": "Pacientes de hoy"
+      "patientsToday": "Pacientes de hoy",
+      "servicesCatalog": "Servicios",
+      "departmentsCatalog": "Departamentos",
+      "specialitiesCatalog": "Especialidades"
     }
   },
   "header": {
@@ -112,10 +116,15 @@
     "contact": "Contacto",
     "email": "Email",
     "status": "Estatus",
-    "createdAt": "Ingreso",
+    "dateJoined": "Ingreso",
+    "createdAt": "Creación",
     "actions": "Acciones",
     "department": "Departamento",
-    "headquarters": "Sede"
+    "headquarters": "Sede",
+    "serviceName": "Servicios",
+    "departmentName": "Departamento",
+    "specialitiesName": "Departamento",
+    "specialitiesDepartment": "Especialidades del depto."
   },
   "speciality": {
     "family_medicine": "Medicina Familiar",
@@ -243,6 +252,15 @@
     },
     "headquarters": {
       "title": "Administración de sedes"
+    },
+    "services": {
+      "title": "Servicios de la sede"
+    },
+    "departments": {
+      "title": "Departamentos de la sede"
+    },
+    "specialities": {
+      "title": "Especialidades de la sede"
     }
   }
 }

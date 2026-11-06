@@ -1,23 +1,3 @@
 {
-  "editor.inlineSuggest.enabled": true,
-  "editor.inlineSuggest.suppressSuggestions": false,
-  "editor.quickSuggestions": {
-    "other": "on",
-    "comments": "on",
-    "strings": "on"
-  },
-  "editor.suggestOnTriggerCharacters": true,
-  "editor.acceptSuggestionOnCommitCharacter": false,
-  "editor.formatOnType": false,
-  "editor.autoClosingBrackets": "languageDefined",
-  "emmet.showExpandedAbbreviation": "never",
-  "emmet.triggerExpansionOnTab": false,
-  "files.eol": "\n",
-  "window.autoDetectColorScheme": false,
-  "workbench.activityBar.compact": true,
-  "workbench.activityBar.autoHide": false,
-  "workbench.iconTheme": "vs-nomo-dark",
-  "breadcrumbs.icons": true,
-  "breadcrumbs.showArrays": true,
-  "editor.cursorBlinking": "smooth"
+  "editor.inlineSuggest.enabled": true
 }

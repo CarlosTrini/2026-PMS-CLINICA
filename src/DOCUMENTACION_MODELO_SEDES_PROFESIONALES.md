@@ -94,6 +94,12 @@ Columnas:
 ```
 
 
+services: Lo que la sede ofrece a nivel operativo/técnico.
+
+specialities: Especialidades médicas directas (ideal para clínicas de consulta externa o consultorios).
+
+departments: Áreas complejas (que a su vez pueden tener sus propias especialidades, ideal para hospitales grandes).
+
 ---
 
 ## Guía Rápida:Formas de Enviar y Recibir Datos en Next.js App Router (`route.ts`)

@@ -413,19 +413,86 @@ export const HEADQUARTERS_DATA: Headquarters[] = [
         hours: 'Lunes a Domingo: 24 Horas',
         emergency: 'Urgencias y Terapia 24/7',
         image: 'https://picsum.photos/id/1076/800/600',
-        services: ['Hospitalizacion', 'Terapia Intensiva', 'Resonancia Magnetica', 'Laboratorio 24h', 'Banco de Sangre'],
-        specialities: headquartersSpecialities([
-            'cardiology', 'general_medicine', 'family_medicine', 'pediatrics', 'psychology',
-            'orthopedics', 'dermatology', 'neurology', 'nutrition', 'oncology', 'gynecology',
-            'ophthalmology', 'dentistry', 'emergency_medicine', 'radiology'
-        ]),
+        services: [
+            { id: 'hospitalization', name: 'Hospitalización', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+            { id: 'intensive_care', name: 'Terapia Intensiva', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+            { id: 'magnetic_resonance', name: 'Resonancia Magnética', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+            { id: 'laboratory_24h', name: 'Laboratorio 24h', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+            { id: 'blood_bank', name: 'Banco de Sangre', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' }
+        ],
         departments: [
-            { id: 'insurgentes-consulta', headquartersId: 'sede-insurgentes', value: 'outpatient', isActive: true, specialities: ['cardiology', 'general_medicine', 'family_medicine', 'pediatrics', 'psychology', 'orthopedics', 'dermatology', 'neurology', 'nutrition', 'oncology', 'gynecology', 'ophthalmology', 'dentistry'] },
-            { id: 'insurgentes-urgencias', headquartersId: 'sede-insurgentes', value: 'emergency', isActive: true, specialities: ['emergency_medicine', 'general_medicine'] },
-            { id: 'insurgentes-cardiologia', headquartersId: 'sede-insurgentes', value: 'cardiology_unit', isActive: true, specialities: ['cardiology'] },
-            { id: 'insurgentes-terapia-intensiva', headquartersId: 'sede-insurgentes', value: 'intensive_care', isActive: true, specialities: ['cardiology', 'emergency_medicine'] },
-            { id: 'insurgentes-laboratorio', headquartersId: 'sede-insurgentes', value: 'laboratory', isActive: true, specialities: [] },
-            { id: 'insurgentes-imagen', headquartersId: 'sede-insurgentes', value: 'imaging', isActive: true, specialities: ['radiology'] },
+            {
+                id: 'insurgentes-consulta',
+                name: 'Consulta Externa',
+                isActive: true,
+                createdAt: '2026-01-01T00:00:00.000Z',
+                updatedAt: '2026-01-01T00:00:00.000Z',
+                specialities: [
+                    { id: 'cardiology', name: 'Cardiología', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+                    { id: 'general_medicine', name: 'Medicina General', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+                    { id: 'family_medicine', name: 'Medicina Familiar', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+                    { id: 'pediatrics', name: 'Pediatría', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+                    { id: 'psychology', name: 'Psicología', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+                    { id: 'orthopedics', name: 'Ortopedia', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+                    { id: 'dermatology', name: 'Dermatología', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+                    { id: 'neurology', name: 'Neurología', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+                    { id: 'nutrition', name: 'Nutrición', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+                    { id: 'oncology', name: 'Oncología', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+                    { id: 'gynecology', name: 'Ginecología', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+                    { id: 'ophthalmology', name: 'Oftalmología', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+                    { id: 'dentistry', name: 'Odontología', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' }
+                ]
+            },
+            {
+                id: 'insurgentes-urgencias',
+                name: 'Urgencias Médicas',
+                isActive: true,
+                createdAt: '2026-01-01T00:00:00.000Z',
+                updatedAt: '2026-01-01T00:00:00.000Z',
+                specialities: [
+                    { id: 'emergency_medicine', name: 'Medicina de Urgencias', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+                    { id: 'general_medicine', name: 'Medicina General', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' }
+                ]
+            },
+            {
+                id: 'insurgentes-cardiologia',
+                name: 'Unidad Cardiológica',
+                isActive: true,
+                createdAt: '2026-01-01T00:00:00.000Z',
+                updatedAt: '2026-01-01T00:00:00.000Z',
+                specialities: [
+                    { id: 'cardiology', name: 'Cardiología', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' }
+                ]
+            },
+            {
+                id: 'insurgentes-terapia-intensiva',
+                name: 'Terapia Intensiva (UCI)',
+                isActive: true,
+                createdAt: '2026-01-01T00:00:00.000Z',
+                updatedAt: '2026-01-01T00:00:00.000Z',
+                specialities: [
+                    { id: 'cardiology', name: 'Cardiología', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+                    { id: 'emergency_medicine', name: 'Medicina de Urgencias', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' }
+                ]
+            },
+            {
+                id: 'insurgentes-laboratorio',
+                name: 'Laboratorio Clínico',
+                isActive: true,
+                createdAt: '2026-01-01T00:00:00.000Z',
+                updatedAt: '2026-01-01T00:00:00.000Z',
+                specialities: []
+            },
+            {
+                id: 'insurgentes-imagen',
+                name: 'Imagenología y Radiología',
+                isActive: true,
+                createdAt: '2026-01-01T00:00:00.000Z',
+                updatedAt: '2026-01-01T00:00:00.000Z',
+                specialities: [
+                    { id: 'radiology', name: 'Radiología', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' }
+                ]
+            },
         ],
     },
     {
@@ -438,8 +505,13 @@ export const HEADQUARTERS_DATA: Headquarters[] = [
         hours: 'Lunes a Sabado: 7:00 am - 9:00 pm | Urgencias 24h',
         emergency: 'Urgencias Medicas 24/7',
         image: 'https://picsum.photos/id/122/800/600',
-        services: ['Consulta Especializada', 'Tomografia Axial', 'Check-ups Ejecutivos', 'Clinica Dental', 'Farmacia'],
-        specialities: headquartersSpecialities(SPECIALITY_ARRAY),
+        services: [
+            { id: 'specialized_consultation', name: 'Consulta Especializada', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+            { id: 'axial_tomography', name: 'Tomografía Axial', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+            { id: 'executive_checkups', name: 'Check-ups Ejecutivos', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+            { id: 'dental_clinic', name: 'Clínica Dental', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+            { id: 'pharmacy', name: 'Farmacia', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' }
+        ],
         departments: [],
     },
 ];

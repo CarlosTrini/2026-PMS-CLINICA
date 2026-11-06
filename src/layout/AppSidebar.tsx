@@ -14,7 +14,7 @@ import {
 } from "../icons/index";
 import { useUserStore } from "@/store/userStore";
 import { useHeadquarterStore } from "@/store/useHeadquarterStore";
-import { Building2, LogOut, User2, UserRoundGroupIcon } from "lucide-react";
+import { Building2, DoorOpen, Dot, ListCheck, LogOut, NotebookTabsIcon, Stethoscope, User2, UserRoundGroupIcon } from "lucide-react";
 import Select from "@/components/form/select/Select";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { HeadquartersService } from "@/features/headquarters/services/headquartersService";
@@ -38,8 +38,8 @@ type NavItem = {
     target?: string;
   }[];
 };
-type MenuType = "main" | "patients";
-const MenyTypesValues: MenuType[] = ["main", "patients"];
+type MenuType = "main" | "patients" | "catalogs";
+const MenyTypesValues: MenuType[] = ["main", "patients", "catalogs"];
 
 // =========================================================================================================
 // =========================================================================================================
@@ -100,7 +100,7 @@ const AppSidebar: React.FC = () => {
   });
 
   // MEMO 
-  const [patientsItems, adminItems] = useMemo(() => {
+  const [patientsItems, adminItems, catalogItems] = useMemo(() => {
     // NAVEGACIÓN MENU
     const adminItems: NavItem[] = [
       {
@@ -140,9 +140,37 @@ const AppSidebar: React.FC = () => {
       }
     ];
 
+    const catalogItems: NavItem[] = [
+      // {
+      // icon: <NotebookTabsIcon />,
+      // key: "catalogDrop",
+      // permissions: ["admin", "owner", "professional", "assistant"],
+      // subItems: [
+      {
+        icon: <ListCheck />,
+        key: "servicesCatalog",
+        path: "/admin/services",
+        permissions: ["admin", "owner", "professional", "assistant", "receptionist"],
+      },
+      {
+        icon: <DoorOpen />,
+        key: "departmentsCatalog",
+        path: "/admin/departments",
+        permissions: ["admin", "owner", "professional", "assistant", "receptionist"],
+      },
+      {
+        icon: <Stethoscope />,
+        key: "specialitiesCatalog",
+        path: "/admin/specialities",
+        permissions: ["admin", "owner", "professional", "assistant", "receptionist"],
+      }
+      // ]
+      // }
+    ]
+
     const patientsItems: NavItem[] = [];
 
-    return [patientsItems, adminItems];
+    return [patientsItems, adminItems, catalogItems];
 
   }, [currentHeadquarter, allHeadquarters]);
 
@@ -443,11 +471,13 @@ const AppSidebar: React.FC = () => {
 
           )
         }
+
+        {/* PRINCIPAL SECTION */}
         <nav className="space-y-6">
           <div>
             <h2
               className={cn(
-                "mb-2.5 px-3 text-xs italic uppercase tracking-wider text-gray-dark/70 dark:text-light/50",
+                "mb-2.5 px-3 text-xs italic  uppercase tracking-wider text-brand-dark/50 dark:text-light/50",
                 !isExpanded && !isHovered
                   ? "lg:flex lg:justify-center px-0"
                   : "flex justify-start",
@@ -464,6 +494,28 @@ const AppSidebar: React.FC = () => {
 
 
         </nav>
+
+        {/* CATALOG SECTION */}
+        <nav className="space-y-6 mt-3">
+          <div>
+            <h2
+              className={cn(
+                "mb-2.5 px-3 text-xs italic  uppercase tracking-wider text-brand-dark/50 dark:text-light/50",
+                !isExpanded && !isHovered
+                  ? "lg:flex lg:justify-center px-0"
+                  : "flex justify-start",
+              )}
+            >
+              {isExpanded || isHovered || isMobileOpen ? (
+                t("groups.catalog")
+              ) : (
+                <span className="h-1 w-3 rounded-full bg-gray-light dark:bg-gray/40" />
+              )}
+            </h2>
+            {renderMenuItems(catalogItems, "catalogs")}
+          </div>
+        </nav>
+
 
         {/* BOTÓN DE CERRAR SESIÓN */}
         <div className="mt-auto pt-4 pb-4">

@@ -2,15 +2,16 @@ import { APPOINTMENT_STATUS_ARRAY, GENDER_ARRAY, RELATIONSHIP_ARRAY, ROLE_SYSTEM
 
 export type Relationships = typeof RELATIONSHIP_ARRAY[number];
 export type Genders = typeof GENDER_ARRAY[number];
-export type Speciality = typeof SPECIALITY_ARRAY[number];
+// export type Speciality = typeof SPECIALITY_ARRAY[number];
 export type RoleSystem = typeof ROLE_SYSTEM_ARRAY[number];
 export type AppointmentStatus = typeof APPOINTMENT_STATUS_ARRAY[number];
-export type Department = typeof HEADQUARTERS_DEPARTMENT_ARRAY[number];
+// export type Department = typeof HEADQUARTERS_DEPARTMENT_ARRAY[number];
 export type StatusPersonal = typeof STATUS_PERSONAL_ARRAY[number];
 
 // formato fechas ISO 8601 en UTC, por ejemplo, 2024-11-18T15:35:00.000Z
 
 // ==================== COMMON DATA STRUCTURES ====================
+
 
 export interface ContactInfo {
     email?: string;
@@ -35,20 +36,33 @@ export interface ProfesionalInfo {
     license: string;
 }
 
-export interface HeadquartersDepartment {
+
+//=============== HEADQUARTERS DATAA
+
+export interface Speciality {
     id: string;
-    headquartersId: string;
-    value: Department;
+    name: string;
     isActive: boolean;
-    specialities: Speciality[];
+    createdAt: string;
+    updatedAt: string;
+}
+export interface Services {
+    id: string;
+    name: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
+export interface Department {
+    id: string;
+    name: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
 }
 
-export interface PersonalLocationAssignment {
-    id: string;
-    headquartersId: string;
-    speciality: Speciality;
-    departmentId?: string;
-    roleSystem: RoleSystem;
+export interface HeadquartersDepartment extends Department {
+    specialities: Speciality[];
 }
 
 export interface Headquarters {
@@ -61,12 +75,22 @@ export interface Headquarters {
     hours: string;
     emergency: string;
     image: string;
-    services: string[];
-    specialities: Speciality[];
+    services: Services[];
     departments: HeadquartersDepartment[];
+    specialities: Speciality[];
 }
 
 // ==================== CLINICAL DATA STRUCTURES ====================
+
+
+export interface PersonalLocationAssignment {
+    id: string;
+    headquartersId: string;
+    departmentId?: string;
+    roleSystem: RoleSystem;
+    speciality: Speciality;
+}
+
 
 export interface Patient {
     id: string;

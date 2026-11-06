@@ -12,10 +12,19 @@ export default function useSystemTraslations() {
     const rolesSystemT = useTranslations("rolesSystem");
     const servicesT = useTranslations("services");
     //página personal
-    const personalT = useTranslations("pages.personal");
+    const personalPageT = useTranslations("pages.personal");
     const personalMetricsT = useTranslations("pages.personal.Metrics");
     //página sedes
-    const headquartersT = useTranslations("pages.headquarters");
+    const headquartersPageT = useTranslations("pages.headquarters");
+    //página servicios
+    const servicesPageT = useTranslations("pages.services");
+    //página departamentos
+    const departmentsPageT = useTranslations("pages.departments");
+    //página especialidades
+    const specialitiesPageT = useTranslations("pages.specialities");
+
+
+
 
     return {
         commonT,
@@ -27,9 +36,15 @@ export default function useSystemTraslations() {
         rolesSystemT,
         servicesT,
         // página de personal
-        personalT,
+        personalPageT,
         personalMetricsT,
         // página de sedes
-        headquartersT,
+        headquartersPageT,
+        // página de servicios
+        servicesPageT,
+        // página de departamentos
+        departmentsPageT,
+        // página de especialidades
+        specialitiesPageT,
     }
 }

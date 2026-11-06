@@ -1,0 +1,1 @@
+export { default as SpecialitiesView } from './SpecialitiesView';

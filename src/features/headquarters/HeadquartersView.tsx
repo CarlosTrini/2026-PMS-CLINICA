@@ -19,7 +19,7 @@ import CardHeadquarter from "./components/CardHeadquarter";
 export default function HeadquartersView() {
 
     // TRADUCCIONES
-    const { headquartersT } = useSystemTraslations();
+    const { headquartersPageT } = useSystemTraslations();
 
     // QUERY
     const { data: headquartersData, isError, error, isLoading } = useQuery({
@@ -34,7 +34,7 @@ export default function HeadquartersView() {
 
     return (
         <>
-            <PageBreadcrumb pageTitle={headquartersT('title')} />
+            <PageBreadcrumb pageTitle={headquartersPageT('title')} />
 
 
             <Metrics />

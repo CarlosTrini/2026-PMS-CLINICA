@@ -27,21 +27,21 @@ import { useHeadquarterStore } from "@/store/useHeadquarterStore";
 import { useUserStore } from "@/store/userStore";
 
 
-const COLUMNS = ['name', 'speciality', 'headquarters', 'contact', 'status', 'createdAt', 'actions'];
+const COLUMNS = ['name', 'speciality', 'headquarters', 'contact', 'status', 'dateJoined', 'actions'];
 const permissionsTablePersonal: Record<typeof COLUMNS[number], RoleSystem[]> = { // no permitidos ver o accionar
     'name': [],
     'speciality': [],
     'headquarters': [],
     'contact': [],
     'status': [],
-    'createdAt': ['assistant', 'receptionist', 'no_role', 'professional'],
+    'dateJoined': ['assistant', 'receptionist', 'no_role', 'professional'],
     'actions': ['assistant', 'receptionist', 'no_role', 'professional']
 };
 
 
 export default function PersonalView() {
 
-    const { personalT, commonT, statusT, tableColumnsT, specialityT, departmentT, rolesSystemT } = useSystemTraslations();
+    const { personalPageT, commonT, statusT, tableColumnsT, specialityT, departmentT, rolesSystemT } = useSystemTraslations();
     const { currentHeadquarter } = useHeadquarterStore();
     const { userRole } = useUserStore();
 
@@ -52,7 +52,7 @@ export default function PersonalView() {
     const { isOpen, openModal, closeModal } = useModal(false);
 
 
-    const { mutate: handlePersonal, isSuccess, isError, error } = useMutation({
+    const { mutate: handleGetPersonal, isSuccess, isError, error } = useMutation({
         mutationKey: ['personalTable', currentHeadquarter?.id],
         mutationFn: (id: string) => PersonalActionsService.getPersonalByHeadquarter(id),
         onSuccess: (data) => {
@@ -111,7 +111,7 @@ export default function PersonalView() {
     // DATA DEL PERSONAL POR ID SEDE
     useEffect(() => {
         if (!currentHeadquarter) return;
-        handlePersonal(currentHeadquarter.id);
+        handleGetPersonal(currentHeadquarter.id);
     }, [currentHeadquarter]);
 
 
@@ -125,7 +125,7 @@ export default function PersonalView() {
 
     return (
         <>
-            <PageBreadcrumb pageTitle={personalT('tittle')} />
+            <PageBreadcrumb pageTitle={personalPageT('tittle')} />
 
 
 
@@ -194,7 +194,7 @@ export default function PersonalView() {
                                         const showClass = checkPermissionsTable(col) ? 'w-0 h-0 hidden' : 'nada';
 
                                         return (
-                                            <TableCell key={col} isHeader className={`${showClass} generic-header-table`}><p className={`generic-header-table`}>{tableColumnsT(`${col}`)}</p></TableCell>
+                                            <TableCell key={col} isHeader className={`${showClass}`}><p className={`generic-header-table`}>{tableColumnsT(`${col}`)}</p></TableCell>
                                         );
                                     }
                                     )}

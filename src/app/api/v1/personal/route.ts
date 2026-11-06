@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
         //     };
         // });
 
-        console.log(await collectionFound.find({}).toArray());
+
         return NextResponse.json(collectionFound);
     } catch (error) {
         return NextResponse.json(
