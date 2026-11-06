@@ -9,7 +9,7 @@ import { useHeadquarterStore } from "@/store/useHeadquarterStore";
 import { useUserStore } from "@/store/userStore";
 import Switch from "@/components/form/switch/Switch";
 import Button from "@/components/ui/button/Button";
-import { Calendar, Dot, FilePlus, Info, Layers, LucideEye, Pencil, Trash2 } from "lucide-react";
+import { Calendar, Dot, FilePlus, Info, Layers, LucideEye, LucidePlayingCardsFan, Pencil, TableCellsMerge, Trash2, WalletCardsIcon } from "lucide-react";
 import Badge from "@/components/ui/badge/Badge";
 import Fallback from "@/components/fallbackQuery/Fallback";
 import { DepartmentsActionService } from "./services/service";
@@ -87,17 +87,26 @@ export default function DepartmentsView() {
                     </div>
                 </>}
             >
-                <div className="mb-4 flex justify-between items-baseline">
 
-                    <div className={`${isMobile ? 'invisible' : 'visible'}`}>
-                        <Switch label='Tabla/Cards' defaultChecked={toggleTable === 'cards' ? true : false} onChange={(e) => {
-                            setToggleTable(e ? 'cards' : 'table');
-                        }} />
+
+                <div className="flex items-baseline justify-between">
+                    <div className={`${dataTable && dataTable.length > 0 ? 'visible' : 'opacity-0'}`}>
+                        <p className="italic font-semibold text-sm items-baseline text-gray/70 dark:text-gray-light/70">Coincidencias: {dataTable && dataTable.length}</p>
                     </div>
 
+                    <div className={`flex gap-2  ${isMobile ? 'invisible' : 'visible'}`}>
+                        <Tooltip content='Vista Tabla' >
+
+                            <button onClick={() => setToggleTable('table')}><TableCellsMerge className={`p-1 rounded-md   ${toggleTable == 'table' ? 'bg-brand/80 text-light' : 'bg-gray/20 text-gray/70'} `} /></button>
+                        </Tooltip>
+                        <Tooltip content='Vista Cards' >
+
+                            <button onClick={() => setToggleTable('cards')}><WalletCardsIcon className={`p-1 rounded-md   ${toggleTable == 'cards' ? 'bg-brand/80 text-light' : 'bg-gray/20 text-gray/70'} `} /></button>
+                        </Tooltip>
+                    </div>
 
                     <div>
-                        <Button type="button" size="sm" variant="primary" ><FilePlus />Agregar departamento</Button>
+                        <Button type="button" size="xs" variant="primary" ><FilePlus />Agregar departamento</Button>
                     </div>
                 </div>
                 {

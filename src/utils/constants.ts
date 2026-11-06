@@ -494,6 +494,7 @@ export const HEADQUARTERS_DATA: Headquarters[] = [
                 ]
             },
         ],
+        specialities: []
     },
     {
         id: 'sede-guadalajara',
@@ -513,5 +514,99 @@ export const HEADQUARTERS_DATA: Headquarters[] = [
             { id: 'pharmacy', name: 'Farmacia', isActive: true, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' }
         ],
         departments: [],
+
+        "specialities": [
+            {
+                "id": "cardiology",
+                "name": "Cardiología",
+                "isActive": true,
+                "createdAt": "2026-01-01T00:00:00.000Z",
+                "updatedAt": "2026-01-01T00:00:00.000Z"
+            },
+            {
+                "id": "general_medicine",
+                "name": "Medicina General",
+                "isActive": true,
+                "createdAt": "2026-01-01T00:00:00.000Z",
+                "updatedAt": "2026-01-01T00:00:00.000Z"
+            },
+            {
+                "id": "family_medicine",
+                "name": "Medicina Familiar",
+                "isActive": true,
+                "createdAt": "2026-01-01T00:00:00.000Z",
+                "updatedAt": "2026-01-01T00:00:00.000Z"
+            },
+            {
+                "id": "pediatrics",
+                "name": "Pediatría",
+                "isActive": true,
+                "createdAt": "2026-01-01T00:00:00.000Z",
+                "updatedAt": "2026-01-01T00:00:00.000Z"
+            },
+            {
+                "id": "psychology",
+                "name": "Psicología",
+                "isActive": true,
+                "createdAt": "2026-01-01T00:00:00.000Z",
+                "updatedAt": "2026-01-01T00:00:00.000Z"
+            },
+            {
+                "id": "orthopedics",
+                "name": "Ortopedia",
+                "isActive": true,
+                "createdAt": "2026-01-01T00:00:00.000Z",
+                "updatedAt": "2026-01-01T00:00:00.000Z"
+            },
+            {
+                "id": "dermatology",
+                "name": "Dermatología",
+                "isActive": true,
+                "createdAt": "2026-01-01T00:00:00.000Z",
+                "updatedAt": "2026-01-01T00:00:00.000Z"
+            },
+            {
+                "id": "neurology",
+                "name": "Neurología",
+                "isActive": true,
+                "createdAt": "2026-01-01T00:00:00.000Z",
+                "updatedAt": "2026-01-01T00:00:00.000Z"
+            },
+            {
+                "id": "nutrition",
+                "name": "Nutrición",
+                "isActive": true,
+                "createdAt": "2026-01-01T00:00:00.000Z",
+                "updatedAt": "2026-01-01T00:00:00.000Z"
+            },
+            {
+                "id": "oncology",
+                "name": "Oncología",
+                "isActive": true,
+                "createdAt": "2026-01-01T00:00:00.000Z",
+                "updatedAt": "2026-01-01T00:00:00.000Z"
+            },
+            {
+                "id": "gynecology",
+                "name": "Ginecología",
+                "isActive": true,
+                "createdAt": "2026-01-01T00:00:00.000Z",
+                "updatedAt": "2026-01-01T00:00:00.000Z"
+            },
+            {
+                "id": "ophthalmology",
+                "name": "Oftalmología",
+                "isActive": true,
+                "createdAt": "2026-01-01T00:00:00.000Z",
+                "updatedAt": "2026-01-01T00:00:00.000Z"
+            },
+            {
+                "id": "dentistry",
+                "name": "Odontología",
+                "isActive": true,
+                "createdAt": "2026-01-01T00:00:00.000Z",
+                "updatedAt": "2026-01-01T00:00:00.000Z"
+            }
+        ]
     },
 ];

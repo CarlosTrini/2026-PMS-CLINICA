@@ -6,19 +6,21 @@ import type { RoleSystem } from "@/types/dataTypes";
 
 import Switch from "@/components/form/switch/Switch";
 import Button from "@/components/ui/button/Button";
-import { Calendar, FilePlus, Layers, Pencil, Trash2 } from "lucide-react";
+import { Calendar, FilePlus, Layers, Pencil, TableCellsMerge, Trash2, WalletCardsIcon } from "lucide-react";
 import Badge from "@/components/ui/badge/Badge";
 import Fallback from "@/components/fallbackQuery/Fallback";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { STATUS_COLOR_LIGHT } from "@/utils/statusColors";
 import Tooltip from "@/components/ui/tooltip/Tooltip";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 // QUERY
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useHeadquarterStore } from "@/store/useHeadquarterStore";
 import { useUserStore } from "@/store/userStore";
 import { SpecialitiesActionService } from "./services/service";
+import Metrics from "./components/Metrics";
 
 
 const COLUMNS = ['specialitiesName', 'status', 'createdAt', 'actions'];
@@ -41,6 +43,7 @@ export default function SpecialitiesView() {
 
     // HOOKS
     const [toggleTable, setToggleTable] = useState<'table' | 'cards'>('table');
+    const { isMobile } = useIsMobile();
 
     // QUERY
     const { data: dataTable, isLoading, isError, error } = useQuery({
@@ -53,15 +56,20 @@ export default function SpecialitiesView() {
         return permissionsTableSpecialities[col] && permissionsTableSpecialities[col].some(ur => ur === userRole);
     };
 
+    useEffect(() => {
+        setToggleTable(isMobile ? 'cards' : 'table')
+    }, [isMobile]);
+
+
 
     return (
         <>
             <PageBreadcrumb pageTitle={specialitiesPageT('title')} />
 
-
+            <Metrics data={dataTable || []} />
 
             <Fallback
-                id='department-table-fallback'
+                id='specialitities-table-fallback'
                 isLoading={isLoading}
                 isError={error}
                 data={dataTable}
@@ -80,13 +88,24 @@ export default function SpecialitiesView() {
                     </div>
                 </>}
             >
-                <div className="mb-4 flex justify-between">
-                    <Switch label='Tabla/Cards' defaultChecked={false} onChange={(e) => {
-                        setToggleTable(e ? 'cards' : 'table');
-                    }} />
+                <div className="flex items-baseline justify-between">
+                    <div className={`${dataTable && dataTable.length > 0 ? 'visible' : 'opacity-0'}`}>
+                        <p className="italic font-semibold text-sm items-baseline text-gray/70 dark:text-gray-light/70">Coincidencias: {dataTable && dataTable.length}</p>
+                    </div>
+
+                    <div className={`flex gap-2  ${isMobile ? 'invisible' : 'visible'}`}>
+                        <Tooltip content='Vista Tabla' >
+
+                            <button onClick={() => setToggleTable('table')}><TableCellsMerge className={`p-1 rounded-md   ${toggleTable == 'table' ? 'bg-brand/80 text-light' : 'bg-gray/20 text-gray/70'} `} /></button>
+                        </Tooltip>
+                        <Tooltip content='Vista Cards' >
+
+                            <button onClick={() => setToggleTable('cards')}><WalletCardsIcon className={`p-1 rounded-md   ${toggleTable == 'cards' ? 'bg-brand/80 text-light' : 'bg-gray/20 text-gray/70'} `} /></button>
+                        </Tooltip>
+                    </div>
 
                     <div>
-                        <Button type="button" size="sm" variant="primary" ><FilePlus />Agregar especialidad</Button>
+                        <Button type="button" size="xs" variant="primary" ><FilePlus />Agregar especialidad</Button>
                     </div>
                 </div>
                 {
@@ -173,7 +192,7 @@ export default function SpecialitiesView() {
                                             {COLUMNS.map((col) => {
                                                 if (checkPermissionsTable(col)) return null;
                                                 const alignClass =
-                                                    col === 'serviceName'
+                                                    col === 'specialitiesName'
                                                         ? 'text-left'
                                                         : col === 'actions'
                                                             ? 'text-right'

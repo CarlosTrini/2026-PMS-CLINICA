@@ -11,12 +11,13 @@ import { useUserStore } from "@/store/userStore";
 import { useEffect, useState } from "react";
 import Fallback from "@/components/fallbackQuery/Fallback";
 import Image from "next/image";
-import { Calendar, FilePlus, Layers, Pencil, Trash, Trash2 } from "lucide-react";
+import { Calendar, FilePlus, Layers, Pencil, TableCellsMerge, Trash, Trash2, WalletCardsIcon } from "lucide-react";
 import Badge from "@/components/ui/badge/Badge";
 import { STATUS_COLOR_LIGHT } from "@/utils/statusColors";
 import Tooltip from "@/components/ui/tooltip/Tooltip";
 import Switch from "@/components/form/switch/Switch";
 import Button from "@/components/ui/button/Button";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 
 const COLUMNS = ['serviceName', 'status', 'createdAt', 'actions'];
@@ -35,6 +36,7 @@ export default function ServicesView() {
 
     // HOOKS
     const [toggleTable, setToggleTable] = useState<'table' | 'cards'>('table');
+    const { isMobile } = useIsMobile();
 
 
     // ZUSTAND
@@ -64,6 +66,11 @@ export default function ServicesView() {
         return permissionsTableServices[col] && permissionsTableServices[col].some(ur => ur === userRole);
     };
 
+
+    useEffect(() => {
+        setToggleTable(isMobile ? 'cards' : 'table')
+    }, [isMobile]);
+
     return (
         <>
             <PageBreadcrumb pageTitle={servicesPageT('title')} />
@@ -88,13 +95,24 @@ export default function ServicesView() {
                     </div>
                 </>}
             >
-                <div className="mb-4 flex justify-between">
-                    <Switch label='Tabla/Cards' defaultChecked={false} onChange={(e) => {
-                        setToggleTable(e ? 'cards' : 'table');
-                    }} />
+                <div className="flex items-baseline justify-between">
+                    <div className={`${dataTable && dataTable.length > 0 ? 'visible' : 'opacity-0'}`}>
+                        <p className="italic font-semibold text-sm items-baseline text-gray/70 dark:text-gray-light/70">Coincidencias: {dataTable && dataTable.length}</p>
+                    </div>
+
+                    <div className={`flex gap-2  ${isMobile ? 'invisible' : 'visible'}`}>
+                        <Tooltip content='Vista Tabla' >
+
+                            <button onClick={() => setToggleTable('table')}><TableCellsMerge className={`p-1 rounded-md   ${toggleTable == 'table' ? 'bg-brand/80 text-light' : 'bg-gray/20 text-gray/70'} `} /></button>
+                        </Tooltip>
+                        <Tooltip content='Vista Cards' >
+
+                            <button onClick={() => setToggleTable('cards')}><WalletCardsIcon className={`p-1 rounded-md   ${toggleTable == 'cards' ? 'bg-brand/80 text-light' : 'bg-gray/20 text-gray/70'} `} /></button>
+                        </Tooltip>
+                    </div>
 
                     <div>
-                        <Button type="button" size="sm" variant="primary" ><FilePlus />Agregar servicio</Button>
+                        <Button type="button" size="xs" variant="primary" ><FilePlus />Agregar servicio</Button>
                     </div>
                 </div>
                 {

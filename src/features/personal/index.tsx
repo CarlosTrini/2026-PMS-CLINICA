@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import Badge from "@/components/ui/badge/Badge";
 import { simpleDate } from "@/utils/dates";
 import Metrics from "./components/Metrics";
-import { Building, Calendar, Eye, Mail, Phone, PlusCircle, Trash2 } from 'lucide-react';
+import { Building, Calendar, Eye, FilePlus, Mail, Phone, PlusCircle, TableCellsMerge, Trash2, WalletCardsIcon } from 'lucide-react';
 import Fallback from "@/components/fallbackQuery/Fallback";
 import { PersonalActionsService } from "./services/service";
 import useSystemTraslations from "@/hooks/useSysteTranslations";
@@ -17,6 +17,8 @@ import FiltersPersonal from "./components/Filters";
 import { useModal } from "@/hooks/useModal";
 import { Link } from "@/i18n/navigation";
 import { HEADQUARTERS_DATA } from "@/utils/constants";
+import { useIsMobile } from "@/hooks/useIsMobile";
+
 
 
 
@@ -25,6 +27,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import ViewEditPersonal from "./components/ViewEditPersonal";
 import { useHeadquarterStore } from "@/store/useHeadquarterStore";
 import { useUserStore } from "@/store/userStore";
+import Button from "@/components/ui/button/Button";
 
 
 const COLUMNS = ['name', 'speciality', 'headquarters', 'contact', 'status', 'dateJoined', 'actions'];
@@ -50,6 +53,8 @@ export default function PersonalView() {
     const [dataMetrics, setDataMetrics] = useState<Personal[]>([]);
     const [userSelected, setUserSelected] = useState<Personal | null>(null);
     const { isOpen, openModal, closeModal } = useModal(false);
+    const [toggleTable, setToggleTable] = useState<'table' | 'cards'>('table');
+    const { isMobile } = useIsMobile();
 
 
     const { mutate: handleGetPersonal, isSuccess, isError, error } = useMutation({
@@ -122,6 +127,10 @@ export default function PersonalView() {
         }
     }, [userSelected]);
 
+    useEffect(() => {
+        setToggleTable(isMobile ? 'cards' : 'table')
+    }, [isMobile]);
+
 
     return (
         <>
@@ -139,23 +148,8 @@ export default function PersonalView() {
                 checkPermissionCb={(colName) => checkPermissionsTable(colName)} // En caso de filtros relacoinados a columnas.,..  ejemplo: Filtro: Orden por ingreso, Col: createdAt
             />
 
-            {/* EXTRA BUTTONS */}
-            <section className="flex items-center justify-between ">
 
-                <div className={`${dataTable.length > 0 ? 'visible' : 'opacity-0'}`}>
-                    <p className="italic font-semibold text-sm items-baseline text-gray/70 dark:text-gray-light/70">Coincidencias: {dataTable.length}</p>
-                </div>
 
-                <div>
-                    <Link
-                        href="/admin/personal/new"
-                        className="flex items-center text-sm font-medium gap-2 px-4 py-2 rounded-lg bg-brand hover:bg-brand/90 dark:bg-brand-dark dark:hover:bg-brand-dark/80 text-light transition-colors shadow-theme-xs"
-                    >
-                        <PlusCircle className="w-4 h-4" />
-                        <span>Agregar Personal</span>
-                    </Link>
-                </div>
-            </section>
 
             {/* TABLE */}
             <Fallback
@@ -175,11 +169,36 @@ export default function PersonalView() {
                     </div>
                 </>}
             >
+                {/* EXTRA BUTTONS */}
+                <div className="flex items-baseline justify-between">
+                    <div className={`${dataTable && dataTable.length > 0 ? 'visible' : 'opacity-0'}`}>
+                        <p className="italic font-semibold text-sm items-baseline text-gray/70 dark:text-gray-light/70">Coincidencias: {dataTable && dataTable.length}</p>
+                    </div>
+
+                    <div className={`flex gap-2  ${isMobile ? 'invisible' : 'visible'}`}>
+                        <Tooltip content='Vista Tabla' >
+
+                            <button onClick={() => setToggleTable('table')}><TableCellsMerge className={`p-1 rounded-md   ${toggleTable == 'table' ? 'bg-brand/80 text-light' : 'bg-gray/20 text-gray/70'} `} /></button>
+                        </Tooltip>
+                        <Tooltip content='Vista Cards' >
+
+                            <button onClick={() => setToggleTable('cards')}><WalletCardsIcon className={`p-1 rounded-md   ${toggleTable == 'cards' ? 'bg-brand/80 text-light' : 'bg-gray/20 text-gray/70'} `} /></button>
+                        </Tooltip>
+                    </div>
+
+                    <div>
+                        <Button type="button" size="xs" variant="primary" ><FilePlus />Agregar Personal</Button>
+                    </div>
+                </div>
+
                 <section className=" w-full min-w-0 mt-2 ">
 
-                    <div className="hidden xl:block w-full h-full max-h-[65vh]  min-w-0 overflow-auto rounded-lg generic-border-shadow bg-theme-light-dark">
-                        <Table className="w-full table-fixed" id={'personal-table'}>
-                            {/* <colgroup>
+                    {
+
+                        toggleTable == 'table' && (
+                            <div className=" w-full h-full max-h-[65vh]  min-w-0 overflow-auto rounded-lg generic-border-shadow bg-theme-light-dark">
+                                <Table className="w-full table-fixed" id={'personal-table'}>
+                                    {/* <colgroup>
                                 <col className="min-w-60 lg:min-w-60" />
                                 <col className="min-w-50 lg:min-w-40" />
                                 <col className="min-w-50 lg:min-w-40" />
@@ -188,329 +207,333 @@ export default function PersonalView() {
                                 <col className="min-w-50 lg:min-w-35" />
                                 <col className="min-w-50 lg:min-w-40" />
                             </colgroup> */}
-                            <TableHeader className="sticky top-0 border-b z-50 bg-brand dark:bg-brand-dark border-gray/20 dark:border-gray/40">
-                                <TableRow className="">
-                                    {COLUMNS.map(col => {
-                                        const showClass = checkPermissionsTable(col) ? 'w-0 h-0 hidden' : 'nada';
+                                    <TableHeader className="sticky top-0 border-b z-50 bg-brand dark:bg-brand-dark border-gray/20 dark:border-gray/40">
+                                        <TableRow className="">
+                                            {COLUMNS.map(col => {
+                                                const showClass = checkPermissionsTable(col) ? 'w-0 h-0 hidden' : 'nada';
 
-                                        return (
-                                            <TableCell key={col} isHeader className={`${showClass}`}><p className={`generic-header-table`}>{tableColumnsT(`${col}`)}</p></TableCell>
-                                        );
-                                    }
-                                    )}
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody className="divide-y divide-gray/10 dark:divide-gray/30 text-theme-light-gray">
-                                {
-                                    dataTable && dataTable?.map(p => (
-                                        <TableRow key={p.id} className="transition-colors hover:bg-gray/5 dark:hover:bg-gray-light/5">
-                                            <TableCell className="p-3 min-w-0 overflow-hidden whitespace-nowrap">
-                                                <div className="flex min-w-0 items-center gap-2">
-                                                    <figure className="shrink-0">
-                                                        <Image src={p.image} alt={p.personalInfo.name} width={25} height={25} className="rounded-full" />
-                                                    </figure>
-                                                    <div className="flex min-w-0 flex-1 flex-col">
-                                                        <p className="truncate text-sm font-bold text-gray dark:text-gray-light">{p.personalInfo.name} {p.personalInfo.lastName}</p>
-                                                        <p className="truncate text-sm italic text-gray/50 dark:text-gray-light/50">{p.contactInfo.city} - {p.contactInfo.state}</p>
-                                                        <p className="truncate text-sm italic text-gray/50 dark:text-gray-light/50">
-                                                            Role: {p.locationAssignments?.[0]?.roleSystem ? rolesSystemT(p.locationAssignments[0].roleSystem) : '-'}
-                                                        </p>
-
-                                                        <Tooltip content={
-                                                            <>
-                                                                <button className="p-2 rounded-md text-xs text-light" onClick={() => { copyData(p.id); }}>
-                                                                    {copyTxt}
-                                                                </button>
-                                                            </>}
-                                                            position="top-right" trigger="click">
-                                                            <p className="truncate text-sm cursor-pointer">{p.id.slice(0, 6) + '...'}</p>
-                                                        </Tooltip>
-                                                    </div>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="p-3">
-                                                {
-                                                    p.profesionalInfo?.[0] ? (
-                                                        <>
-                                                            <div className="flex items-center gap-2">
-                                                                {
-                                                                    (p.profesionalInfo?.length ?? 0) > 1 && (
-                                                                        <Tooltip content={`${p.profesionalInfo.length} ${commonT('specialities')}`}>
-                                                                            <button className="p-1 rounded-md text-xs flex gap-1 items-center bg-brand-light/60 dark:bg-gray" onClick={() => { }}>
-                                                                                <Eye className="w-3 h-3 text-brand-dark dark:text-light" />
-                                                                            </button>
-                                                                        </Tooltip>
-
-                                                                    )
-                                                                }
-                                                                <p className="text-xs font-bold uppercase text-gray dark:text-gray-light">{specialityT(p.profesionalInfo[0].speciality)}</p>
-
-                                                            </div>
-                                                            <p className="text-xs italic text-gray/50 dark:text-gray-light/50">Ced: {p.profesionalInfo[0].cedula}</p>
-                                                            <p className="text-xs italic text-gray/50 dark:text-gray-light/50">Lic: {p.profesionalInfo[0].license}</p>
-                                                        </>
-                                                    ) : (
-                                                        <span className="text-xs text-gray/40 italic">Sin especialidad</span>
-                                                    )
-                                                }
-
-
-
-                                            </TableCell>
-                                            <TableCell className="p-3 ">
-                                                <div className="text-xs font-semibold capitalize text-gray dark:text-gray-light ">
-                                                    {p.locationAssignments.length ? p.locationAssignments.map((assignment) => <span key={assignment.id} className="flex gap-1.5"><Building className="w-3 h-3 cursor-pointer text-brand-dark dark:text-brand" /> {assignment.headquartersId}</span>) : 'Sin sede asignada'}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="p-3 min-w-0 overflow-hidden whitespace-nowrap">
-                                                <div className="flex items-center gap-1">
-
-                                                    <Tooltip content={
-                                                        <>
-                                                            <button className="p-2 rounded-md text-xs text-light" onClick={() => { copyData(p.contactInfo.email); }}>
-                                                                {copyTxt} correo
-                                                            </button>
-                                                        </>}
-                                                        position="top-right" trigger="hover">
-                                                        <Mail className="w-3.5 h-3.5 shrink-0 cursor-pointer text-brand-dark dark:text-brand" />
-                                                    </Tooltip>
-                                                    <p className="min-w-0 flex-1 truncate pt-1 text-sm text-gray dark:text-gray-light">
-                                                        {p.contactInfo.email}
-                                                    </p>
-                                                </div>
-                                                <div className="flex items-center gap-1">
-                                                    <Tooltip content={<PhoneAction phone={p?.contactInfo?.phone ? p.contactInfo.phone : ""} />}
-                                                        position="top-right" trigger="hover">
-                                                        <Phone className="w-3.5 h-3.5 shrink-0 cursor-pointer text-success" />
-                                                    </Tooltip>
-                                                    <p className="min-w-0 flex-1 truncate pt-1 text-sm text-gray dark:text-gray-light">
-                                                        {p.contactInfo.phone}
-                                                    </p>
-                                                </div>
-
-                                            </TableCell>
-                                            <TableCell className="p-2  whitespace-nowrap">
-                                                <div className="flex justify-center">
-
-                                                    <Badge variantColor={`${STATUS_COLOR_LIGHT[p.status]}`} size="md" >
-                                                        {statusT(`${p.status}`)}
-                                                    </Badge>
-                                                </div>
-                                            </TableCell>
-                                            {
-                                                !checkPermissionsTable('createdAt') && (
-                                                    <TableCell className="p-2 ">
-                                                        <p className="text-sm flex items-center justify-center gap-2 text-gray dark:text-gray-light"> <Calendar className="w-4 h-4 text-gray dark:text-gray-light" /> {simpleDate(p.createdAt)}</p>
-                                                    </TableCell>
-                                                )
+                                                return (
+                                                    <TableCell key={col} isHeader className={`${showClass}`}><p className={`generic-header-table`}>{tableColumnsT(`${col}`)}</p></TableCell>
+                                                );
                                             }
+                                            )}
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody className="divide-y divide-gray/10 dark:divide-gray/30 text-theme-light-gray">
+                                        {
+                                            dataTable && dataTable?.map(p => (
+                                                <TableRow key={p.id} className="transition-colors hover:bg-gray/5 dark:hover:bg-gray-light/5">
+                                                    <TableCell className="p-3 min-w-0 overflow-hidden whitespace-nowrap">
+                                                        <div className="flex min-w-0 items-center gap-2">
+                                                            <figure className="shrink-0">
+                                                                <Image src={p.image} alt={p.personalInfo.name} width={25} height={25} className="rounded-full" />
+                                                            </figure>
+                                                            <div className="flex min-w-0 flex-1 flex-col">
+                                                                <p className="truncate text-sm font-bold text-gray dark:text-gray-light">{p.personalInfo.name} {p.personalInfo.lastName}</p>
+                                                                <p className="truncate text-sm italic text-gray/50 dark:text-gray-light/50">{p.contactInfo.city} - {p.contactInfo.state}</p>
+                                                                <p className="truncate text-sm italic text-gray/50 dark:text-gray-light/50">
+                                                                    Role: {p.locationAssignments?.[0]?.roleSystem ? rolesSystemT(p.locationAssignments[0].roleSystem) : '-'}
+                                                                </p>
 
-                                            {
-                                                !checkPermissionsTable('actions') && (
-                                                    <TableCell className="p-2 ">
-                                                        <div className="flex justify-center items-center gap-2">
+                                                                <Tooltip content={
+                                                                    <>
+                                                                        <button className="p-2 rounded-md text-xs text-light" onClick={() => { copyData(p.id); }}>
+                                                                            {copyTxt}
+                                                                        </button>
+                                                                    </>}
+                                                                    position="top-right" trigger="click">
+                                                                    <p className="truncate text-sm cursor-pointer">{p.id.slice(0, 6) + '...'}</p>
+                                                                </Tooltip>
+                                                            </div>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="p-3">
+                                                        {
+                                                            p.profesionalInfo?.[0] ? (
+                                                                <>
+                                                                    <div className="flex items-center gap-2">
+                                                                        {
+                                                                            (p.profesionalInfo?.length ?? 0) > 1 && (
+                                                                                <Tooltip content={`${p.profesionalInfo.length} ${commonT('specialities')}`}>
+                                                                                    <button className="p-1 rounded-md text-xs flex gap-1 items-center bg-brand-light/60 dark:bg-gray" onClick={() => { }}>
+                                                                                        <Eye className="w-3 h-3 text-brand-dark dark:text-light" />
+                                                                                    </button>
+                                                                                </Tooltip>
 
-                                                            <button className="p-1 rounded-md bg-brand dark:bg-brand-dark hover:bg-brand/60 dark:hover:bg-brand-dark/70 text-light" onClick={() => { setUserSelected(p); }}><Eye className="w-4 h-4 " /></button>
+                                                                            )
+                                                                        }
+                                                                        <p className="text-xs font-bold uppercase text-gray dark:text-gray-light">{specialityT(p.profesionalInfo[0].speciality)}</p>
 
-                                                            <Tooltip content={<>
-                                                                <div className="p-2.5  bg-error-dark/60 ">
-                                                                    <p className="text-xs  text-theme-light">¿{commonT("deleteUser")} <span className="font-bold italic">{p.personalInfo.name + " " + p.personalInfo.lastName}</span> ?</p>
-                                                                    <p className="text-xs mt-1  text-theme-light italic">({commonT("thisActionCannotBeUndone")})</p>
-                                                                    <button className="p-1 mt-2 text-xs rounded-md bg-error dark:bg-error-dark hover:bg-error/60 dark:hover:bg-error-dark/70 text-gray-light">{commonT('delete')}</button>
+                                                                    </div>
+                                                                    <p className="text-xs italic text-gray/50 dark:text-gray-light/50">Ced: {p.profesionalInfo[0].cedula}</p>
+                                                                    <p className="text-xs italic text-gray/50 dark:text-gray-light/50">Lic: {p.profesionalInfo[0].license}</p>
+                                                                </>
+                                                            ) : (
+                                                                <span className="text-xs text-gray/40 italic">Sin especialidad</span>
+                                                            )
+                                                        }
+
+
+
+                                                    </TableCell>
+                                                    <TableCell className="p-3 ">
+                                                        <div className="text-xs font-semibold capitalize text-gray dark:text-gray-light ">
+                                                            {p.locationAssignments.length ? p.locationAssignments.map((assignment) => <span key={assignment.id} className="flex gap-1.5"><Building className="w-3 h-3 cursor-pointer text-brand-dark dark:text-brand" /> {assignment.headquartersId}</span>) : 'Sin sede asignada'}
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="p-3 min-w-0 overflow-hidden whitespace-nowrap">
+                                                        <div className="flex items-center gap-1">
+
+                                                            <Tooltip content={
+                                                                <>
+                                                                    <button className="p-2 rounded-md text-xs text-light" onClick={() => { copyData(p.contactInfo.email); }}>
+                                                                        {copyTxt} correo
+                                                                    </button>
+                                                                </>}
+                                                                position="top-right" trigger="hover">
+                                                                <Mail className="w-3.5 h-3.5 shrink-0 cursor-pointer text-brand-dark dark:text-brand" />
+                                                            </Tooltip>
+                                                            <p className="min-w-0 flex-1 truncate pt-1 text-sm text-gray dark:text-gray-light">
+                                                                {p.contactInfo.email}
+                                                            </p>
+                                                        </div>
+                                                        <div className="flex items-center gap-1">
+                                                            <Tooltip content={<PhoneAction phone={p?.contactInfo?.phone ? p.contactInfo.phone : ""} />}
+                                                                position="top-right" trigger="hover">
+                                                                <Phone className="w-3.5 h-3.5 shrink-0 cursor-pointer text-success" />
+                                                            </Tooltip>
+                                                            <p className="min-w-0 flex-1 truncate pt-1 text-sm text-gray dark:text-gray-light">
+                                                                {p.contactInfo.phone}
+                                                            </p>
+                                                        </div>
+
+                                                    </TableCell>
+                                                    <TableCell className="p-2  whitespace-nowrap">
+                                                        <div className="flex justify-center">
+
+                                                            <Badge variantColor={`${STATUS_COLOR_LIGHT[p.status]}`} size="md" >
+                                                                {statusT(`${p.status}`)}
+                                                            </Badge>
+                                                        </div>
+                                                    </TableCell>
+                                                    {
+                                                        !checkPermissionsTable('createdAt') && (
+                                                            <TableCell className="p-2 ">
+                                                                <p className="text-sm flex items-center justify-center gap-2 text-gray dark:text-gray-light"> <Calendar className="w-4 h-4 text-gray dark:text-gray-light" /> {simpleDate(p.createdAt)}</p>
+                                                            </TableCell>
+                                                        )
+                                                    }
+
+                                                    {
+                                                        !checkPermissionsTable('actions') && (
+                                                            <TableCell className="p-2 ">
+                                                                <div className="flex justify-center items-center gap-2">
+
+                                                                    <button className="p-1 rounded-md bg-brand dark:bg-brand-dark hover:bg-brand/60 dark:hover:bg-brand-dark/70 text-light" onClick={() => { setUserSelected(p); }}><Eye className="w-4 h-4 " /></button>
+
+                                                                    <Tooltip content={<>
+                                                                        <div className="p-2.5  bg-error-dark/60 ">
+                                                                            <p className="text-xs  text-theme-light">¿{commonT("deleteUser")} <span className="font-bold italic">{p.personalInfo.name + " " + p.personalInfo.lastName}</span> ?</p>
+                                                                            <p className="text-xs mt-1  text-theme-light italic">({commonT("thisActionCannotBeUndone")})</p>
+                                                                            <button className="p-1 mt-2 text-xs rounded-md bg-error dark:bg-error-dark hover:bg-error/60 dark:hover:bg-error-dark/70 text-gray-light">{commonT('delete')}</button>
+                                                                        </div>
+                                                                    </>}
+                                                                        position="left"
+                                                                        trigger="click"
+                                                                    >
+
+                                                                        <button className="p-1 rounded-md bg-error dark:bg-error-dark hover:bg-error/60 dark:hover:bg-error-dark/70 text-gray-light"><Trash2 className="w-4 h-4 " /></button>
+                                                                    </Tooltip>
                                                                 </div>
-                                                            </>}
+                                                            </TableCell>
+                                                        )
+                                                    }
+                                                </TableRow>
+                                            )
+
+                                            )
+                                        }
+                                    </TableBody>
+
+                                </Table>
+                            </div>
+                        )
+                    }
+
+                    {/* FROM 0 TO LG BREAKPOINT - TABLE WITH MOBILE VERSION */}
+                    {toggleTable == 'cards' && (
+                        <div className=" w-full h-full max-h-[65vh] min-w-0 overflow-auto rounded-lg generic-border-shadow bg-theme-light-dark">
+                            <Table className="w-full block divide-y divide-gray/10 dark:divide-gray/30" id={'personal-table-mobile'}>
+                                <TableBody className="block divide-y divide-gray/10 dark:divide-gray/30 text-theme-light-gray">
+                                    {
+                                        dataTable.map(p => (
+                                            <TableRow key={`mobile-${p.id}`} className="block p-4 border-b-2 border-gray/40 dark:border-gray-light/30 transition-colors hover:bg-gray/5 dark:hover:bg-gray-light/5">
+                                                <TableCell className="block p-0 border-none">
+                                                    {/* ENCABEZADO DE LA CARD: AVATAR, NOMBRE, STATUS Y ACCIONES */}
+                                                    <div className="flex items-start justify-between gap-3">
+                                                        <div className="flex items-center gap-3 min-w-0">
+                                                            <figure className="shrink-0">
+                                                                <Image
+                                                                    src={p.image}
+                                                                    alt={p.personalInfo.name}
+                                                                    width={36}
+                                                                    height={36}
+                                                                    className="rounded-full object-cover"
+                                                                />
+                                                            </figure>
+                                                            <div className="flex flex-col min-w-0">
+                                                                <p className="text-gray dark:text-gray-light text-sm font-bold truncate">
+                                                                    {p.personalInfo.name} {p.personalInfo.lastName}
+                                                                </p>
+                                                                <span className="text-xs text-gray/60 dark:text-gray-light/60">
+                                                                    {p.contactInfo.city} - {p.contactInfo.state} &bull; <span className="italic">Role: {p.locationAssignments?.[0]?.roleSystem ? rolesSystemT(p.locationAssignments[0].roleSystem) : '-'}</span>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="flex items-center gap-2 shrink-0">
+                                                            <Badge variantColor={`${STATUS_COLOR_LIGHT[p.status]}`} size="sm">
+                                                                {statusT(`${p.status}`)}
+                                                            </Badge>
+                                                            <button
+                                                                type="button"
+                                                                className="p-1.5 rounded-md bg-brand dark:bg-brand-dark hover:bg-brand/60 dark:hover:bg-brand-dark/70 text-light transition-colors"
+                                                                onClick={() => { setUserSelected(p); }}
+                                                                title={commonT("viewMore")}
+                                                            >
+                                                                <Eye className="w-3.5 h-3.5" />
+                                                            </button>
+                                                            <Tooltip
+                                                                content={
+                                                                    <div className="p-2.5 bg-error-dark/60">
+                                                                        <p className="text-xs text-theme-light">
+                                                                            ¿{commonT("deleteUser")}: <span className="font-bold italic">{p.personalInfo.name} {p.personalInfo.lastName}</span>?
+                                                                        </p>
+                                                                        <p className="text-xs mt-1 text-theme-light italic">({commonT("thisActionCannotBeUndone")})</p>
+                                                                        <button type="button" className="p-1 mt-2 text-xs rounded-md bg-error dark:bg-error-dark hover:bg-error/60 dark:hover:bg-error-dark/70 text-gray-light">
+                                                                            {commonT("delete")}
+                                                                        </button>
+                                                                    </div>
+                                                                }
                                                                 position="left"
                                                                 trigger="click"
                                                             >
-
-                                                                <button className="p-1 rounded-md bg-error dark:bg-error-dark hover:bg-error/60 dark:hover:bg-error-dark/70 text-gray-light"><Trash2 className="w-4 h-4 " /></button>
+                                                                <button
+                                                                    type="button"
+                                                                    className="p-1.5 rounded-md bg-error dark:bg-error-dark hover:bg-error/60 dark:hover:bg-error-dark/70 text-gray-light transition-colors"
+                                                                    title={commonT("delete")}
+                                                                >
+                                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                                </button>
                                                             </Tooltip>
                                                         </div>
-                                                    </TableCell>
-                                                )
-                                            }
-                                        </TableRow>
-                                    )
+                                                    </div>
 
-                                    )
-                                }
-                            </TableBody>
-
-                        </Table>
-                    </div>
-
-                    {/* FROM 0 TO LG BREAKPOINT - TABLE WITH MOBILE VERSION */}
-                    <div className="block xl:hidden w-full h-full max-h-[65vh] min-w-0 overflow-auto rounded-lg generic-border-shadow bg-theme-light-dark">
-                        <Table className="w-full block divide-y divide-gray/10 dark:divide-gray/30" id={'personal-table-mobile'}>
-                            <TableBody className="block divide-y divide-gray/10 dark:divide-gray/30 text-theme-light-gray">
-                                {
-                                    dataTable.map(p => (
-                                        <TableRow key={`mobile-${p.id}`} className="block p-4 border-b-2 border-gray/40 dark:border-gray-light/30 transition-colors hover:bg-gray/5 dark:hover:bg-gray-light/5">
-                                            <TableCell className="block p-0 border-none">
-                                                {/* ENCABEZADO DE LA CARD: AVATAR, NOMBRE, STATUS Y ACCIONES */}
-                                                <div className="flex items-start justify-between gap-3">
-                                                    <div className="flex items-center gap-3 min-w-0">
-                                                        <figure className="shrink-0">
-                                                            <Image
-                                                                src={p.image}
-                                                                alt={p.personalInfo.name}
-                                                                width={36}
-                                                                height={36}
-                                                                className="rounded-full object-cover"
-                                                            />
-                                                        </figure>
-                                                        <div className="flex flex-col min-w-0">
-                                                            <p className="text-gray dark:text-gray-light text-sm font-bold truncate">
-                                                                {p.personalInfo.name} {p.personalInfo.lastName}
-                                                            </p>
-                                                            <span className="text-xs text-gray/60 dark:text-gray-light/60">
-                                                                {p.contactInfo.city} - {p.contactInfo.state} &bull; <span className="italic">Role: {p.locationAssignments?.[0]?.roleSystem ? rolesSystemT(p.locationAssignments[0].roleSystem) : '-'}</span>
+                                                    {/* CUERPO: ESPECIALIDAD Y DEPARTAMENTO */}
+                                                    <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-gray/10 dark:border-gray/30 text-xs">
+                                                        <div>
+                                                            <span className="text-[11px] text-gray/50 dark:text-gray-light/50 font-medium block mb-0.5">
+                                                                {tableColumnsT("speciality")}
                                                             </span>
+                                                            {p.profesionalInfo?.[0] ? (
+                                                                <div>
+                                                                    <div className="flex items-center gap-1.5">
+                                                                        <p className="font-semibold uppercase text-gray dark:text-gray-light truncate">
+                                                                            {specialityT(p.profesionalInfo[0].speciality)}
+                                                                        </p>
+                                                                        {(p.profesionalInfo?.length ?? 0) > 1 && (
+                                                                            <Tooltip content={`${p.profesionalInfo.length} especialidades más`}>
+                                                                                <button type="button" className="p-0.5 rounded text-xs bg-brand-light/60 dark:bg-gray">
+                                                                                    <Eye className="w-3 h-3 text-brand-dark dark:text-light" />
+                                                                                </button>
+                                                                            </Tooltip>
+                                                                        )}
+                                                                    </div>
+                                                                    <p className="text-[10px] italic text-gray/50 dark:text-gray-light/50 mt-0.5">
+                                                                        Ced: {p.profesionalInfo[0].cedula} &bull; Lic: {p.profesionalInfo[0].license}
+                                                                    </p>
+                                                                </div>
+                                                            ) : (
+                                                                <span className="text-gray/40 italic">Sin especialidad</span>
+                                                            )}
+                                                        </div>
+
+                                                        <div>
+                                                            <span className="text-[11px] text-gray/50 dark:text-gray-light/50 font-medium block mb-0.5">
+                                                                {tableColumnsT("headquarters")}
+                                                            </span>
+                                                            <p className="font-semibold uppercase text-gray dark:text-gray-light truncate">
+                                                                {p.locationAssignments.length ? p.locationAssignments.map((assignment) => {
+                                                                    const headquarters = HEADQUARTERS_DATA.find((item) => item.id === assignment.headquartersId);
+                                                                    return <span key={assignment.id} className="block">{headquarters?.name ?? assignment.headquartersId} · {specialityT(assignment.speciality)}</span>;
+                                                                }) : 'Sin sede asignada'}
+                                                            </p>
                                                         </div>
                                                     </div>
 
-                                                    <div className="flex items-center gap-2 shrink-0">
-                                                        <Badge variantColor={`${STATUS_COLOR_LIGHT[p.status]}`} size="sm">
-                                                            {statusT(`${p.status}`)}
-                                                        </Badge>
-                                                        <button
-                                                            type="button"
-                                                            className="p-1.5 rounded-md bg-brand dark:bg-brand-dark hover:bg-brand/60 dark:hover:bg-brand-dark/70 text-light transition-colors"
-                                                            onClick={() => { setUserSelected(p); }}
-                                                            title={commonT("viewMore")}
-                                                        >
-                                                            <Eye className="w-3.5 h-3.5" />
-                                                        </button>
-                                                        <Tooltip
-                                                            content={
-                                                                <div className="p-2.5 bg-error-dark/60">
-                                                                    <p className="text-xs text-theme-light">
-                                                                        ¿{commonT("deleteUser")}: <span className="font-bold italic">{p.personalInfo.name} {p.personalInfo.lastName}</span>?
-                                                                    </p>
-                                                                    <p className="text-xs mt-1 text-theme-light italic">({commonT("thisActionCannotBeUndone")})</p>
-                                                                    <button type="button" className="p-1 mt-2 text-xs rounded-md bg-error dark:bg-error-dark hover:bg-error/60 dark:hover:bg-error-dark/70 text-gray-light">
-                                                                        {commonT("delete")}
-                                                                    </button>
-                                                                </div>
-                                                            }
-                                                            position="left"
-                                                            trigger="click"
-                                                        >
-                                                            <button
-                                                                type="button"
-                                                                className="p-1.5 rounded-md bg-error dark:bg-error-dark hover:bg-error/60 dark:hover:bg-error-dark/70 text-gray-light transition-colors"
-                                                                title={commonT("delete")}
-                                                            >
-                                                                <Trash2 className="w-3.5 h-3.5" />
-                                                            </button>
-                                                        </Tooltip>
-                                                    </div>
-                                                </div>
-
-                                                {/* CUERPO: ESPECIALIDAD Y DEPARTAMENTO */}
-                                                <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-gray/10 dark:border-gray/30 text-xs">
-                                                    <div>
-                                                        <span className="text-[11px] text-gray/50 dark:text-gray-light/50 font-medium block mb-0.5">
-                                                            {tableColumnsT("speciality")}
-                                                        </span>
-                                                        {p.profesionalInfo?.[0] ? (
-                                                            <div>
-                                                                <div className="flex items-center gap-1.5">
-                                                                    <p className="font-semibold uppercase text-gray dark:text-gray-light truncate">
-                                                                        {specialityT(p.profesionalInfo[0].speciality)}
-                                                                    </p>
-                                                                    {(p.profesionalInfo?.length ?? 0) > 1 && (
-                                                                        <Tooltip content={`${p.profesionalInfo.length} especialidades más`}>
-                                                                            <button type="button" className="p-0.5 rounded text-xs bg-brand-light/60 dark:bg-gray">
-                                                                                <Eye className="w-3 h-3 text-brand-dark dark:text-light" />
-                                                                            </button>
-                                                                        </Tooltip>
-                                                                    )}
-                                                                </div>
-                                                                <p className="text-[10px] italic text-gray/50 dark:text-gray-light/50 mt-0.5">
-                                                                    Ced: {p.profesionalInfo[0].cedula} &bull; Lic: {p.profesionalInfo[0].license}
-                                                                </p>
+                                                    {/* FOOTER: CONTACTO, FECHA E ID */}
+                                                    <div className="flex flex-wrap items-center justify-between gap-2 mt-3 pt-2 border-t border-dashed border-gray/10 dark:border-gray/30 text-xs">
+                                                        {/* Contacto: Email y Teléfono */}
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="flex items-center gap-1">
+                                                                <Tooltip
+                                                                    content={
+                                                                        <button type="button" className="p-2 rounded-md text-xs text-light" onClick={() => { copyData(p.contactInfo.email); }}>
+                                                                            {copyTxt} correo
+                                                                        </button>
+                                                                    }
+                                                                    position="top-right"
+                                                                    trigger="hover"
+                                                                >
+                                                                    <Mail className="cursor-pointer w-3.5 h-3.5 text-brand-dark dark:text-brand" />
+                                                                </Tooltip>
+                                                                <span className="text-[11px] text-gray dark:text-gray-light max-w-30 sm:max-w-45 truncate">
+                                                                    {p.contactInfo.email}
+                                                                </span>
                                                             </div>
-                                                        ) : (
-                                                            <span className="text-gray/40 italic">Sin especialidad</span>
-                                                        )}
-                                                    </div>
 
-                                                    <div>
-                                                        <span className="text-[11px] text-gray/50 dark:text-gray-light/50 font-medium block mb-0.5">
-                                                            {tableColumnsT("headquarters")}
-                                                        </span>
-                                                        <p className="font-semibold uppercase text-gray dark:text-gray-light truncate">
-                                                            {p.locationAssignments.length ? p.locationAssignments.map((assignment) => {
-                                                                const headquarters = HEADQUARTERS_DATA.find((item) => item.id === assignment.headquartersId);
-                                                                return <span key={assignment.id} className="block">{headquarters?.name ?? assignment.headquartersId} · {specialityT(assignment.speciality)}</span>;
-                                                            }) : 'Sin sede asignada'}
-                                                        </p>
-                                                    </div>
-                                                </div>
+                                                            <div className="flex items-center gap-1">
+                                                                <Tooltip
+                                                                    content={<PhoneAction phone={p?.contactInfo?.phone ? p.contactInfo.phone : ""} />}
+                                                                    position="top-right"
+                                                                    trigger="hover"
+                                                                >
+                                                                    <Phone className="cursor-pointer w-3.5 h-3.5 text-success" />
+                                                                </Tooltip>
+                                                                <span className="text-[11px] text-gray dark:text-gray-light">
+                                                                    {p.contactInfo.phone}
+                                                                </span>
+                                                            </div>
+                                                        </div>
 
-                                                {/* FOOTER: CONTACTO, FECHA E ID */}
-                                                <div className="flex flex-wrap items-center justify-between gap-2 mt-3 pt-2 border-t border-dashed border-gray/10 dark:border-gray/30 text-xs">
-                                                    {/* Contacto: Email y Teléfono */}
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="flex items-center gap-1">
+                                                        {/* Meta: Ingreso e ID */}
+                                                        <div className="flex items-center gap-2 text-[11px] text-gray/60 dark:text-gray-light/60">
+                                                            <span>{simpleDate(p.createdAt)}</span>
+                                                            <span>&bull;</span>
                                                             <Tooltip
                                                                 content={
-                                                                    <button type="button" className="p-2 rounded-md text-xs text-light" onClick={() => { copyData(p.contactInfo.email); }}>
-                                                                        {copyTxt} correo
+                                                                    <button type="button" className="p-2 rounded-md text-xs text-light" onClick={() => { copyData(p.id); }}>
+                                                                        {copyTxt}
                                                                     </button>
                                                                 }
                                                                 position="top-right"
-                                                                trigger="hover"
+                                                                trigger="click"
                                                             >
-                                                                <Mail className="cursor-pointer w-3.5 h-3.5 text-brand-dark dark:text-brand" />
+                                                                <span className="cursor-pointer font-mono underline hover:text-brand">
+                                                                    {p.id.slice(0, 6)}...
+                                                                </span>
                                                             </Tooltip>
-                                                            <span className="text-[11px] text-gray dark:text-gray-light max-w-30 sm:max-w-45 truncate">
-                                                                {p.contactInfo.email}
-                                                            </span>
-                                                        </div>
-
-                                                        <div className="flex items-center gap-1">
-                                                            <Tooltip
-                                                                content={<PhoneAction phone={p?.contactInfo?.phone ? p.contactInfo.phone : ""} />}
-                                                                position="top-right"
-                                                                trigger="hover"
-                                                            >
-                                                                <Phone className="cursor-pointer w-3.5 h-3.5 text-success" />
-                                                            </Tooltip>
-                                                            <span className="text-[11px] text-gray dark:text-gray-light">
-                                                                {p.contactInfo.phone}
-                                                            </span>
                                                         </div>
                                                     </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    }
+                                </TableBody>
+                            </Table>
 
-                                                    {/* Meta: Ingreso e ID */}
-                                                    <div className="flex items-center gap-2 text-[11px] text-gray/60 dark:text-gray-light/60">
-                                                        <span>{simpleDate(p.createdAt)}</span>
-                                                        <span>&bull;</span>
-                                                        <Tooltip
-                                                            content={
-                                                                <button type="button" className="p-2 rounded-md text-xs text-light" onClick={() => { copyData(p.id); }}>
-                                                                    {copyTxt}
-                                                                </button>
-                                                            }
-                                                            position="top-right"
-                                                            trigger="click"
-                                                        >
-                                                            <span className="cursor-pointer font-mono underline hover:text-brand">
-                                                                {p.id.slice(0, 6)}...
-                                                            </span>
-                                                        </Tooltip>
-                                                    </div>
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))
-                                }
-                            </TableBody>
-                        </Table>
-
-                    </div>
+                        </div>
+                    )}
 
                 </section>
 

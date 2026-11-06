@@ -112,7 +112,8 @@ export default function LandingView() {
 
   // Filtrado de especialidades
   const selectedHeadquarters = HEADQUARTERS_DATA.find((branch) => branch.id === selectedBranch) ?? HEADQUARTERS_DATA[0];
-  const branchSpecialities = selectedHeadquarters.specialities.filter(({ isActive }) => isActive).map(({ value }) => value);
+  { console.log(selectedHeadquarters) }
+  const branchSpecialities = selectedHeadquarters?.specialities.filter(({ isActive }) => isActive).map(({ name }) => name);
   const filteredSpecialties =
     selectedSpecialty === "all"
       ? branchSpecialities.slice(0, 12)
@@ -470,7 +471,7 @@ export default function LandingView() {
                   : "bg-light text-gray-dark border-gray-light hover:bg-gray-light"
                   }`}
               >
-              Todas ({branchSpecialities.length})
+                Todas ({branchSpecialities.length})
               </button>
             </div>
           </div>
@@ -521,7 +522,7 @@ export default function LandingView() {
                   key={dept.id}
                   className="px-2.5 py-1 text-2xs font-medium rounded bg-white border border-gray-light text-gray-dark"
                 >
-                  {departmentT(dept.value)}
+                  {dept.name}
                 </span>
               ))}
             </div>
@@ -603,7 +604,7 @@ export default function LandingView() {
                     <div className="flex flex-wrap gap-1">
                       {branch.services.slice(0, 3).map((srv, idx) => (
                         <span key={idx} className="text-2xs px-1.5 py-0.5 rounded bg-light text-gray">
-                          {srv}
+                          {srv.name}
                         </span>
                       ))}
                     </div>
