@@ -1,7 +1,7 @@
 import { Link } from "@/i18n/navigation";
 
 interface BreadcrumbProps {
-  pageTitle: string;
+  pageTitle: React.ReactNode | string;
 }
 
 const PageBreadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle }) => {

@@ -9,7 +9,7 @@ import { useHeadquarterStore } from "@/store/useHeadquarterStore";
 import { useUserStore } from "@/store/userStore";
 import Switch from "@/components/form/switch/Switch";
 import Button from "@/components/ui/button/Button";
-import { Calendar, Dot, FilePlus, Info, Layers, LucideEye, LucidePlayingCardsFan, Pencil, TableCellsMerge, Trash2, WalletCardsIcon } from "lucide-react";
+import { Calendar, DoorOpen, Dot, FilePlus, Info, Layers, LucideEye, LucidePlayingCardsFan, Pencil, TableCellsMerge, Trash2, WalletCardsIcon } from "lucide-react";
 import Badge from "@/components/ui/badge/Badge";
 import Fallback from "@/components/fallbackQuery/Fallback";
 import { DepartmentsActionService } from "./services/service";
@@ -17,6 +17,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { STATUS_COLOR_LIGHT } from "@/utils/statusColors";
 import Tooltip from "@/components/ui/tooltip/Tooltip";
+import MetricsCatalogs from "@/components/common/MetricsCatalogs";
 
 
 const COLUMNS = ['departmentName', 'specialitiesDepartment', 'status', 'createdAt', 'actions'];
@@ -65,7 +66,14 @@ export default function DepartmentsView() {
 
     return (
         <>
-            <PageBreadcrumb pageTitle={departmentsPageT('title')} />
+            <PageBreadcrumb pageTitle={'Catálogo de departamentos'} />
+
+            <MetricsCatalogs catalogName="Departamentos" iconCatalog={<DoorOpen className="text-light" />} data={dataTable || []} />
+
+            <div className="flex items-baseline justify-end">
+                <Button type="button" size="xs" variant="primary" ><FilePlus />Agregar departamento</Button>
+            </div>
+
 
             <Fallback
                 id='department-table-fallback'
@@ -80,10 +88,8 @@ export default function DepartmentsView() {
                         <figure className="w-15 h-15 overflow-hidden rounded-full">
                             <Image src="/images/no-results.jpg" alt="Empty" width={100} height={100} className="object-cover" />
                         </figure>
-                        <p className="font-bold text-lg text-theme-light-gray italic">No se han encontrado departamentos para esta sede</p>
-                        <div>
-                            <Button type="button" size="sm" variant="primary" ><FilePlus />Agregar departamento</Button>
-                        </div>
+                        <p className="font-bold text-lg text-theme-light-gray italic">No se han encontrado coincidencias de departamentos</p>
+
                     </div>
                 </>}
             >
@@ -106,7 +112,6 @@ export default function DepartmentsView() {
                     </div>
 
                     <div>
-                        <Button type="button" size="xs" variant="primary" ><FilePlus />Agregar departamento</Button>
                     </div>
                 </div>
                 {

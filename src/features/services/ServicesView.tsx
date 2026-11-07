@@ -11,13 +11,15 @@ import { useUserStore } from "@/store/userStore";
 import { useEffect, useState } from "react";
 import Fallback from "@/components/fallbackQuery/Fallback";
 import Image from "next/image";
-import { Calendar, FilePlus, Layers, Pencil, TableCellsMerge, Trash, Trash2, WalletCardsIcon } from "lucide-react";
+import { Calendar, Dot, FilePlus, Layers, List, LucideInfo, Pencil, Stethoscope, TableCellsMerge, Trash, Trash2, WalletCardsIcon } from "lucide-react";
 import Badge from "@/components/ui/badge/Badge";
 import { STATUS_COLOR_LIGHT } from "@/utils/statusColors";
 import Tooltip from "@/components/ui/tooltip/Tooltip";
 import Switch from "@/components/form/switch/Switch";
 import Button from "@/components/ui/button/Button";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import MetricsCatalogs from "@/components/common/MetricsCatalogs";
+import FiltersServices from "./components/Filters";
 
 
 const COLUMNS = ['serviceName', 'status', 'createdAt', 'actions'];
@@ -35,6 +37,7 @@ export default function ServicesView() {
     const { servicesPageT, commonT, statusT, tableColumnsT } = useSystemTraslations();
 
     // HOOKS
+    const [dataTable, setDataTable] = useState<Services[]>([]);
     const [toggleTable, setToggleTable] = useState<'table' | 'cards'>('table');
     const { isMobile } = useIsMobile();
 
@@ -54,7 +57,7 @@ export default function ServicesView() {
     //     }
     // });
 
-    const { data: dataTable, isLoading, isError, error } = useQuery({
+    const { data: dataServices, isLoading, isError, error } = useQuery({
         queryKey: ['services-page-table', currentHeadquarter?.id],
         queryFn: () => ServicesActionService.getAllServices(currentHeadquarter?.id || ''),
         enabled: !!currentHeadquarter?.id // solo si hay sede
@@ -71,9 +74,35 @@ export default function ServicesView() {
         setToggleTable(isMobile ? 'cards' : 'table')
     }, [isMobile]);
 
+    useEffect(() => {
+        if (dataServices && Array.isArray(dataServices)) {
+            setDataTable(dataServices)
+        }
+    }, [dataServices]);
+
+
+
     return (
         <>
-            <PageBreadcrumb pageTitle={servicesPageT('title')} />
+            <PageBreadcrumb pageTitle={'Catálogo de servicios'} />
+
+            <MetricsCatalogs catalogName="Servicios" iconCatalog={<List className="text-light" />} data={dataServices || []} />
+
+
+            {/* FILTERS */}
+            <FiltersServices
+                dataQuery={dataTable as Services[]}
+                updateDataFn={(filteredData) => setDataTable(filteredData)}
+                checkPermissionCb={(colName) => checkPermissionsTable(colName)} // En caso de filtros relacoinados a columnas.,..  ejemplo: Filtro: Orden por ingreso, Col: createdAt
+            />
+
+            <div className="flex items-baseline justify-end">
+
+                <Button type="button" size="xs" variant="primary" ><FilePlus />Agregar servicio</Button>
+                <div>
+                </div>
+            </div>
+
 
             <Fallback
                 id='services-table-fallback'
@@ -84,14 +113,12 @@ export default function ServicesView() {
                 errorClassName="min-h-[40vh]"
                 loadingClassName="min-h-[40vh]"
                 noDataPlaceholder={<>
-                    <div className="h-[70vh] flex flex-col items-center justify-center gap-2">
+                    <div className="h-[50vh] flex flex-col items-center justify-center gap-2">
                         <figure className="w-15 h-15 overflow-hidden rounded-full">
                             <Image src="/images/no-results.jpg" alt="Empty" width={100} height={100} className="object-cover" />
                         </figure>
-                        <p className="font-bold text-lg text-theme-light-gray">No se han encontrado servicios para esta sede</p>
-                        <div>
-                            <Button type="button" size="sm" variant="primary" ><FilePlus />Agregar servicio</Button>
-                        </div>
+                        <p className="font-bold text-lg text-theme-light-gray">No se han encontrado coincidencias de servicios</p>
+
                     </div>
                 </>}
             >
@@ -111,9 +138,9 @@ export default function ServicesView() {
                         </Tooltip>
                     </div>
 
-                    <div>
-                        <Button type="button" size="xs" variant="primary" ><FilePlus />Agregar servicio</Button>
-                    </div>
+                    <div></div>
+
+
                 </div>
                 {
                     toggleTable == 'cards' && (
@@ -224,7 +251,7 @@ export default function ServicesView() {
                                                 <TableCell className="p-4">
                                                     <div className="flex items-center gap-3">
                                                         <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand/10 dark:bg-brand-dark/30 text-brand dark:text-brand-light border border-brand/20">
-                                                            <Layers className="size-4" />
+                                                            <List className="size-4" />
                                                         </div>
                                                         <div className="flex flex-col min-w-0">
                                                             <p className="text-theme-sm font-semibold text-gray-dark dark:text-gray-light truncate">

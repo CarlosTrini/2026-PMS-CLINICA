@@ -2,11 +2,10 @@
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import useSystemTraslations from "@/hooks/useSysteTranslations";
-import type { RoleSystem } from "@/types/dataTypes";
+import type { RoleSystem, Speciality } from "@/types/dataTypes";
 
-import Switch from "@/components/form/switch/Switch";
 import Button from "@/components/ui/button/Button";
-import { Calendar, FilePlus, Layers, Pencil, TableCellsMerge, Trash2, WalletCardsIcon } from "lucide-react";
+import { Calendar, FilePlus, Layers, Pencil, Stethoscope, TableCellsMerge, Trash2, WalletCardsIcon } from "lucide-react";
 import Badge from "@/components/ui/badge/Badge";
 import Fallback from "@/components/fallbackQuery/Fallback";
 import Image from "next/image";
@@ -20,7 +19,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useHeadquarterStore } from "@/store/useHeadquarterStore";
 import { useUserStore } from "@/store/userStore";
 import { SpecialitiesActionService } from "./services/service";
-import Metrics from "./components/Metrics";
+import MetricsCatalogs from "@/components/common/MetricsCatalogs";
+import FiltersSpecialities from "./components/Filters";
 
 
 const COLUMNS = ['specialitiesName', 'status', 'createdAt', 'actions'];
@@ -35,18 +35,19 @@ const permissionsTableSpecialities: Record<typeof COLUMNS[number], RoleSystem[]>
 export default function SpecialitiesView() {
 
     // TRADUCCIONES
-    const { specialitiesPageT, commonT, statusT, tableColumnsT, specialityT, departmentT, rolesSystemT } = useSystemTraslations();
+    const { commonT, statusT, tableColumnsT } = useSystemTraslations();
 
     // ZUSTAND
     const { currentHeadquarter } = useHeadquarterStore();
     const { userRole } = useUserStore();
 
     // HOOKS
+    const [dataTable, setDataTable] = useState<Speciality[]>([]);
     const [toggleTable, setToggleTable] = useState<'table' | 'cards'>('table');
     const { isMobile } = useIsMobile();
 
     // QUERY
-    const { data: dataTable, isLoading, isError, error } = useQuery({
+    const { data: dataSpecialities, isLoading, isError, error } = useQuery({
         queryKey: ['specialities-page-table', currentHeadquarter?.id],
         queryFn: () => SpecialitiesActionService.getAllSpecialities(currentHeadquarter?.id || '')
     });
@@ -56,17 +57,47 @@ export default function SpecialitiesView() {
         return permissionsTableSpecialities[col] && permissionsTableSpecialities[col].some(ur => ur === userRole);
     };
 
+
+    // EFFECTS
     useEffect(() => {
         setToggleTable(isMobile ? 'cards' : 'table')
     }, [isMobile]);
+
+    useEffect(() => {
+        if (dataSpecialities && Array.isArray(dataSpecialities)) {
+            setDataTable(dataSpecialities)
+        }
+    }, [dataSpecialities]);
+
+
 
 
 
     return (
         <>
-            <PageBreadcrumb pageTitle={specialitiesPageT('title')} />
+            <PageBreadcrumb pageTitle={'Catálogo de especialidades'} />
 
-            <Metrics data={dataTable || []} />
+            <MetricsCatalogs catalogName="Especialidades" iconCatalog={<Stethoscope className="text-light" />} data={dataSpecialities || []} />
+
+
+
+            {/* FILTERS */}
+            {/* {
+                dataSpecialities && dataSpecialities.length > 0 && ( */}
+
+            <FiltersSpecialities
+                dataQuery={dataTable as Speciality[]}
+                updateDataFn={(filteredData) => setDataTable(filteredData)}
+                checkPermissionCb={(colName) => checkPermissionsTable(colName)} // En caso de filtros relacoinados a columnas.,..  ejemplo: Filtro: Orden por ingreso, Col: createdAt
+            />
+            {/* )
+            } */}
+
+            <div className="flex items-baseline justify-end">
+                <Button type="button" size="xs" variant="primary" ><FilePlus />Agregar especialidad</Button>
+            </div>
+
+
 
             <Fallback
                 id='specialitities-table-fallback'
@@ -77,14 +108,11 @@ export default function SpecialitiesView() {
                 errorClassName="min-h-[40vh]"
                 loadingClassName="min-h-[40vh]"
                 noDataPlaceholder={<>
-                    <div className="h-[70vh] flex flex-col items-center justify-center gap-2">
+                    <div className="h-[50vh] flex flex-col items-center justify-center gap-2">
                         <figure className="w-15 h-15 overflow-hidden rounded-full">
                             <Image src="/images/no-results.jpg" alt="Empty" width={100} height={100} className="object-cover" />
                         </figure>
-                        <p className="font-bold text-lg text-theme-light-gray italic">No se han encontrado especialidades para esta sede</p>
-                        <div>
-                            <Button type="button" size="sm" variant="primary" ><FilePlus />Agregar especialidad</Button>
-                        </div>
+                        <p className="font-bold text-lg text-theme-light-gray italic">No se han encontrado coincidencias de especialidades</p>
                     </div>
                 </>}
             >
@@ -105,7 +133,6 @@ export default function SpecialitiesView() {
                     </div>
 
                     <div>
-                        <Button type="button" size="xs" variant="primary" ><FilePlus />Agregar especialidad</Button>
                     </div>
                 </div>
                 {
@@ -217,7 +244,7 @@ export default function SpecialitiesView() {
                                                 <TableCell className="p-4">
                                                     <div className="flex items-center gap-3">
                                                         <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand/10 dark:bg-brand-dark/30 text-brand dark:text-brand-light border border-brand/20">
-                                                            <Layers className="size-4" />
+                                                            <Stethoscope className="size-4" />
                                                         </div>
                                                         <div className="flex flex-col min-w-0">
                                                             <p className="text-theme-sm font-semibold text-gray-dark dark:text-gray-light truncate">

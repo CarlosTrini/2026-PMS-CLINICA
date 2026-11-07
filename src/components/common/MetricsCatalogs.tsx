@@ -1,15 +1,17 @@
 'use client';
 import { memo, useMemo } from "react";
-import { CheckCircle2, Layers, Percent, XCircle } from "lucide-react";
-import type { Speciality } from "@/types/dataTypes";
+import { CheckCircle2, Layers, Percent, Stethoscope, XCircle } from "lucide-react";
+import type { HeadquartersDepartment, Services, Speciality } from "@/types/dataTypes";
 import { useHeadquarterStore } from "@/store/useHeadquarterStore";
 import useSystemTraslations from "@/hooks/useSysteTranslations";
 
 interface Props {
-    data: Speciality[];
+    data: Speciality[] | Services[] | HeadquartersDepartment[];
+    iconCatalog?: React.ReactNode;
+    catalogName: string;
 }
 
-function Metrics({ data }: Props) {
+function MetricsCatalogs({ data, iconCatalog = <Layers />, catalogName = '' }: Props) {
     const { statusT } = useSystemTraslations();
     const { currentHeadquarter } = useHeadquarterStore();
 
@@ -37,17 +39,14 @@ function Metrics({ data }: Props) {
                 {/* Decoración lateral tipo catálogo */}
                 <div className="flex items-center gap-4 min-w-0">
                     <div className="relative flex size-14 shrink-0 items-center justify-center rounded-xl bg-brand/10 dark:bg-brand-dark/30 text-brand dark:text-brand-light border border-brand/20">
-                        <Layers className="size-7" />
+                        {iconCatalog}
                         <span className="absolute -top-1 -right-1 size-3 rounded-full bg-brand border-2 border-light-accent dark:border-gray-dark" />
                     </div>
 
                     <div className="flex flex-col min-w-0">
                         <span className="text-theme-xs font-semibold uppercase tracking-wider text-brand dark:text-brand-light">
-                            Catálogo de Sede
+                            Catálogo de {catalogName}
                         </span>
-                        <h3 className="text-theme-sm font-medium text-theme-light-gray truncate">
-                            Total de Especialidades
-                        </h3>
                         <p className="text-theme-xs text-gray/60 dark:text-gray-light/50 truncate mt-0.5">
                             {currentHeadquarter?.name || "Sede actual"}
                         </p>
@@ -73,7 +72,7 @@ function Metrics({ data }: Props) {
                             <Percent className="size-4" />
                         </div>
                         <span className="text-theme-sm font-semibold text-gray-dark dark:text-light-accent">
-                            Disponibilidad del Catálogo
+                            Porcentaje operativo
                         </span>
                     </div>
 
@@ -119,4 +118,4 @@ function Metrics({ data }: Props) {
     );
 }
 
-export default memo(Metrics);
+export default memo(MetricsCatalogs);

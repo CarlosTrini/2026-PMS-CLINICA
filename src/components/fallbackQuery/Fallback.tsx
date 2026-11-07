@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 // import { useState, useEffect } from 'react';
 
 interface Props {
@@ -16,6 +17,7 @@ interface Props {
 
 export default function Fallback({ id, children, isError, isLoading, data, errorMsg, loadingClassName, errorClassName, noDataPlaceholder }: Props) {
 
+    const [dataInfo, setDataInfo] = useState(data);
     const loadingStyles = loadingClassName ? loadingClassName : `min-h-20 w-full`;
     const errorStyles = errorClassName ? errorClassName : `min-h-10 w-full `;
 
@@ -31,6 +33,11 @@ export default function Fallback({ id, children, isError, isLoading, data, error
 
         return isNull;
     }
+
+    useEffect(() => {
+        console.log(dataInfo)
+        setDataInfo(data);
+    }, [data]);
 
     return (
         <>
@@ -61,11 +68,11 @@ export default function Fallback({ id, children, isError, isLoading, data, error
                 }
 
                 {
-                    !isLoading && !isError && !noDataEva(data) && <>{children}</>
+                    !isLoading && !isError && !noDataEva(dataInfo) && <>{children}</>
                 }
 
                 {
-                    !isLoading && !isError && noDataEva(data) && noDataPlaceholder && <>{noDataPlaceholder}</>
+                    !isLoading && !isError && noDataEva(dataInfo) && noDataPlaceholder && <>{noDataPlaceholder}</>
                 }
 
             </section>
