@@ -10,6 +10,7 @@ interface Option {
 
 interface SelectProps
   extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "value" | "size"> {
+  getLabel?: (option: Option | undefined) => void; // para el caso de hook form y las pill de filtros, para que regrese el valor. SIn eso, on change normal funciona
   options: Option[];
   placeholder?: string;
   value?: string;
@@ -34,6 +35,7 @@ const ICON_SIZE = {
 };
 
 const Select: React.FC<SelectProps> = ({
+  getLabel,
   options,
   placeholder = "Selecciona una opción",
   value: controlledValue,
@@ -64,6 +66,8 @@ const Select: React.FC<SelectProps> = ({
       setInternalValue(value);
     }
     onChange?.(e);
+    getLabel?.(options.find(o => o.value == e.target.value))
+
   };
 
   const resetSelect = () => {
@@ -81,6 +85,7 @@ const Select: React.FC<SelectProps> = ({
     } as unknown as React.ChangeEvent<HTMLSelectElement>;
 
     onChange?.(syntheticEvent);
+    getLabel?.(undefined)
   };
 
   useEffect(() => {

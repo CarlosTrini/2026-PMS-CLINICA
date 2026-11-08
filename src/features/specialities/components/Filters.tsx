@@ -81,7 +81,7 @@ export default function FiltersSpecialities({ dataQuery, updateDataFn, checkPerm
 
             // Filtro por Estatus ('activo' -> true, 'inactivo' -> false)
             if (filterValues.status !== 'all') {
-                const isSearchingActive = filterValues.status === 'activo';
+                const isSearchingActive = filterValues.status === 'active';
                 if (s.isActive !== isSearchingActive) return false;
             }
 
@@ -106,13 +106,6 @@ export default function FiltersSpecialities({ dataQuery, updateDataFn, checkPerm
                 if (diff !== 0) return diff;
             }
 
-            // Criterio 3: Orden por Estatus (isActive es boolean: true=1, false=0)
-            if (filterValues.orderByStatus) {
-                const diff = filterValues.orderByStatus === 'asc'
-                    ? Number(b.isActive) - Number(a.isActive) // 'asc': activos primero
-                    : Number(a.isActive) - Number(b.isActive); // 'desc': inactivos primero
-                if (diff !== 0) return diff;
-            }
 
             return 0;
         });
@@ -246,14 +239,6 @@ export default function FiltersSpecialities({ dataQuery, updateDataFn, checkPerm
                     )
                 }
 
-                {
-                    filtersSelected.orderByStatus !== 'asc' && (
-                        <div className="flex gap-2 items-center">
-                            <p className="text-brand-dark dark:text-light font-bold">{'Ordenar por estatus'}:</p>
-                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{filtersSelected.orderByStatus}</p>
-                        </div>
-                    )
-                }
 
             </div>
 
@@ -268,8 +253,7 @@ export default function FiltersSpecialities({ dataQuery, updateDataFn, checkPerm
                 <Collapse title={'Filtros'} positionOpenBtn="left" defaultOpen={false} contentHeader={<InfoCurrentFilters />} >
                     {
                         backupData && backupData.length < 1 && (
-                            <div className="flex gap-2 items-center justify-center">
-                                <p className="text-brand-dark dark:text-light font-bold">{'Sin datos disponibles'}:</p>
+                            <div className="flex gap-2 items-center justify-center mt-4">
                                 <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{'Sin datos disponibles'}</p>
                             </div>
                         )
@@ -322,11 +306,7 @@ export default function FiltersSpecialities({ dataQuery, updateDataFn, checkPerm
                                         <Label key={'order-by-speciality'} htmlFor='orderBySpeciality' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {'Ordenar por nombre'}</Label>
                                         <Select canClear defaultValue={getValues('orderBySpecialities')} {...register('orderBySpecialities')} reset={resetSelectValue} options={orderOptions} placeholder='Selecciona un orden' />
                                     </div>
-                                    {/* ORDENAR POR STATUS */}
-                                    <div>
-                                        <Label key={'order-by-status-speciality'} htmlFor='orderByStatus' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {'Ordenar por estatus'}</Label>
-                                        <Select canClear defaultValue={getValues('orderByStatus')} {...register('orderByStatus')} reset={resetSelectValue} options={orderOptions} placeholder='Selecciona un orden' />
-                                    </div>
+
 
                                 </div>
 

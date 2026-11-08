@@ -81,7 +81,7 @@ export default function FiltersServices({ dataQuery, updateDataFn, checkPermissi
 
             // Filtro por Estatus ('activo' -> true, 'inactivo' -> false)
             if (filterValues.status !== 'all') {
-                const isSearchingActive = filterValues.status === 'activo';
+                const isSearchingActive = filterValues.status === 'active';
                 if (s.isActive !== isSearchingActive) return false;
             }
 
@@ -106,13 +106,7 @@ export default function FiltersServices({ dataQuery, updateDataFn, checkPermissi
                 if (diff !== 0) return diff;
             }
 
-            // Criterio 3: Orden por Estatus (isActive es boolean: true=1, false=0)
-            if (filterValues.orderByStatus) {
-                const diff = filterValues.orderByStatus === 'asc'
-                    ? Number(b.isActive) - Number(a.isActive) // 'asc': activos primero
-                    : Number(a.isActive) - Number(b.isActive); // 'desc': inactivos primero
-                if (diff !== 0) return diff;
-            }
+
 
             return 0;
         });
@@ -246,14 +240,6 @@ export default function FiltersServices({ dataQuery, updateDataFn, checkPermissi
                     )
                 }
 
-                {
-                    filtersSelected.orderByStatus !== 'asc' && (
-                        <div className="flex gap-2 items-center">
-                            <p className="text-brand-dark dark:text-light font-bold">{'Ordenar por estatus'}:</p>
-                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{filtersSelected.orderByStatus}</p>
-                        </div>
-                    )
-                }
 
             </div>
 
@@ -266,71 +252,80 @@ export default function FiltersServices({ dataQuery, updateDataFn, checkPermissi
         <>
             <section className="mt-10 mb-6 ">
                 <Collapse title={'Filtros'} positionOpenBtn="left" defaultOpen={false} contentHeader={<InfoCurrentFilters />} >
-                    <Form onSubmit={handleSubmit(onHandleFilters)} key={'services-filters'} className="mt-5">
-
-                        <div className=" pb-5 border-b border-gray-light dark:border-gray-light/30">
-
-                            <Label key={'name-services'} htmlFor='name' className="flex gap-2" > <Search className="w-4 h-4 text-theme-light-gray" /> {'Buscar por nombre'}</Label>
-                            <Input type="text" {...register('name')} className="max-w-55" id={`name-services`} placeholder={'Servicio'} />
-                        </div>
-
-                        {/* FILTROS DE SEDE */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 mt-10 mb-5">
-                            {/* SEDE */}
-                            <div>
-                                <Label key={'headquarters-services'} htmlFor='headquarters' className="flex gap-2" > <Building className="w-4 h-4 text-theme-light-gray" /> {'Sede actual'}</Label>
-                                <p className="text-sm ml-2 text-brand-dark dark:text-brand-light">{currentHeadquarter?.name}</p>
-
+                    {
+                        backupData && backupData.length < 1 && (
+                            <div className="flex gap-2 items-center justify-center mt-4">
+                                <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{'Sin datos disponibles'}</p>
                             </div>
-                            {/* SERVICIOS */}
-                            <div>
-                                <Label key={'services-services'} htmlFor='services' className="flex gap-2" > <Briefcase className="w-4 h-4 text-theme-light-gray" /> {'Servicios'}</Label>
-                                <Select canClear defaultValue={getValues('services')} {...register('services')} reset={resetSelectValue} options={servicesSelect} placeholder='Selecciona un servicio' />
-                            </div>
+                        )
+                    }
 
-                        </div>
+                    {
+                        backupData && backupData.length > 0 && (
+                            <Form onSubmit={handleSubmit(onHandleFilters)} key={'services-filters'} className="mt-5">
 
-                        {/* OTROS FILTROS */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 pt-5  border-t border-gray-light  dark:border-gray-light/30">
+                                <div className=" pb-5 border-b border-gray-light dark:border-gray-light/30">
 
-                            <div>
-                                <Label key={'status-services'} htmlFor='status' className="flex gap-2" > <Activity className="w-4 h-4 text-theme-light-gray" /> {'Estatus del servicio'}</Label>
-                                <Select canClear defaultValue={getValues('status')} {...register('status')} reset={resetSelectValue} options={statusSelect} placeholder='Selecciona un estatus' />
-                            </div>
+                                    <Label key={'name-services'} htmlFor='name' className="flex gap-2" > <Search className="w-4 h-4 text-theme-light-gray" /> {'Buscar por nombre'}</Label>
+                                    <Input type="text" {...register('name')} className="max-w-55" id={`name-services`} placeholder={'Servicio'} />
+                                </div>
 
-
-
-                            {/* ORDERNAR POR INGRESO CREATED_AT */}
-                            {
-                                !checkPermissionCb('createdAt') && (
+                                {/* FILTROS DE SEDE */}
+                                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 mt-10 mb-5">
+                                    {/* SEDE */}
                                     <div>
-                                        <Label key={'order-by-createdat-services'} htmlFor='orderBy' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {'Ordenar por fecha de creación'}</Label>
-                                        <Select canClear defaultValue={getValues('orderByCreatedAt')} {...register('orderByCreatedAt')} reset={resetSelectValue} options={orderOptions} placeholder='Selecciona un orden' />
+                                        <Label key={'headquarters-services'} htmlFor='headquarters' className="flex gap-2" > <Building className="w-4 h-4 text-theme-light-gray" /> {'Sede actual'}</Label>
+                                        <p className="text-sm ml-2 text-brand-dark dark:text-brand-light">{currentHeadquarter?.name}</p>
+
                                     </div>
-                                )
+                                    {/* SERVICIOS */}
+                                    <div>
+                                        <Label key={'services-services'} htmlFor='services' className="flex gap-2" > <Briefcase className="w-4 h-4 text-theme-light-gray" /> {'Servicios'}</Label>
+                                        <Select canClear defaultValue={getValues('services')} {...register('services')} reset={resetSelectValue} options={servicesSelect} placeholder='Selecciona un servicio' />
+                                    </div>
 
-                            }
-                            {/* ORDENAR POR SERVICIO */}
-                            <div>
-                                <Label key={'order-by-speciality-services'} htmlFor='orderByService' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {'Ordenar por nombre'}</Label>
-                                <Select canClear defaultValue={getValues('orderByServices')} {...register('orderByServices')} reset={resetSelectValue} options={orderOptions} placeholder='Selecciona un orden' />
-                            </div>
-                            {/* ORDENAR POR STATUS */}
-                            <div>
-                                <Label key={'order-by-status-services'} htmlFor='orderByStatus' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {'Ordenar por estatus'}</Label>
-                                <Select canClear defaultValue={getValues('orderByStatus')} {...register('orderByStatus')} reset={resetSelectValue} options={orderOptions} placeholder='Selecciona un orden' />
-                            </div>
+                                </div>
 
-                        </div>
+                                {/* OTROS FILTROS */}
+                                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 pt-5  border-t border-gray-light  dark:border-gray-light/30">
+
+                                    <div>
+                                        <Label key={'status-services'} htmlFor='status' className="flex gap-2" > <Activity className="w-4 h-4 text-theme-light-gray" /> {'Estatus del servicio'}</Label>
+                                        <Select canClear defaultValue={getValues('status')} {...register('status')} reset={resetSelectValue} options={statusSelect} placeholder='Selecciona un estatus' />
+                                    </div>
 
 
 
-                        {/* BOTÓN SUBMIT */}
-                        <div className="flex gap-2 justify-end mt-5">
-                            <button type="button" onClick={resetAllFilters} className="flex items-center gap-1 py-2 px-3 rounded-lg text-theme-light font-semibold bg-error dark:bg-error-dark"> <Delete className="w-4 h-4" /> {'Quitar filtros'}</button>
-                            <button type="submit" className="flex items-center gap-1 py-2 px-3 rounded-lg text-theme-light font-semibold bg-brand dark:bg-brand-dark"> <Filter className="w-4 h-4" /> {'Filtrar'}</button>
-                        </div>
-                    </Form>
+                                    {/* ORDERNAR POR INGRESO CREATED_AT */}
+                                    {
+                                        !checkPermissionCb('createdAt') && (
+                                            <div>
+                                                <Label key={'order-by-createdat-services'} htmlFor='orderBy' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {'Ordenar por fecha de creación'}</Label>
+                                                <Select canClear defaultValue={getValues('orderByCreatedAt')} {...register('orderByCreatedAt')} reset={resetSelectValue} options={orderOptions} placeholder='Selecciona un orden' />
+                                            </div>
+                                        )
+
+                                    }
+                                    {/* ORDENAR POR SERVICIO */}
+                                    <div>
+                                        <Label key={'order-by-speciality-services'} htmlFor='orderByService' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {'Ordenar por nombre'}</Label>
+                                        <Select canClear defaultValue={getValues('orderByServices')} {...register('orderByServices')} reset={resetSelectValue} options={orderOptions} placeholder='Selecciona un orden' />
+                                    </div>
+
+
+                                </div>
+
+
+
+                                {/* BOTÓN SUBMIT */}
+                                <div className="flex gap-2 justify-end mt-5">
+                                    <button type="button" onClick={resetAllFilters} className="flex items-center gap-1 py-2 px-3 rounded-lg text-theme-light font-semibold bg-error dark:bg-error-dark"> <Delete className="w-4 h-4" /> {'Quitar filtros'}</button>
+                                    <button type="submit" className="flex items-center gap-1 py-2 px-3 rounded-lg text-theme-light font-semibold bg-brand dark:bg-brand-dark"> <Filter className="w-4 h-4" /> {'Filtrar'}</button>
+                                </div>
+                            </Form>
+                        )
+
+                    }
 
                 </Collapse >
             </section >

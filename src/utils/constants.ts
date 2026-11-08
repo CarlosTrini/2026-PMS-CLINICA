@@ -12,7 +12,7 @@ export const APPOINTMENT_STATUS_ARRAY = ['scheduled', 'completed', 'cancelled', 
 export const GENDER_ARRAY = ['male', 'female', 'other', 'prefer_not_to_say'] as const;
 export const RELATIONSHIP_ARRAY = ['father', 'mother', 'legal_guardian', 'other', 'spouse', 'son_daughter', 'sibling', 'grandparent', 'caregiver'] as const;
 export const STATUS_PERSONAL_ARRAY = ['active', 'inactive', 'on_leave', 'on_vacation', 'in_consultation', 'on_break', 'incapacitated', 'suspended'] as const;
-export const STATUS_SIMPLE_ARRAY = ['activo', 'inactivo'] as const;
+export const STATUS_SIMPLE_ARRAY = ['active', 'inactive'] as const;
 
 export const HEADQUARTERS_DEPARTMENT_ARRAY = ['outpatient', 'emergency', 'surgery', 'cardiology_unit', 'dentistry_unit', 'womens_health', 'pediatrics_unit', 'intensive_care', 'laboratory', 'imaging'] as const;
 

@@ -86,7 +86,7 @@ export default function ServicesView() {
         <>
             <PageBreadcrumb pageTitle={'Catálogo de servicios'} />
 
-            <MetricsCatalogs catalogName="Servicios" iconCatalog={<List className="text-light" />} data={dataServices || []} />
+            <MetricsCatalogs catalogName="Servicios" iconCatalog={<List className="dark:text-light text-brand-dark" />} data={dataServices || []} />
 
 
             {/* FILTERS */}

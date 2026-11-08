@@ -77,7 +77,7 @@ export default function SpecialitiesView() {
         <>
             <PageBreadcrumb pageTitle={'Catálogo de especialidades'} />
 
-            <MetricsCatalogs catalogName="Especialidades" iconCatalog={<Stethoscope className="text-light" />} data={dataSpecialities || []} />
+            <MetricsCatalogs catalogName="Especialidades" iconCatalog={<Stethoscope className="dark:text-light text-brand-dark" />} data={dataSpecialities || []} />
 
 
 

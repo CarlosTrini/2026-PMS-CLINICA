@@ -7,16 +7,14 @@ export const filterSpecialitySchema = z.object({
     specialities: z.string(),
     orderByCreatedAt: z.enum(['asc', 'desc']),
     orderBySpecialities: z.enum(['asc', 'desc']),
-    orderByStatus: z.enum(['asc', 'desc']),
 });
 export type FilterSpecialityData = z.infer<typeof filterSpecialitySchema>;
 
 export const filtersSpecialityDefault: FilterSpecialityData = {
     name: '',
     status: 'all',
+    specialities: 'all',
     orderByCreatedAt: 'asc',
     orderBySpecialities: 'asc',
-    orderByStatus: 'asc',
-    specialities: 'all'
 }
 

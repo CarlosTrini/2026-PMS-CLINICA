@@ -2,7 +2,7 @@
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import useSystemTraslations from "@/hooks/useSysteTranslations";
-import type { RoleSystem } from "@/types/dataTypes";
+import type { Department, RoleSystem } from "@/types/dataTypes";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useHeadquarterStore } from "@/store/useHeadquarterStore";
@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { STATUS_COLOR_LIGHT } from "@/utils/statusColors";
 import Tooltip from "@/components/ui/tooltip/Tooltip";
 import MetricsCatalogs from "@/components/common/MetricsCatalogs";
+import FiltersDepartments from "./components/Filters";
 
 
 const COLUMNS = ['departmentName', 'specialitiesDepartment', 'status', 'createdAt', 'actions'];
@@ -40,18 +41,15 @@ export default function DepartmentsView() {
     const { userRole } = useUserStore();
 
     // QU3ERY
-    const { data: dataTable, isLoading, isError, error } = useQuery({
+    const { data: dataDeparments, isLoading, isError, error } = useQuery({
         queryKey: ['departments-page-table', currentHeadquarter?.id],
         queryFn: () => DepartmentsActionService.getAllDepartments(currentHeadquarter?.id || ''),
     });
 
     // HOOKS
+    const [dataTable, setDataTable] = useState<Department[]>([]);
     const [toggleTable, setToggleTable] = useState<'table' | 'cards'>('table'); // true = 'cards', false='table'
     const { isMobile } = useIsMobile();
-
-
-
-    //FUNCTIONS
 
     // REVISAR PERMISOS PARA TABLA Y FILTROS
     const checkPermissionsTable = (col: string): boolean => {
@@ -59,16 +57,33 @@ export default function DepartmentsView() {
     };
 
 
+    //EFFECTS
     useEffect(() => {
         setToggleTable(isMobile ? 'cards' : 'table')
 
     }, [isMobile]);
 
+
+    useEffect(() => {
+        if (dataDeparments && Array.isArray(dataDeparments)) {
+            setDataTable(dataDeparments)
+        }
+    }, [dataDeparments]);
+
+
+
+
     return (
         <>
             <PageBreadcrumb pageTitle={'Catálogo de departamentos'} />
 
-            <MetricsCatalogs catalogName="Departamentos" iconCatalog={<DoorOpen className="text-light" />} data={dataTable || []} />
+            <MetricsCatalogs catalogName="Departamentos" iconCatalog={<DoorOpen className="dark:text-light text-brand-dark" />} data={dataTable || []} />
+
+            <FiltersDepartments
+                dataQuery={dataTable as Department[]}
+                updateDataFn={(filteredData) => setDataTable(filteredData)}
+                checkPermissionCb={(colName) => checkPermissionsTable(colName)} // En caso de filtros relacoinados a columnas.,..  ejemplo: Filtro: Orden por ingreso, Col: createdAt
+            />
 
             <div className="flex items-baseline justify-end">
                 <Button type="button" size="xs" variant="primary" ><FilePlus />Agregar departamento</Button>

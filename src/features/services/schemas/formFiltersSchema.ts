@@ -7,16 +7,14 @@ export const filterServicesSchema = z.object({
     services: z.string(),
     orderByCreatedAt: z.enum(['asc', 'desc']),
     orderByServices: z.enum(['asc', 'desc']),
-    orderByStatus: z.enum(['asc', 'desc']),
 });
 export type FilterServicesData = z.infer<typeof filterServicesSchema>;
 
 export const filtersServicesDefault: FilterServicesData = {
     name: '',
     status: 'all',
+    services: 'all',
     orderByCreatedAt: 'asc',
     orderByServices: 'asc',
-    orderByStatus: 'asc',
-    services: 'all'
 }
 
