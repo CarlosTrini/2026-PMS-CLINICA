@@ -35,6 +35,8 @@ export default function FiltersSpecialities({ dataQuery, updateDataFn, checkPerm
     // HOOKS
     const { resetSelectValue, resetSelectFn } = useSelect();
     const [filtersSelected, setFiltersSelected] = useState<FilterSpecialityData>(filtersSpecialityDefault);
+    const [filtersSelectedPills, setFiltersSelectedPills] = useState<FilterSpecialityData>(filtersSpecialityDefault); // guarda el label para mostrar en el header del filtro
+
     const [backupData, setBackupData] = useState(dataQuery);
 
     // HOOK FORM -ZOD
@@ -122,7 +124,7 @@ export default function FiltersSpecialities({ dataQuery, updateDataFn, checkPerm
 
         const statusSelect = [...STATUS_SIMPLE_ARRAY.map((item) => ({
             value: item,
-            label: item,
+            label: item == 'active' ? 'Activo' : 'Inactivo',
         })), { value: 'all', label: 'Todos' }];
 
         const servicesSelect = backupData?.length > 0
@@ -195,7 +197,7 @@ export default function FiltersSpecialities({ dataQuery, updateDataFn, checkPerm
                     filtersSelected.specialities !== 'all' && (
                         <div className="flex gap-2 items-center">
                             <p className="text-brand-dark dark:text-light font-bold" >{'Especialidad'}:</p>
-                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{filtersSelected.specialities}</p>
+                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{filtersSelectedPills.specialities}</p>
                         </div>
                     )
                 }
@@ -210,7 +212,7 @@ export default function FiltersSpecialities({ dataQuery, updateDataFn, checkPerm
                     filtersSelected.status !== 'all' && (
                         <div className="flex gap-2 items-center">
                             <p className="text-brand-dark dark:text-light font-bold">{'Estatus del servicio'}:</p>
-                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{filtersSelected.status}</p>
+                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{filtersSelectedPills.status}</p>
                         </div>
 
                     )
@@ -222,7 +224,7 @@ export default function FiltersSpecialities({ dataQuery, updateDataFn, checkPerm
 
                         <div className="flex gap-2 items-center">
                             <p className="text-brand-dark dark:text-light font-bold">{'Ordenar por fecha de creación'}:</p>
-                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{filtersSelected.orderByCreatedAt}</p>
+                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{filtersSelectedPills.orderByCreatedAt}</p>
                         </div>
 
                     )}
@@ -234,7 +236,7 @@ export default function FiltersSpecialities({ dataQuery, updateDataFn, checkPerm
                     filtersSelected.orderBySpecialities !== 'asc' && (
                         <div className="flex gap-2 items-center">
                             <p className="text-brand-dark dark:text-light font-bold">{'Ordenar servicios'}:</p>
-                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{filtersSelected.orderBySpecialities}</p>
+                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{filtersSelectedPills.orderBySpecialities}</p>
                         </div>
                     )
                 }
@@ -280,17 +282,32 @@ export default function FiltersSpecialities({ dataQuery, updateDataFn, checkPerm
                                     {/* ESPECIALIDAD */}
                                     <div>
                                         <Label key={'specialities'} htmlFor='specialities' className="flex gap-2" > <Stethoscope className="w-4 h-4 text-theme-light-gray" /> {'Especialidades'}</Label>
-                                        <Select canClear defaultValue={getValues('specialities')} {...register('specialities')} reset={resetSelectValue} options={servicesSelect} placeholder='Seleccionar especialidad' />
+                                        <Select
+                                            canClear
+                                            getLabel={(op) => { setFiltersSelectedPills(prev => ({ ...prev, 'specialities': op!.label })) }}
+                                            defaultValue={getValues('specialities')}
+                                            {...register('specialities')}
+                                            reset={resetSelectValue}
+                                            options={servicesSelect}
+                                            placeholder='Seleccionar especialidad' />
                                     </div>
 
                                 </div>
 
                                 {/* OTROS FILTROS */}
-                                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 pt-5  border-t border-gray-light  dark:border-gray-light/30">
+                                <div className="grid grid-cols-1 md:grid-cols-3  gap-5 pt-5  border-t border-gray-light  dark:border-gray-light/30">
 
                                     <div>
                                         <Label key={'status-speciality'} htmlFor='status' className="flex gap-2" > <Activity className="w-4 h-4 text-theme-light-gray" /> {'Estatus de especialidad'}</Label>
-                                        <Select canClear defaultValue={getValues('status')} {...register('status')} reset={resetSelectValue} options={statusSelect} placeholder='Selecciona un estatus' />
+                                        <Select
+                                            canClear
+                                            getLabel={(op) => { setFiltersSelectedPills(prev => ({ ...prev, 'status': op!.label as FilterSpecialityData['status'] })) }}
+                                            defaultValue={getValues('status')}
+                                            {...register('status')}
+                                            reset={resetSelectValue}
+                                            options={statusSelect}
+                                            placeholder='Selecciona un estatus' />
+
                                     </div>
 
 
@@ -298,13 +315,27 @@ export default function FiltersSpecialities({ dataQuery, updateDataFn, checkPerm
                                     {/* ORDERNAR POR INGRESO CREATED_AT */}
 
                                     <div>
-                                        <Label key={'order-by-createdat-speciality'} htmlFor='orderBy' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {'Ordenar por fecha de creación'}</Label>
-                                        <Select canClear defaultValue={getValues('orderByCreatedAt')} {...register('orderByCreatedAt')} reset={resetSelectValue} options={orderOptions} placeholder='Selecciona un orden' />
+                                        <Label key={'order-by-createdat-speciality'} htmlFor='orderByCreatedAt' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {'Ordenar por fecha de creación'}</Label>
+                                        <Select
+                                            canClear
+                                            getLabel={(op) => { setFiltersSelectedPills(prev => ({ ...prev, 'orderByCreatedAt': op!.label as FilterSpecialityData['orderByCreatedAt'] })) }}
+                                            defaultValue={getValues('orderByCreatedAt')}
+                                            {...register('orderByCreatedAt')}
+                                            reset={resetSelectValue}
+                                            options={orderOptions}
+                                            placeholder='Selecciona un orden' />
                                     </div>
-                                    {/* ORDENAR POR ESPECIALIDAD */}
+                                    {/* ORDENAR POR NOMBRE DE ESPECIALIDAD */}
                                     <div>
                                         <Label key={'order-by-speciality'} htmlFor='orderBySpeciality' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {'Ordenar por nombre'}</Label>
-                                        <Select canClear defaultValue={getValues('orderBySpecialities')} {...register('orderBySpecialities')} reset={resetSelectValue} options={orderOptions} placeholder='Selecciona un orden' />
+                                        <Select
+                                            canClear
+                                            getLabel={(op) => { setFiltersSelectedPills(prev => ({ ...prev, 'orderBySpecialities': op!.label as FilterSpecialityData['orderBySpecialities'] })) }}
+                                            defaultValue={getValues('orderBySpecialities')}
+                                            {...register('orderBySpecialities')}
+                                            reset={resetSelectValue}
+                                            options={orderOptions}
+                                            placeholder='Selecciona un orden' />
                                     </div>
 
 

@@ -36,7 +36,6 @@ export default function FiltersDepartments({ dataQuery, updateDataFn, checkPermi
     const { resetSelectValue, resetSelectFn } = useSelect();
     const [filtersSelected, setFiltersSelected] = useState<FilterDepartmentsData>(filtersDepartmentsDefault); // guarda value (id) de selects para filtrar
     const [filtersSelectedPills, setFiltersSelectedPills] = useState<FilterDepartmentsData>(filtersDepartmentsDefault); // guarda el label para mostrar en el header del filtro
-    const [departmentSpecialitiesSelect, setDepartmentSpecialitiesSelect] = useState<{ value: string; label: string; }[]>([]);
     const [backupData, setBackupData] = useState(dataQuery);
 
     // HOOK FORM -ZOD
@@ -52,7 +51,6 @@ export default function FiltersDepartments({ dataQuery, updateDataFn, checkPermi
         reset();
         resetDataTable();
         setFiltersSelected(filtersDepartmentsDefault);
-        setDepartmentSpecialitiesSelect([])
     };
 
     // FILTERS & SORTING
@@ -84,6 +82,11 @@ export default function FiltersDepartments({ dataQuery, updateDataFn, checkPermi
             if (filterValues.status !== 'all') {
                 const isSearchingActive = filterValues.status === 'active';
                 if (s.isActive !== isSearchingActive) return false;
+            }
+
+            // Filtro por Especialidades
+            if (filterValues.deptoSpeciality !== 'all') {
+                if (!s.specialities.find((sp) => sp.id === filterValues.deptoSpeciality)) return false;
             }
 
             return true;
@@ -301,7 +304,7 @@ export default function FiltersDepartments({ dataQuery, updateDataFn, checkPermi
             <section className="mt-10 mb-6 ">
                 <Collapse title={'Filtros'} positionOpenBtn="left" defaultOpen={false} contentHeader={<InfoCurrentFilters />} >
                     {
-                        backupData && backupData.length < 1 && (
+                        backupData && backupData.length == 0 && (
                             <div className="flex gap-2 items-center justify-center mt-4">
                                 <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{'Sin datos disponibles'}</p>
                             </div>

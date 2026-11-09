@@ -34,7 +34,9 @@ export default function FiltersServices({ dataQuery, updateDataFn, checkPermissi
 
     // HOOKS
     const { resetSelectValue, resetSelectFn } = useSelect();
-    const [filtersSelected, setFiltersSelected] = useState<FilterServicesData>(filtersServicesDefault);
+    const [filtersSelected, setFiltersSelected] = useState<FilterServicesData>(filtersServicesDefault);// guarda value (id) de selects para filtrar
+    const [filtersSelectedPills, setFiltersSelectedPills] = useState<FilterServicesData>(filtersServicesDefault); // guarda el label para mostrar en el header del filtro
+
     const [backupData, setBackupData] = useState(dataQuery);
 
     // HOOK FORM -ZOD
@@ -105,9 +107,6 @@ export default function FiltersServices({ dataQuery, updateDataFn, checkPermissi
                     : b.name.localeCompare(a.name);
                 if (diff !== 0) return diff;
             }
-
-
-
             return 0;
         });
 
@@ -123,7 +122,7 @@ export default function FiltersServices({ dataQuery, updateDataFn, checkPermissi
 
         const statusSelect = [...STATUS_SIMPLE_ARRAY.map((item) => ({
             value: item,
-            label: item,
+            label: item == 'active' ? 'Activo' : 'Inactivo',
         })), { value: 'all', label: 'Todos' }];
 
         const servicesSelect = backupData?.length > 0
@@ -195,7 +194,7 @@ export default function FiltersServices({ dataQuery, updateDataFn, checkPermissi
                     filtersSelected.services !== 'all' && (
                         <div className="flex gap-2 items-center">
                             <p className="text-brand-dark dark:text-light font-bold" >{'Servicios'}:</p>
-                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{filtersSelected.services}</p>
+                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{filtersSelectedPills.services}</p>
                         </div>
                     )
                 }
@@ -210,7 +209,7 @@ export default function FiltersServices({ dataQuery, updateDataFn, checkPermissi
                     filtersSelected.status !== 'all' && (
                         <div className="flex gap-2 items-center">
                             <p className="text-brand-dark dark:text-light font-bold">{'Estatus del servicio'}:</p>
-                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{filtersSelected.status}</p>
+                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{filtersSelectedPills.status}</p>
                         </div>
 
                     )
@@ -221,7 +220,7 @@ export default function FiltersServices({ dataQuery, updateDataFn, checkPermissi
                     !checkPermissionCb('createdAt') && filtersSelected.orderByCreatedAt !== 'asc' && (
                         <div className="flex gap-2 items-center">
                             <p className="text-brand-dark dark:text-light font-bold">{'Ordenar por fecha de creación'}:</p>
-                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{filtersSelected.orderByCreatedAt}</p>
+                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{filtersSelectedPills.orderByCreatedAt}</p>
                         </div>
 
 
@@ -229,13 +228,13 @@ export default function FiltersServices({ dataQuery, updateDataFn, checkPermissi
                 }
 
 
-                {/* ORDER BY SERVICE */}
+                {/* ORDER BY SERVICE NAME */}
                 {
 
                     filtersSelected.orderByServices !== 'asc' && (
                         <div className="flex gap-2 items-center">
                             <p className="text-brand-dark dark:text-light font-bold">{'Ordenar servicios'}:</p>
-                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{filtersSelected.orderByServices}</p>
+                            <p className="bg-brand/10 text-brand-dark dark:bg-brand-dark/25 dark:text-brand-light border border-brand/20 dark:border-brand-dark/40 font-medium px-1 py-0.5 rounded-lg h-fit w-fit">{filtersSelectedPills.orderByServices}</p>
                         </div>
                     )
                 }
@@ -281,17 +280,29 @@ export default function FiltersServices({ dataQuery, updateDataFn, checkPermissi
                                     {/* SERVICIOS */}
                                     <div>
                                         <Label key={'services-services'} htmlFor='services' className="flex gap-2" > <Briefcase className="w-4 h-4 text-theme-light-gray" /> {'Servicios'}</Label>
-                                        <Select canClear defaultValue={getValues('services')} {...register('services')} reset={resetSelectValue} options={servicesSelect} placeholder='Selecciona un servicio' />
+                                        <Select
+                                            canClear
+                                            getLabel={(option) => { setFiltersSelectedPills(prev => ({ ...prev, 'services': option!.label })) }}
+                                            defaultValue={getValues('services')} {...register('services')}
+                                            reset={resetSelectValue}
+                                            options={servicesSelect}
+                                            placeholder='Selecciona un servicio' />
                                     </div>
 
                                 </div>
 
                                 {/* OTROS FILTROS */}
-                                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 pt-5  border-t border-gray-light  dark:border-gray-light/30">
+                                <div className="grid grid-cols-1 md:grid-cols-3  gap-5 pt-5  border-t border-gray-light  dark:border-gray-light/30">
 
                                     <div>
                                         <Label key={'status-services'} htmlFor='status' className="flex gap-2" > <Activity className="w-4 h-4 text-theme-light-gray" /> {'Estatus del servicio'}</Label>
-                                        <Select canClear defaultValue={getValues('status')} {...register('status')} reset={resetSelectValue} options={statusSelect} placeholder='Selecciona un estatus' />
+                                        <Select
+                                            canClear
+                                            getLabel={(option) => { setFiltersSelectedPills(prev => ({ ...prev, 'status': option!.label as FilterServicesData['status'] })) }}
+                                            defaultValue={getValues('status')} {...register('status')}
+                                            reset={resetSelectValue}
+                                            options={statusSelect}
+                                            placeholder='Selecciona un estatus' />
                                     </div>
 
 
@@ -300,8 +311,14 @@ export default function FiltersServices({ dataQuery, updateDataFn, checkPermissi
                                     {
                                         !checkPermissionCb('createdAt') && (
                                             <div>
-                                                <Label key={'order-by-createdat-services'} htmlFor='orderBy' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {'Ordenar por fecha de creación'}</Label>
-                                                <Select canClear defaultValue={getValues('orderByCreatedAt')} {...register('orderByCreatedAt')} reset={resetSelectValue} options={orderOptions} placeholder='Selecciona un orden' />
+                                                <Label key={'order-by-createdat-services'} htmlFor='orderByCreatedAt' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {'Ordenar por fecha de creación'}</Label>
+                                                <Select
+                                                    canClear
+                                                    getLabel={(option) => { setFiltersSelectedPills(prev => ({ ...prev, 'orderByCreatedAt': option!.label as FilterServicesData['orderByCreatedAt'] })) }}
+                                                    defaultValue={getValues('orderByCreatedAt')} {...register('orderByCreatedAt')}
+                                                    reset={resetSelectValue}
+                                                    options={orderOptions}
+                                                    placeholder='Selecciona un orden' />
                                             </div>
                                         )
 
@@ -309,7 +326,14 @@ export default function FiltersServices({ dataQuery, updateDataFn, checkPermissi
                                     {/* ORDENAR POR SERVICIO */}
                                     <div>
                                         <Label key={'order-by-speciality-services'} htmlFor='orderByService' className="flex items-center gap-2" > <ListOrdered className="w-4 h-4 text-theme-light-gray" />  {'Ordenar por nombre'}</Label>
-                                        <Select canClear defaultValue={getValues('orderByServices')} {...register('orderByServices')} reset={resetSelectValue} options={orderOptions} placeholder='Selecciona un orden' />
+                                        <Select
+                                            canClear
+                                            getLabel={(option) => { setFiltersSelectedPills(prev => ({ ...prev, 'orderByServices': option!.label as FilterServicesData['orderByServices'] })) }}
+                                            defaultValue={getValues('orderByServices')} {...register('orderByServices')}
+                                            reset={resetSelectValue}
+                                            options={orderOptions}
+                                            placeholder='Selecciona un orden' />
+
                                     </div>
 
 

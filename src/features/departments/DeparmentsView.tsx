@@ -2,7 +2,7 @@
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import useSystemTraslations from "@/hooks/useSysteTranslations";
-import type { Department, RoleSystem } from "@/types/dataTypes";
+import type { Department, HeadquartersDepartment, RoleSystem } from "@/types/dataTypes";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useHeadquarterStore } from "@/store/useHeadquarterStore";
@@ -47,7 +47,7 @@ export default function DepartmentsView() {
     });
 
     // HOOKS
-    const [dataTable, setDataTable] = useState<Department[]>([]);
+    const [dataTable, setDataTable] = useState<HeadquartersDepartment[]>([]);
     const [toggleTable, setToggleTable] = useState<'table' | 'cards'>('table'); // true = 'cards', false='table'
     const { isMobile } = useIsMobile();
 
@@ -77,10 +77,10 @@ export default function DepartmentsView() {
         <>
             <PageBreadcrumb pageTitle={'Catálogo de departamentos'} />
 
-            <MetricsCatalogs catalogName="Departamentos" iconCatalog={<DoorOpen className="dark:text-light text-brand-dark" />} data={dataTable || []} />
+            <MetricsCatalogs catalogName="Departamentos" iconCatalog={<DoorOpen className="dark:text-light text-brand-dark" />} data={dataDeparments || []} />
 
             <FiltersDepartments
-                dataQuery={dataTable as Department[]}
+                dataQuery={dataTable as HeadquartersDepartment[]}
                 updateDataFn={(filteredData) => setDataTable(filteredData)}
                 checkPermissionCb={(colName) => checkPermissionsTable(colName)} // En caso de filtros relacoinados a columnas.,..  ejemplo: Filtro: Orden por ingreso, Col: createdAt
             />
@@ -321,7 +321,7 @@ export default function DepartmentsView() {
                                                     </div>
                                                 </TableCell>
 
-                                                {/* ESPECIALIDADES DEL DEPARTAMENTO */}
+                                                {/* ESPECIALIDADES DE LOS DEPARTAMENTOS */}
                                                 <TableCell className="p-4">
                                                     {d.specialities.length > 0 ? (
                                                         <div className="flex flex-wrap items-center gap-1.5">
