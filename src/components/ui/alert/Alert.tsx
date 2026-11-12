@@ -92,27 +92,27 @@ const Alert: React.FC<AlertProps> = ({
   const variantClasses = {
     success: {
       container:
-        "border-success/30 bg-light-accent dark:border-success-dark/40 dark:bg-gray-dark",
+        "border-2 border-success-light/40 bg-linear-to-br from-success-dark/85 via-success-dark/75 to-success/65 dark:from-success-dark/80 dark:via-gray-dark/85 dark:to-success-dark/60 backdrop-blur-xl backdrop-saturate-150 ring-1 ring-light-accent/20 shadow-theme-lg shadow-success/20",
       iconWrapper:
-        "bg-success-light/20 text-success dark:bg-success-dark/25 dark:text-success-light",
+        "border border-success text-success-light",
     },
     error: {
       container:
-        "border-error/30 bg-light-accent dark:border-error-dark/40 dark:bg-gray-dark",
+        "border-2 border-error-light/40 bg-linear-to-br from-error-dark/85 via-error-dark/75 to-error/65 dark:from-error-dark/80 dark:via-gray-dark/85 dark:to-error-dark/60 backdrop-blur-xl backdrop-saturate-150 ring-1 ring-light-accent/20 shadow-theme-lg shadow-error/20",
       iconWrapper:
-        "bg-error-light/20 text-error dark:bg-error-dark/25 dark:text-error-light",
+        "border border-error text-light",
     },
     warning: {
       container:
-        "border-warning/30 bg-light-accent dark:border-warning-dark/40 dark:bg-gray-dark",
+        "border-warning-light/40 bg-linear-to-br from-warning-dark/85 via-warning-dark/75 to-warning/65 dark:from-warning-dark/80 dark:via-gray-dark/85 dark:to-warning-dark/60 backdrop-blur-xl backdrop-saturate-150 ring-1 ring-light-accent/20 shadow-theme-lg shadow-warning/20",
       iconWrapper:
-        "bg-warning-light/20 text-warning dark:bg-warning-dark/25 dark:text-warning-light",
+        "border border-warning text-light",
     },
     info: {
       container:
-        "border-blue-light/30 bg-light-accent dark:border-blue-light-dark/40 dark:bg-gray-dark",
+        "border-brand-light/40 bg-linear-to-br from-brand-dark/85 via-brand/75 to-blue-light/65 dark:from-brand-dark/80 dark:via-gray-dark/85 dark:to-blue-light-dark/60 backdrop-blur-xl backdrop-saturate-150 ring-1 ring-light-accent/20 shadow-theme-lg shadow-brand/20",
       iconWrapper:
-        "bg-blue-light-light/20 text-blue-light dark:bg-blue-light-dark/25 dark:text-blue-light-light",
+        "border border-brand-light text-light",
     },
   };
 
@@ -177,22 +177,22 @@ const Alert: React.FC<AlertProps> = ({
   return (
     <div
       role="alert"
-      className={`fixed z-99999 flex w-auto max-w-sm sm:max-w-md items-start gap-3 rounded-2xl border p-4 shadow-theme-lg backdrop-blur-md transition-all duration-200 ${isLeaving ? "opacity-0 scale-95" : "opacity-100 scale-100"
+      className={`fixed z-99999 flex w-auto min-w-100 items-start gap-3 rounded-xl border px-4 py-2.5 shadow-theme-lg backdrop-blur-md transition-all duration-200 ${isLeaving ? "opacity-0 scale-95" : "opacity-100 scale-100"
         } ${selectedPositionClass} ${variantClasses[variant].container} ${className}`}
     >
       <div
-        className={`flex size-9 shrink-0 items-center justify-center rounded-xl ${variantClasses[variant].iconWrapper}`}
+        className={`flex size-6 shrink-0 items-center justify-center rounded-xl ${variantClasses[variant].iconWrapper}`}
       >
         {icons[variant]}
       </div>
 
       <div className="flex-1 min-w-0 pt-0.5">
-        <h4 className="text-theme-sm font-semibold text-gray-dark dark:text-light-accent leading-5">
+        <h4 className="text-sm font-semibold text-light leading-5">
           {title}
         </h4>
 
         {message && (
-          <p className="mt-1 text-theme-xs text-gray dark:text-gray-light leading-relaxed">
+          <p className="mt-1 text-sm text-light leading-relaxed">
             {message}
           </p>
         )}
@@ -223,7 +223,7 @@ const Alert: React.FC<AlertProps> = ({
           type="button"
           onClick={handleClose}
           aria-label="Cerrar alerta"
-          className="shrink-0 rounded-lg p-1 text-gray transition-colors hover:bg-gray-light/60 hover:text-gray-dark dark:text-gray-light dark:hover:bg-light-accent/10 dark:hover:text-light-accent focus:outline-none"
+          className="shrink-0 rounded-full p-1 text-light transition-colors hover:bg-light/50 hover:text-error focus:outline-none"
         >
           <svg
             className="size-4.5 fill-current"

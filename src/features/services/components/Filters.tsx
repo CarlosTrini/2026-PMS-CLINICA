@@ -6,13 +6,14 @@ import Label from "@/components/form/Label";
 import Input from "@/components/form/input/InputField";
 import Select from "@/components/form/select/Select";
 import { FilterServicesData, filterServicesSchema, filtersServicesDefault } from "../schemas/formFiltersSchema";
-import { Activity, Briefcase, Building, Delete, Filter, ListOrdered, Search, Stethoscope } from 'lucide-react';
+import { Activity, Briefcase, Building, Delete, Filter, ListOrdered, Search } from 'lucide-react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSelect } from "@/hooks/useSelelct";
 import { useState, useMemo, useEffect } from "react";
 import type { Services } from "@/types/dataTypes";
 import { useHeadquarterStore } from "@/store/useHeadquarterStore";
+import Button from "@/components/ui/button/Button";
 
 
 
@@ -20,10 +21,10 @@ interface Props {
     dataQuery: Services[];
     updateDataFn: (data: Services[]) => void;
     checkPermissionCb: (colFilterName: string) => boolean;
-
+    backupData: Services[];
 }
 
-export default function FiltersServices({ dataQuery, updateDataFn, checkPermissionCb }: Props) {
+export default function FiltersServices({ dataQuery, updateDataFn, checkPermissionCb, backupData }: Props) {
 
     const { currentHeadquarter } = useHeadquarterStore();
 
@@ -37,8 +38,6 @@ export default function FiltersServices({ dataQuery, updateDataFn, checkPermissi
     const [filtersSelected, setFiltersSelected] = useState<FilterServicesData>(filtersServicesDefault);// guarda value (id) de selects para filtrar
     const [filtersSelectedPills, setFiltersSelectedPills] = useState<FilterServicesData>(filtersServicesDefault); // guarda el label para mostrar en el header del filtro
 
-    const [backupData, setBackupData] = useState(dataQuery);
-
     // HOOK FORM -ZOD
     const { register, handleSubmit, reset, getValues, subscribe } = useForm<FilterServicesData, any, FilterServicesData>({
         resolver: zodResolver(filterServicesSchema),
@@ -50,9 +49,9 @@ export default function FiltersServices({ dataQuery, updateDataFn, checkPermissi
 
     // DA UN RESET A FILTER EN DATA Y SELECTS
     const resetAllFilters = () => {
+        resetDataTable();
         resetSelectFn();
         reset();
-        resetDataTable();
         setFiltersSelected(filtersServicesDefault);
     };
 
@@ -137,11 +136,6 @@ export default function FiltersServices({ dataQuery, updateDataFn, checkPermissi
 
     // EFFECTS
 
-    // regresa la data a su estado original al quitar filtros
-    useEffect(() => {
-        if (backupData?.length > 0) return; // ya guardó el bakcup para cuando se quiten los filtros 'Quitar filtros'
-        setBackupData(dataQuery);
-    }, [dataQuery]);
 
     // resetea todos los filtros cada que cambia la sede
     useEffect(() => {
@@ -343,8 +337,8 @@ export default function FiltersServices({ dataQuery, updateDataFn, checkPermissi
 
                                 {/* BOTÓN SUBMIT */}
                                 <div className="flex gap-2 justify-end mt-5">
-                                    <button type="button" onClick={resetAllFilters} className="flex items-center gap-1 py-2 px-3 rounded-lg text-theme-light font-semibold bg-error dark:bg-error-dark"> <Delete className="w-4 h-4" /> {'Quitar filtros'}</button>
-                                    <button type="submit" className="flex items-center gap-1 py-2 px-3 rounded-lg text-theme-light font-semibold bg-brand dark:bg-brand-dark"> <Filter className="w-4 h-4" /> {'Filtrar'}</button>
+                                    <Button size="sm" type="button" onClick={resetAllFilters} className="flex items-center gap-1 py-2 px-3 rounded-lg text-theme-light font-semibold bg-error dark:bg-error-dark"> <Delete className="w-4 h-4" /> {'Quitar filtros'}</Button>
+                                    <Button size="sm" type="submit" className="flex items-center gap-1 py-2 px-3 rounded-lg text-theme-light font-semibold bg-brand dark:bg-brand-dark"> <Filter className="w-4 h-4" /> {'Filtrar'}</Button>
                                 </div>
                             </Form>
                         )

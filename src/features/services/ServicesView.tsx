@@ -15,11 +15,14 @@ import { Calendar, Dot, FilePlus, Layers, List, LucideInfo, Pencil, Stethoscope,
 import Badge from "@/components/ui/badge/Badge";
 import { STATUS_COLOR_LIGHT } from "@/utils/statusColors";
 import Tooltip from "@/components/ui/tooltip/Tooltip";
-import Switch from "@/components/form/switch/Switch";
+import { useModal } from "@/hooks/useModal";
+import { Modal } from "@/components/ui/modal";
 import Button from "@/components/ui/button/Button";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import MetricsCatalogs from "@/components/common/MetricsCatalogs";
 import FiltersServices from "./components/Filters";
+import AddServiceModal from "./components/AddServiceModal";
+import EditServiceModal from "./components/EditServiceModal";
 
 
 const COLUMNS = ['serviceName', 'status', 'createdAt', 'actions'];
@@ -29,17 +32,27 @@ const permissionsTableServices: Record<typeof COLUMNS[number], RoleSystem[]> = {
     'createdAt': ['assistant', 'receptionist', 'no_role', 'professional'],
     'actions': ['assistant', 'receptionist', 'no_role', 'professional']
 };
+const getColText: Record<typeof COLUMNS[number], string> = {
+    serviceName: 'Nombre del servicio',
+    status: 'Estado',
+    createdAt: 'Fecha de creación',
+    actions: 'Acciones'
+}
 
 
 export default function ServicesView() {
 
     // TRADUCCIONES
-    const { servicesPageT, commonT, statusT, tableColumnsT } = useSystemTraslations();
+    // const { servicesPageT, commonT, statusT, tableColumnsT } = useSystemTraslations();
 
     // HOOKS
     const [dataTable, setDataTable] = useState<Services[]>([]);
     const [toggleTable, setToggleTable] = useState<'table' | 'cards'>('table');
+    const [serviceSelected, setServiceSelected] = useState<Services>({} as Services);
     const { isMobile } = useIsMobile();
+    const { isOpen: isOpenAddService, openModal: openAddService, toggleModal: toggleAddService } = useModal();
+    const { isOpen: isOpenEditService, openModal: openEditService, toggleModal: toggleEditService } = useModal();
+
 
 
     // ZUSTAND
@@ -48,7 +61,13 @@ export default function ServicesView() {
 
 
     // QUERY
-    // const { mutate: handleGetServices, isSuccess, isError, error } = useMutation({
+    const { data: dataServices, isLoading, isError, error } = useQuery({
+        queryKey: ['services-page-table', currentHeadquarter?.id],
+        queryFn: () => ServicesActionService.getAllServices(currentHeadquarter?.id || ''),
+        enabled: !!currentHeadquarter?.id // solo si hay sede
+    });
+    // MUTATIONS
+    // const { mutate: handleInitAddService, isPending: isPendingInitAddService } = useMutation({
     //     mutationKey: ['services-page-table'],
     //     mutationFn: () => ServicesActionService.getAllServices(),
     //     onSuccess: (data) => {
@@ -57,17 +76,18 @@ export default function ServicesView() {
     //     }
     // });
 
-    const { data: dataServices, isLoading, isError, error } = useQuery({
-        queryKey: ['services-page-table', currentHeadquarter?.id],
-        queryFn: () => ServicesActionService.getAllServices(currentHeadquarter?.id || ''),
-        enabled: !!currentHeadquarter?.id // solo si hay sede
-    });
+    //FUNCIONES
 
+    const handleModalAddService = () => {
+        openAddService();
+    }
 
     // REVISAR PERMISOS PARA TABLA Y FILTROS
     const checkPermissionsTable = (col: string): boolean => {
         return permissionsTableServices[col] && permissionsTableServices[col].some(ur => ur === userRole);
     };
+
+    // EFFCTS
 
 
     useEffect(() => {
@@ -92,13 +112,21 @@ export default function ServicesView() {
             {/* FILTERS */}
             <FiltersServices
                 dataQuery={dataTable as Services[]}
+                backupData={dataServices ? [...dataServices] : []} // se manda con spread... para que al filtrar no se afecté y al reset, tener la data completa
                 updateDataFn={(filteredData) => setDataTable(filteredData)}
                 checkPermissionCb={(colName) => checkPermissionsTable(colName)} // En caso de filtros relacoinados a columnas.,..  ejemplo: Filtro: Orden por ingreso, Col: createdAt
             />
 
             <div className="flex items-baseline justify-end">
 
-                <Button type="button" size="xs" variant="primary" ><FilePlus />Agregar servicio</Button>
+                <Button
+                    onClick={() => handleModalAddService()}
+                    type="button"
+                    size="xs"
+                    variant="primary" >
+                    <FilePlus />
+                    Agregar servicio
+                </Button>
                 <div>
                 </div>
             </div>
@@ -176,7 +204,7 @@ export default function ServicesView() {
                                                         : STATUS_COLOR_LIGHT.inactive
                                                 }
                                             >
-                                                {s.isActive ? statusT('active') : statusT('inactive')}
+                                                {s.isActive ? 'Activo' : 'Inactivo'}
                                             </Badge>
                                         </div>
 
@@ -234,7 +262,7 @@ export default function ServicesView() {
                                                 return (
                                                     <TableCell key={col} isHeader className={alignClass}>
                                                         <p className="generic-header-table">
-                                                            {tableColumnsT(col)}
+                                                            {getColText[col]}
                                                         </p>
                                                     </TableCell>
                                                 );
@@ -274,7 +302,7 @@ export default function ServicesView() {
                                                                     : STATUS_COLOR_LIGHT.inactive
                                                             }
                                                         >
-                                                            {s.isActive ? statusT('active') : statusT('inactive')}
+                                                            {s.isActive ? 'Activo' : 'Inactivo'}
                                                         </Badge>
                                                     </div>
                                                 </TableCell>
@@ -294,39 +322,44 @@ export default function ServicesView() {
                                                             <button
                                                                 type="button"
                                                                 className="p-1.5 rounded-lg bg-brand/10 hover:bg-brand text-brand hover:text-light dark:bg-brand-dark/30 dark:text-brand-light dark:hover:bg-brand-dark dark:hover:text-light transition-colors"
-                                                                title={commonT('edit')}
+                                                                title={'Editar'}
+                                                                onClick={() => {
+                                                                    openEditService();
+                                                                    setServiceSelected(s);
+                                                                }}
                                                             >
                                                                 <Pencil className="size-4" />
                                                             </button>
-                                                            <Tooltip
+                                                            {/* <Tooltip
                                                                 position="left"
-                                                                trigger="click"
+                                                                trigger="hover"
                                                                 content={
-                                                                    <div className="p-2.5 bg-error-dark/60">
+                                                                    <div className="p-2.5 bg-error-dark">
                                                                         <p className="text-theme-xs text-theme-light">
-                                                                            ¿{commonT('delete')}{' '}
+                                                                            ¿{'Eliminar'}{' '}
                                                                             <span className="font-bold italic">{s.name}</span>?
                                                                         </p>
                                                                         <p className="text-theme-xs mt-1 text-theme-light italic">
-                                                                            ({commonT('thisActionCannotBeUndone')})
+                                                                            Esta acción no se puede deshacer
                                                                         </p>
-                                                                        <button
+                                                                        <Button
+                                                                            size="xs"
                                                                             type="button"
-                                                                            className="px-2.5 py-1 mt-2 text-theme-xs rounded-md bg-error dark:bg-error-dark hover:bg-error/80 text-light"
+                                                                            className="px-2.5 py-1 mt-2 text-theme-xs rounded-md bg-error hover:bg-error/80 text-light"
                                                                         >
-                                                                            {commonT('delete')}
-                                                                        </button>
+                                                                            Sí, eliminar
+                                                                        </Button>
                                                                     </div>
                                                                 }
                                                             >
                                                                 <button
                                                                     type="button"
                                                                     className="p-1.5 rounded-lg bg-error/10 hover:bg-error text-error hover:text-light dark:bg-error-dark/30 dark:text-error-light dark:hover:bg-error-dark dark:hover:text-light transition-colors"
-                                                                    title={commonT('delete')}
+                                                                    title={'Eliminar'}
                                                                 >
                                                                     <Trash2 className="size-4" />
                                                                 </button>
-                                                            </Tooltip>
+                                                            </Tooltip> */}
                                                         </div>
                                                     </TableCell>
                                                 )}
@@ -342,6 +375,22 @@ export default function ServicesView() {
 
 
             </Fallback>
+
+
+
+            {/* MODALES PARA EDITAR Y AGREGAR SERVICIOS */}
+            <AddServiceModal
+                isOpen={isOpenAddService}
+                handleToggle={toggleAddService}
+            />
+
+            <EditServiceModal
+                isOpen={isOpenEditService}
+                handleToggle={toggleEditService}
+                service={serviceSelected}
+            />
+
+
 
         </>
     );
