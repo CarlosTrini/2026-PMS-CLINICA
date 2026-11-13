@@ -204,3 +204,17 @@ export interface AuthLogin {
     email: string;
     password: string;
 }
+
+
+// ======================= API RESPONSE PAGINATION
+export interface ResponseDataPaginated<T> {
+    docs: T[];
+    totalDocs: number;
+    totalPages: number;
+    page: number;
+    limit: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+    prevPage: number | null;
+    nextPage: number | null;
+}

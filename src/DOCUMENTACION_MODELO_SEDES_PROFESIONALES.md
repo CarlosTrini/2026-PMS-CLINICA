@@ -151,3 +151,43 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: body });
 }
 ```
+
+
+
+#### Páginación
+```typescript
+export async function GET(req: NextRequest) {
+    try {
+        const hqId = req.nextUrl.searchParams.get('headquarterId');
+        // 1. Leemos page y limit de la URL (con valores por defecto)
+        const page = Math.max(1, Number(req.nextUrl.searchParams.get('page')) || 1);
+        const limit = Math.max(1, Number(req.nextUrl.searchParams.get('limit')) || 10);
+        const { collectionFound } = await getCollectionsFn<Headquarters>('headquarters');
+        if (!collectionFound) {
+            return NextResponse.json({ message: "No se ha podido conectar." }, { status: 500 });
+        }
+        const headquarter = await collectionFound.findOne(
+            { id: hqId },
+            { projection: { _id: 0, services: 1 } }
+        );
+        const allServices = headquarter?.services ?? [];
+        const total = allServices.length;
+        const totalPages = Math.ceil(total / limit);
+        // 2. Cortamos el arreglo según la página
+        const startIndex = (page - 1) * limit;
+        const paginatedServices = allServices.slice(startIndex, startIndex + limit);
+        // 3. Devolvemos la estructura estándar de paginación
+        return NextResponse.json({
+            docs: paginatedServices,
+            totalDocs: total,
+            totalPages,
+            page,
+            limit,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
+        });
+    } catch (error) {
+        return NextResponse.json({ success: false, message: "Failed to fetch services" }, { status: 500 });
+    }
+}
+```

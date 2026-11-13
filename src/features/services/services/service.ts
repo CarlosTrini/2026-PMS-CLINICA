@@ -1,12 +1,14 @@
 import { apiClient } from "@/lib/axios";
-import type { Services } from "@/types/dataTypes";
+import type { ResponseDataPaginated, Services } from "@/types/dataTypes";
 
 export const ServicesActionService = {
-    async getAllServices(idHq: string): Promise<Services[]> {
+    async getAllServices({ idHq, page = 1, limit = 10 }: { idHq: string, page: number; limit: number }): Promise<ResponseDataPaginated<Services>> {
         try {
-            const { data } = await apiClient.get<Services[]>(`/services`, {
+            const { data } = await apiClient.get<ResponseDataPaginated<Services>>(`/services`, {
                 params: {
-                    headquarterId: idHq
+                    headquarterId: idHq,
+                    page,
+                    limit
                 }
             });
             return data;

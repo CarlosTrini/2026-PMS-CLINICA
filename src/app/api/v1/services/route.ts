@@ -1,15 +1,43 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getCollectionsFn } from "@/lib/mongodb";
 import type { Headquarters, Services } from "@/types/dataTypes";
-import { success } from "zod";
+import { Head } from "next/document";
 
+// export async function GET(req: NextRequest) {
+
+//     try {
+//         const hqId = req.nextUrl.searchParams.get('headquarterId');
+
+//         const { collectionFound } = await getCollectionsFn('headquarters');
+
+//         if (!collectionFound) {
+//             return NextResponse.json(
+//                 { message: "No se ha podido obtener información." },
+//                 { status: 500 }
+//             );
+//         }
+
+//         const filterByHqIqId = hqId ? { id: hqId } : {};
+//         let documents = await collectionFound.findOne(filterByHqIqId, { projection: { _id: 0, services: 1 } });
+
+//         return NextResponse.json(documents?.services ?? []);
+//     } catch (error) {
+//         return NextResponse.json({
+//             success: false,
+//             message: "Failed to fetch services"
+//         }, { status: 500 });
+//     }
+
+// }
 
 export async function GET(req: NextRequest) {
 
     try {
         const hqId = req.nextUrl.searchParams.get('headquarterId');
+        const page = Number(req.nextUrl.searchParams.get('page') || 1);
+        const limit = Number(req.nextUrl.searchParams.get('limit') || 10);
 
-        const { collectionFound } = await getCollectionsFn('headquarters');
+        const { collectionFound } = await getCollectionsFn<Headquarters>('headquarters');
 
         if (!collectionFound) {
             return NextResponse.json(
@@ -18,10 +46,34 @@ export async function GET(req: NextRequest) {
             );
         }
 
+
+
         const filterByHqIqId = hqId ? { id: hqId } : {};
         let documents = await collectionFound.findOne(filterByHqIqId, { projection: { _id: 0, services: 1 } });
 
-        return NextResponse.json(documents?.services ?? []);
+        // PÁGINNACIÓN
+        const allServices = documents?.services ?? [];
+        const total = allServices.length;
+        const totalPages = Math.ceil(total / limit);
+
+        // como los servicios son un arreglo no colecciones, se usa slice para paginarlo...
+        // Una sede al no tener cientos o miles de registros, el proceso es rápido
+        const startIndex = (page - 1) * limit;
+        const paginatedServices = allServices.slice(startIndex, (startIndex + limit)); //los servicios
+
+        const responseData = {
+            docs: paginatedServices,
+            totalDocs: total,
+            totalPages,
+            page,
+            limit,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
+            prevPage: page > 1 ? (page - 1) : null,
+            nextPage: page < totalPages ? (page + 1) : null
+        }
+        return NextResponse.json(responseData)
+        // return NextResponse.json(documents?.services ?? []);
     } catch (error) {
         return NextResponse.json({
             success: false,
@@ -30,6 +82,7 @@ export async function GET(req: NextRequest) {
     }
 
 }
+
 
 export async function POST(req: NextRequest) {
     try {
@@ -193,6 +246,7 @@ export async function DELETE(req: NextRequest) {
             { $pull: { services: { id: serviceId } } }
         );
 
+        // no existe sede
         if (deleteService.matchedCount === 0) {
             return NextResponse.json(
                 { success: false, message: 'No se encontró el servicio en la sede' },
@@ -200,6 +254,7 @@ export async function DELETE(req: NextRequest) {
             );
         }
 
+        // si hay sede pero no srevicio con ese id
         if (deleteService.modifiedCount === 0) {
             return NextResponse.json(
                 { success: false, message: 'No se encontró el servicio en la sede' },
@@ -219,6 +274,4 @@ export async function DELETE(req: NextRequest) {
             message: "Failed to add services"
         }, { status: 500 });
     }
-
-
 }

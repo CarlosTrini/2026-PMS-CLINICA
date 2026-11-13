@@ -35,7 +35,6 @@ export default function Fallback({ id, children, isError, isLoading, data, error
     }
 
     useEffect(() => {
-        console.log(dataInfo)
         setDataInfo(data);
     }, [data]);
 

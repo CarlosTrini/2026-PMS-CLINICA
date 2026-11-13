@@ -1,28 +1,27 @@
 'use client';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import useSystemTraslations from "@/hooks/useSysteTranslations";
-import type { RoleSystem, Services } from "@/types/dataTypes";
+import type { ResponseDataPaginated, RoleSystem, Services } from "@/types/dataTypes";
 import { ServicesActionService } from "./services/service";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useHeadquarterStore } from "@/store/useHeadquarterStore";
-import { useUserStore } from "@/store/userStore";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import Fallback from "@/components/fallbackQuery/Fallback";
 import Image from "next/image";
-import { Calendar, Dot, FilePlus, Layers, List, LucideInfo, Pencil, Stethoscope, TableCellsMerge, Trash, Trash2, WalletCardsIcon } from "lucide-react";
+import { Calendar, FilePlus, Layers, List, Pencil, TableCellsMerge, Trash2, WalletCardsIcon } from "lucide-react";
 import Badge from "@/components/ui/badge/Badge";
 import { STATUS_COLOR_LIGHT } from "@/utils/statusColors";
 import Tooltip from "@/components/ui/tooltip/Tooltip";
-import { useModal } from "@/hooks/useModal";
-import { Modal } from "@/components/ui/modal";
 import Button from "@/components/ui/button/Button";
-import { useIsMobile } from "@/hooks/useIsMobile";
 import MetricsCatalogs from "@/components/common/MetricsCatalogs";
 import FiltersServices from "./components/Filters";
 import AddServiceModal from "./components/AddServiceModal";
 import EditServiceModal from "./components/EditServiceModal";
+import { useModal } from "@/hooks/useModal";
+import { useHeadquarterStore } from "@/store/useHeadquarterStore";
+import { useUserStore } from "@/store/userStore";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import { usePagination } from "@/hooks/usePagination";
 
 
 const COLUMNS = ['serviceName', 'status', 'createdAt', 'actions'];
@@ -52,6 +51,19 @@ export default function ServicesView() {
     const { isMobile } = useIsMobile();
     const { isOpen: isOpenAddService, openModal: openAddService, toggleModal: toggleAddService } = useModal();
     const { isOpen: isOpenEditService, openModal: openEditService, toggleModal: toggleEditService } = useModal();
+    const {
+        page,
+        limit,
+        totalDocs,
+        totalPages,
+        hasNextPage,
+        hasPrevPage,
+        nextPage,
+        prevPage,
+        setPage,
+        setLimit,
+        setPaginationInfo,
+    } = usePagination({ initLimit: 2, initPage: 1 });
 
 
 
@@ -60,10 +72,10 @@ export default function ServicesView() {
     const { userRole } = useUserStore();
 
 
-    // QUERY
+    // QUERY 
     const { data: dataServices, isLoading, isError, error } = useQuery({
-        queryKey: ['services-page-table', currentHeadquarter?.id],
-        queryFn: () => ServicesActionService.getAllServices(currentHeadquarter?.id || ''),
+        queryKey: ['services-page-table', currentHeadquarter?.id, page],
+        queryFn: () => ServicesActionService.getAllServices({ idHq: currentHeadquarter?.id || '', page, limit }),
         enabled: !!currentHeadquarter?.id // solo si hay sede
     });
     // MUTATIONS
@@ -87,18 +99,18 @@ export default function ServicesView() {
         return permissionsTableServices[col] && permissionsTableServices[col].some(ur => ur === userRole);
     };
 
+
     // EFFCTS
-
-
     useEffect(() => {
         setToggleTable(isMobile ? 'cards' : 'table')
     }, [isMobile]);
 
     useEffect(() => {
-        if (dataServices && Array.isArray(dataServices)) {
-            setDataTable(dataServices)
+        if (dataServices && dataServices?.docs) {
+            setDataTable(dataServices?.docs || [])
+            setPaginationInfo({ ...dataServices }); // info para controles de paginador
         }
-    }, [dataServices]);
+    }, [dataServices])
 
 
 
@@ -106,13 +118,13 @@ export default function ServicesView() {
         <>
             <PageBreadcrumb pageTitle={'Catálogo de servicios'} />
 
-            <MetricsCatalogs catalogName="Servicios" iconCatalog={<List className="dark:text-light text-brand-dark" />} data={dataServices || []} />
+            <MetricsCatalogs catalogName="Servicios" iconCatalog={<List className="dark:text-light text-brand-dark" />} data={dataServices?.docs || []} />
 
 
             {/* FILTERS */}
             <FiltersServices
                 dataQuery={dataTable as Services[]}
-                backupData={dataServices ? [...dataServices] : []} // se manda con spread... para que al filtrar no se afecté y al reset, tener la data completa
+                backupData={dataServices?.docs ? [...dataServices?.docs] : []} // se manda con spread... para que al filtrar no se afecté y al reset, tener la data completa
                 updateDataFn={(filteredData) => setDataTable(filteredData)}
                 checkPermissionCb={(colName) => checkPermissionsTable(colName)} // En caso de filtros relacoinados a columnas.,..  ejemplo: Filtro: Orden por ingreso, Col: createdAt
             />
